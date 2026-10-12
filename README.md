@@ -43,20 +43,28 @@ Sistema de referencia fijo: observador de pie en el corredor mirando la fachada 
 - **Interior (render).** La pared con la ventana de marco rojo y el aire acondicionado es la
   **fachada** vista desde dentro (coincide con la ventana de marco de madera de la foto exterior).
   La cámara del render está junto a la puerta mirando hacia la pared extrema: los cinco carteles
-  colgados del riel están en la **pared extrema opuesta a la medianera**, el escritorio de madera
-  aparece al fondo a la derecha junto a la **pared trasera** (opuesta a la fachada) y los pupitres
-  azules miran hacia la cámara, es decir, hacia la **medianera** (lado de la puerta). En la imagen
-  del escritorio, la silla negra está pegada a la pared trasera y el tablero blanco está en esa
-  misma pared a la derecha del escritorio (las pendientes de la línea de zócalo y del borde del
-  tablero muestran la esquina trasera-extrema del salón detrás del escritorio). El script
-  reproduce exactamente esa relación.
+  colgados del riel están en la **pared extrema opuesta a la medianera**, la pared de la derecha es
+  la **pared trasera** (opuesta a la fachada) y los pupitres azules miran hacia la cámara, es decir,
+  hacia la **medianera**, que es el frente de la clase (la pared de la puerta).
+- **Escritorio y tablero (imagen 1).** Las pendientes de la línea de zócalo y del borde del tablero
+  muestran una esquina justo detrás del escritorio: la silla negra está contra la pared trasera y el
+  tablero empieza en esa esquina sobre la pared perpendicular. Combinado con lo anterior, el tablero
+  queda en la **medianera** (desde la esquina trasera hacia la fachada, 2,4 m) y el escritorio en la
+  **esquina trasera junto a la medianera**, con la silla entre el escritorio y la pared trasera. Así
+  los pupitres miran al tablero y la puerta queda en la esquina delantera de esa misma pared. (En el
+  render interior el escritorio aparece al fondo a la derecha; se prioriza la imagen 1, que es la
+  referencia explícita del escritorio y el tablero. Para moverlo basta cambiar una línea en
+  `ETAPA 7`.)
 - **7B** se construye como espejo de 6B respecto a la medianera (misma geometría, posiciones
-  reflejadas, objetos no reflejados): puerta junto a la medianera, tablero y escritorio en la
-  pared trasera, carteles en la pared extrema derecha, pupitres mirando hacia la medianera.
+  reflejadas, objetos no reflejados): puerta junto a la medianera, tablero y escritorio contra la
+  medianera, carteles en la pared extrema derecha, pupitres mirando hacia la medianera. Los dos
+  tableros quedan espalda con espalda en el muro compartido.
 
 ## Elementos no visibles y valores por defecto (no confirmados por las fotos)
 
 - Largo interior 7,5 m, fondo 6,5 m, altura libre 3,0 m, muros 0,15 m (estimados por proporción).
+- Anchos de puerta: 6B 0,90 m de hueco (hoja 0,80 m, la verde se ve algo más estrecha), 7B 0,96 m
+  (hoja 0,86 m); ambas de 2,15 m de alto.
 - Fachada de 7B a la derecha de su puerta (ventana, calado, aire acondicionado) = espejo de 6B.
 - Fachada de 6B a la izquierda de la ventana: muro blanco liso (en la foto se corta ahí; el
   fragmento de mural pintado del borde izquierdo no se reproduce).

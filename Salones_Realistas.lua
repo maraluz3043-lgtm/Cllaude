@@ -276,11 +276,13 @@ local SALONES = {
 	{
 		nombre = "Salon_1_6B", etiqueta = "6B", dir = 1,
 		tx = function(x) return x end,
+		anchoPuerta = 0.90,      -- la hoja verde se ve algo más estrecha (0.80 m) que la metálica
 		desfaseVentana = 0,      -- ventana y calado exactamente donde los muestra la foto
 	},
 	{
 		nombre = "Salon_2_7B", etiqueta = "7B", dir = -1,
 		tx = function(x) return ANCHO_TOTAL - x end,
+		anchoPuerta = 0.96,      -- hoja metálica de 0.86 m
 		desfaseVentana = -0.36,  -- no visible en la foto: la ventana se aleja 0.36 m más de la puerta
 		                         -- (la foto muestra ~0.7 m de muro liso a la derecha de la puerta 7B)
 	},
@@ -296,10 +298,9 @@ local function rnormal(sal, dx, dz) return Vector3.new(dx * sal.dir, 0, dz) end
 -- Posiciones locales (metros) comunes a ambos salones
 local X_INT0, X_INT1 = T, T + L               -- 0.15 .. 7.65 interior
 local Z_INT0, Z_INT1 = -T - D, -T             -- -6.65+0.15 = -6.50 .. -0.15 interior
-local PUERTA_X0, PUERTA_X1 = X_INT1 - 1.09, X_INT1 - 0.14   -- 6.56 .. 7.51 (hueco 0.95 m junto a la medianera)
+local PUERTA_X1 = X_INT1 - 0.14      -- 7.51: borde del hueco de puerta junto a la columna de la medianera
 local PUERTA_H = 2.15
 local MARCO = 0.05
-local HOJA_X0, HOJA_X1 = PUERTA_X0 + MARCO, PUERTA_X1 - MARCO -- 6.61 .. 7.46 (hoja 0.85 m)
 
 -------------------------------------------------------------------------------
 -- CONSTRUCTORES DE MOBILIARIO (coordenadas locales del objeto: adelante = -Z, derecha = +X)
@@ -357,14 +358,14 @@ local function escritorioProfesor(parent, centro)
 	return m
 end
 
--- Lámpara fluorescente colgante: carcasa blanca + panel luminoso + dos varillas.
-local function lamparaFluorescente(parent, cx, cz, yViga)
+-- Lámpara fluorescente colgante: carcasa blanca + panel luminoso + dos varillas hasta la cota yTecho.
+local function lamparaFluorescente(parent, cx, cz, yTecho)
 	local m = nuevoModelo("Lampara_Fluorescente", parent)
 	local yTop = 2.58
 	caja("Carcasa", cx - 0.60, cx + 0.60, yTop - 0.08, yTop, cz - 0.15, cz + 0.15, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false }, m)
 	caja("Tubo_Luz", cx - 0.58, cx + 0.58, yTop - 0.10, yTop - 0.08, cz - 0.13, cz + 0.13, { Material = Enum.Material.Neon, Color = C.neon, CanCollide = false, CastShadow = false }, m)
-	for _, sx in ipairs({ -0.45, 0.45 }) do
-		caja("Varilla", cx + sx - 0.01, cx + sx + 0.01, yTop, yViga, cz - 0.01, cz + 0.01, { Material = Enum.Material.Metal, Color = C.metalClaro, CanCollide = false, CastShadow = false }, m)
+	for _, sx in ipairs({ -0.40, 0.40 }) do -- separadas de las vigas transversales
+		caja("Varilla", cx + sx - 0.01, cx + sx + 0.01, yTop, yTecho, cz - 0.01, cz + 0.01, { Material = Enum.Material.Metal, Color = C.metalClaro, CanCollide = false, CastShadow = false }, m)
 	end
 	return m
 end
@@ -439,8 +440,12 @@ local function construir()
 	-- Columna entre las dos puertas (sobresale 10 cm hacia el corredor), alineada con la medianera
 	local xMed = T + L + T / 2
 	caja("Columna_Entre_Puertas", xMed - 0.14, xMed + 0.14, 0, H, 0, 0.10, blanco, mCorredor)
-	-- Canaleta eléctrica a lo largo de la fachada bajo la losa (se interrumpe en la columna)
-	cilindro("Canaleta_Electrica", Vector3.new(0.05, 2.85, 0.03), Vector3.new(xMed - 0.15, 2.85, 0.03), 0.03, { Material = Enum.Material.Metal, Color = C.conducto, CanCollide = false, CastShadow = false }, mCorredor)
+	-- Canaleta eléctrica a lo largo de la fachada bajo la losa (se interrumpe en la columna); en tres tramos
+	-- para no atravesar la viga del corredor (x 5.78..5.98) ni la caja eléctrica de la ventana (x 6.11..6.21)
+	local canProps = { Material = Enum.Material.Metal, Color = C.conducto, CanCollide = false, CastShadow = false }
+	cilindro("Canaleta_Electrica", Vector3.new(0.05, 2.85, 0.03), Vector3.new(5.77, 2.85, 0.03), 0.03, canProps, mCorredor)
+	cilindro("Canaleta_Electrica", Vector3.new(5.99, 2.85, 0.03), Vector3.new(6.10, 2.85, 0.03), 0.03, canProps, mCorredor)
+	cilindro("Canaleta_Electrica", Vector3.new(6.22, 2.85, 0.03), Vector3.new(xMed - 0.15, 2.85, 0.03), 0.03, canProps, mCorredor)
 
 	---------------------------------------------------------------------------
 	-- ETAPAS 4 a 7 por salón
@@ -456,6 +461,8 @@ local function construir()
 		local mMob = nuevoModelo("Mobiliario", mSalon)
 
 		local dv = sal.desfaseVentana
+		local PUERTA_X0 = PUERTA_X1 - sal.anchoPuerta
+		local HOJA_X0, HOJA_X1 = PUERTA_X0 + MARCO, PUERTA_X1 - MARCO
 		-- Huecos de la fachada en coordenadas locales (metros)
 		local VENT_X0, VENT_X1 = 4.97 + dv, 6.11 + dv      -- marco exterior de la ventana 1.14 x 1.20
 		local VENT_Y0, VENT_Y1 = 1.65, 2.85
@@ -489,11 +496,11 @@ local function construir()
 		rcaja(sal, "Marco_Dintel", HOJA_X0, HOJA_X1, PUERTA_H - MARCO, PUERTA_H, -T, 0, marcoProps, mPuerta)
 
 		local hojaCX = sal.tx((HOJA_X0 + HOJA_X1) / 2)
-		local hojaAncho = HOJA_X1 - HOJA_X0  -- 0.85
+		local hojaAncho = HOJA_X1 - HOJA_X0  -- 0.80 (6B) / 0.86 (7B)
 		local normalExterior = Vector3.new(0, 0, 1)
 
 		if sal.etiqueta == "6B" then
-			-- Hoja verde lisa (hueco 0.95 m: hoja 0.85 x 2.10)
+			-- Hoja verde lisa (hueco 0.90 m: hoja 0.80 x 2.09)
 			local hoja = placa("Hoja_Puerta_6B", Vector3.new(hojaCX, 0.01 + 2.09 / 2, -0.04), hojaAncho, 2.09, 0.04, normalExterior,
 				{ Material = Enum.Material.SmoothPlastic, Color = C.verdePuerta }, mPuerta)
 			-- Rótulo "6B": "6" casi negro y "B" verde azulado, centrado; texto pequeño azul marino debajo
@@ -503,7 +510,7 @@ local function construir()
 				{ Font = Enum.Font.GothamBold, Size = UDim2.new(0.5, 0, 0.032, 0), Position = UDim2.new(0.22, 0, 0.472, 0) })
 			-- Cuatro lápices colgando del borde superior, punta hacia abajo (naranja, verde azulado, naranja, verde azulado)
 			local coloresLapiz = { C.naranja, C.verdeAzulado, C.naranja, C.verdeAzulado }
-			local offsets = { 0.14, 0.30, 0.46, 0.63 }
+			local offsets = { 0.13, 0.28, 0.43, 0.59 }
 			local yTope = 0.01 + 2.09
 			for i = 1, 4 do
 				local lx = sal.tx(HOJA_X0 + offsets[i])
@@ -534,25 +541,30 @@ local function construir()
 				end
 			end
 			-- Rótulo "7B": lápiz morado horizontal con letras amarillo pálido y punta crema hacia la derecha
-			local rot = placa("Rotulo_7B", Vector3.new(hojaCX - 0.03, 1.42, -0.006), 0.26, 0.13, 0.012, normalExterior,
+			local rot = placa("Rotulo_7B", Vector3.new(hojaCX - 0.03, 1.42, -0.014), 0.26, 0.13, 0.012, normalExterior,
 				{ Material = Enum.Material.SmoothPlastic, Color = C.moradoLapiz, CanCollide = false, CastShadow = false }, mPuerta)
 			texto(rot, "7B", C.amarilloPalido, { Font = Enum.Font.FredokaOne, Size = UDim2.new(0.8, 0, 0.9, 0), Position = UDim2.new(0.1, 0, 0.05, 0) })
 			local xTip = hojaCX + 0.10
-			caja("Rotulo_Punta", xTip, xTip + 0.07, 1.385, 1.455, -0.012, -0.004, { Material = Enum.Material.SmoothPlastic, Color = C.crema, CanCollide = false, CastShadow = false }, mPuerta)
-			caja("Rotulo_Grafito", xTip + 0.07, xTip + 0.10, 1.405, 1.435, -0.012, -0.005, { Material = Enum.Material.SmoothPlastic, Color = C.grafito, CanCollide = false, CastShadow = false }, mPuerta)
-			-- Manija corta y chapa en el borde derecho de la hoja (visto desde el corredor)
-			local xMan = sal.tx(HOJA_X1 - 0.08)
+			caja("Rotulo_Punta", xTip, xTip + 0.07, 1.385, 1.455, -0.020, -0.012, { Material = Enum.Material.SmoothPlastic, Color = C.crema, CanCollide = false, CastShadow = false }, mPuerta)
+			caja("Rotulo_Grafito", xTip + 0.07, xTip + 0.10, 1.405, 1.435, -0.020, -0.013, { Material = Enum.Material.SmoothPlastic, Color = C.grafito, CanCollide = false, CastShadow = false }, mPuerta)
+			-- Manija corta y chapa en el borde DERECHO de la hoja visto desde el corredor: en coordenadas locales de 7B
+			-- (reflejadas) ese borde es HOJA_X0, el lado alejado de la medianera
+			local xMan = sal.tx(HOJA_X0 + 0.08)
 			caja("Manija", xMan - 0.045, xMan + 0.045, 1.09, 1.115, -0.03, 0.015, { Material = Enum.Material.Metal, Color = C.metalClaro, CanCollide = false }, mPuerta)
 			caja("Chapa", xMan - 0.03, xMan + 0.03, 1.00, 1.06, -0.03, -0.008, { Material = Enum.Material.Metal, Color = C.metalClaro, CanCollide = false, CastShadow = false }, mPuerta)
 			-- Señal "Ruta de evacuación" sobre el tercio derecho de la puerta 7B, flecha hacia la izquierda
-			local xS0, xS1 = sal.tx(PUERTA_X0 + 0.68), sal.tx(PUERTA_X1 + 0.07)
-			local senal = placa("Senal_Evacuacion", Vector3.new((xS0 + xS1) / 2, 2.34, 0.006), math.abs(xS1 - xS0), 0.14, 0.012, normalExterior,
+			-- (los bordes del hueco se pasan a MUNDO antes de aplicar los desfases: en 7B lo local está reflejado)
+			local dx0, dx1 = sal.tx(PUERTA_X0), sal.tx(PUERTA_X1)
+			if dx0 > dx1 then dx0, dx1 = dx1, dx0 end
+			local xS0, xS1 = dx0 + 0.68, dx1 + 0.07
+			local senal = placa("Senal_Evacuacion", Vector3.new((xS0 + xS1) / 2, 2.40, 0.006), xS1 - xS0, 0.14, 0.012, normalExterior,
 				{ Material = Enum.Material.SmoothPlastic, Color = C.verdeSenal, CanCollide = false, CastShadow = false }, mFachada)
 			texto(senal, "←", Color3.fromRGB(255, 255, 255), { Font = Enum.Font.GothamBold, Size = UDim2.new(0.32, 0, 0.9, 0), Position = UDim2.new(0.02, 0, 0.05, 0) })
 			texto(senal, "RUTA DE\nEVACUACIÓN", Color3.fromRGB(255, 255, 255), { Font = Enum.Font.GothamBold, Size = UDim2.new(0.62, 0, 0.8, 0), Position = UDim2.new(0.36, 0, 0.1, 0) })
 		end
 
-		-- Ventana con marco exterior de madera rojo oscuro, marco interior de madera clara y vidrio esmerilado
+		-- Ventana con marco exterior de madera rojo oscuro, marco interior de madera clara y panel de vidrio opaco
+		-- (en la foto no se ve nada a través de él; Glass opaco evita el fallo de render de Glass semitransparente)
 		do
 			local rojo = { Material = Enum.Material.Wood, Color = C.marcoRojo }
 			local clara = { Material = Enum.Material.Wood, Color = C.maderaClara }
@@ -568,7 +580,7 @@ local function construir()
 			rcaja(sal, "Marco_Int_Inf", ix0 + MI, ix1 - MI, iy0, iy0 + MI, -0.12, -0.03, clara, mVentana)
 			rcaja(sal, "Marco_Int_Sup", ix0 + MI, ix1 - MI, iy1 - MI, iy1, -0.12, -0.03, clara, mVentana)
 			rcaja(sal, "Vidrio", ix0 + MI, ix1 - MI, iy0 + MI, iy1 - MI, -0.08, -0.07,
-				{ Material = Enum.Material.Glass, Color = C.vidrio, Transparency = 0.35, Reflectance = 0.05 }, mVentana)
+				{ Material = Enum.Material.Glass, Color = C.vidrio, Transparency = 0, Reflectance = 0.08 }, mVentana)
 		end
 
 		-- Calado (bloques decorativos de ventilación): rejilla de 5 x 4 bloques; cada bloque con cruz central = 4 aberturas
@@ -631,7 +643,7 @@ local function construir()
 		-- Lámparas fluorescentes colgantes bajo las vigas: 3 líneas (cerca de la fachada, centro, cerca del fondo) x 3
 		for _, z in ipairs({ -0.78, -3.33, -5.86 }) do
 			for _, x in ipairs({ 1.50, 3.90, 6.30 }) do
-				lamparaFluorescente(mTecho, sal.tx(x), z, Y_VIGA)
+				lamparaFluorescente(mTecho, sal.tx(x), z, H) -- varillas hasta la cara inferior de la losa
 			end
 		end
 		-- Luminarias redondas planas adosadas a la losa, en las bandas intermedias
@@ -650,15 +662,16 @@ local function construir()
 		rcaja(sal, "Aire_Acondicionado", AC_X0, AC_X1, 2.30, 2.62, -T - 0.22, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco }, mMuros)
 		rcaja(sal, "AC_Rejilla", AC_X0 + 0.05, AC_X1 - 0.05, 2.31, 2.35, -T - 0.225, -T - 0.21, { Material = Enum.Material.SmoothPlastic, Color = C.metalClaro, CanCollide = false, CastShadow = false }, mMuros)
 		cilindro("AC_Tuberia", rpunto(sal, AC_X1 - 0.03, 1.45, -T - 0.02), rpunto(sal, AC_X1 - 0.03, 2.30, -T - 0.02), 0.025, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
-		-- Interruptor entre la ventana y el aire acondicionado
-		rcaja(sal, "Interruptor", 4.65 + dv, 4.75 + dv, 1.30, 1.40, -T - 0.02, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
+		-- Interruptor bajo el aire acondicionado, sobre muro macizo (a la izquierda del calado)
+		rcaja(sal, "Interruptor", 4.10 + dv, 4.20 + dv, 1.30, 1.40, -T - 0.02, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
 
-		-- Tablero acrílico blanco con marco de aluminio y bandeja, en el MURO DE FONDO (opuesto a la fachada)
+		-- Tablero acrílico blanco con marco de aluminio y bandeja, en la MEDIANERA (pared del frente de la clase,
+		-- la misma de la puerta), empezando a 0.10 m de la esquina trasera, como en la imagen del escritorio
 		do
-			local TB_X0, TB_X1 = 2.90, 5.30
-			rcaja(sal, "Tablero_Marco", TB_X0 - 0.03, TB_X1 + 0.03, 0.92, 2.18, Z_INT0, Z_INT0 + 0.02, { Material = Enum.Material.Metal, Color = C.aluminio }, mMuros)
-			rcaja(sal, "Tablero_Blanco", TB_X0, TB_X1, 0.95, 2.15, Z_INT0 + 0.02, Z_INT0 + 0.03, { Material = Enum.Material.SmoothPlastic, Color = C.tablero, Reflectance = 0.04 }, mMuros)
-			rcaja(sal, "Tablero_Bandeja", TB_X0 + 0.2, TB_X1 - 0.2, 0.90, 0.93, Z_INT0, Z_INT0 + 0.08, { Material = Enum.Material.Metal, Color = C.aluminio, CanCollide = false }, mMuros)
+			local TB_Z0, TB_Z1 = Z_INT0 + 0.10, Z_INT0 + 2.50        -- 2.4 m de ancho
+			rcaja(sal, "Tablero_Marco", X_INT1 - 0.02, X_INT1, 0.92, 2.18, TB_Z0 - 0.03, TB_Z1 + 0.03, { Material = Enum.Material.Metal, Color = C.aluminio }, mMuros)
+			rcaja(sal, "Tablero_Blanco", X_INT1 - 0.03, X_INT1 - 0.02, 0.95, 2.15, TB_Z0, TB_Z1, { Material = Enum.Material.SmoothPlastic, Color = C.tablero, Reflectance = 0.04 }, mMuros)
+			rcaja(sal, "Tablero_Bandeja", X_INT1 - 0.08, X_INT1, 0.90, 0.93, TB_Z0 + 0.2, TB_Z1 - 0.2, { Material = Enum.Material.Metal, Color = C.aluminio, CanCollide = false }, mMuros)
 		end
 
 		-- Carteles de colores colgados de un riel blanco en el MURO EXTREMO (opuesto a la medianera) + cartel pequeño con borde rojo
@@ -690,19 +703,20 @@ local function construir()
 		-----------------------------------------------------------------------
 		-- ETAPA 7 · Mobiliario
 		-----------------------------------------------------------------------
-		-- Escritorio del profesor junto al muro de fondo, cerca de la esquina con el muro de carteles;
-		-- silla negra (misma silla universitaria sin paleta) entre el escritorio y el muro.
-		escritorioProfesor(mMob, rpunto(sal, 1.90, 0, -5.70))
-		sillaUniversitaria(mMob, rpunto(sal, 1.90, 0, -6.27), Vector3.new(0, 0, 1), { paleta = false, color = C.negroMetal, nombre = "Silla_Profesor" })
+		-- Escritorio del profesor en la esquina trasera junto a la medianera (delante del tablero, lado largo
+		-- paralelo al muro de fondo, a 0.5 m de la medianera); silla negra (silla universitaria sin paleta)
+		-- entre el escritorio y el muro de fondo, mirando hacia la clase. Reproduce la esquina de la imagen 1.
+		escritorioProfesor(mMob, rpunto(sal, X_INT1 - 0.50 - 0.75, 0, -5.72))
+		sillaUniversitaria(mMob, rpunto(sal, X_INT1 - 1.25, 0, -6.27), Vector3.new(0, 0, 1), { paleta = false, color = C.negroMetal, nombre = "Silla_Profesor" })
 
 		-- 20 sillas universitarias azules en 4 filas x 5, mirando hacia la medianera (lado de la puerta),
 		-- con una ligera irregularidad determinista (±8°, ±0.10 m) como en el render de referencia
 		local filasX = { 1.70, 3.00, 4.30, 5.60 }
 		local colsZ = { -0.80, -1.82, -2.84, -3.86, -4.88 }
 		local semilla = 7
-		local function ruido()
-			semilla = (semilla * 1103515245 + 12345) % 2147483648
-			return (semilla / 2147483648) * 2 - 1
+		local function ruido() -- generador Park-Miller: exacto en doubles, idéntico en cada ejecución
+			semilla = (semilla * 16807) % 2147483647
+			return (semilla / 2147483647) * 2 - 1
 		end
 		for _, x in ipairs(filasX) do
 			for _, z in ipairs(colsZ) do
@@ -735,6 +749,15 @@ local function construir()
 		esperar(puerta6B.Position.X < puerta7B.Position.X, "La puerta 6B debería quedar a la IZQUIERDA (menor X) que la 7B")
 		esperar(puerta6B.CFrame.LookVector.Z > 0.99 and puerta7B.CFrame.LookVector.Z > 0.99, "Las hojas deben mirar hacia el corredor (+Z)")
 		esperar(math.abs(puerta7B.Position.X - puerta6B.Position.X) < mt(1.6), "Las puertas deberían estar juntas, separadas por la columna")
+	end
+	-- Tablero sobre la medianera de cada salón
+	for _, sal in ipairs(SALONES) do
+		local mSalon = raiz:FindFirstChild(sal.nombre)
+		local tb = mSalon and mSalon:FindFirstChild("Tablero_Blanco", true)
+		esperar(tb ~= nil, sal.nombre .. ": falta el tablero")
+		if tb then
+			esperar(math.abs(tb.Position.X - (ORIGEN.X + mt(sal.tx(X_INT1 - 0.025)))) < 0.05, sal.nombre .. ": el tablero no está sobre la medianera")
+		end
 	end
 	-- Ninguna pieza de mobiliario fuera del interior de su salón ni atravesando la fachada / el fondo
 	for _, sal in ipairs(SALONES) do
