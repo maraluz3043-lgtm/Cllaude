@@ -328,8 +328,8 @@ local function sillaUniversitaria(parent, pos, mirar, opciones)
 	local metal = { Material = Enum.Material.Metal, Color = colorMarco }
 	local metalFino = { Material = Enum.Material.Metal, Color = colorMarco, CanCollide = false, CastShadow = false }
 	-- asiento y espaldar (acolchados)
-	pieza("Asiento", 0.46, 0.06, 0.44, 0, 0.44, 0, { Material = Enum.Material.Fabric, Color = colorAsiento })
-	pieza("Espaldar", 0.46, 0.38, 0.04, 0, 0.76, 0.21, { Material = Enum.Material.Fabric, Color = colorAsiento }, CFrame.Angles(math.rad(10), 0, 0))
+	pieza("Asiento", 0.46, 0.06, 0.44, 0, 0.44, 0, { Material = Enum.Material.SmoothPlastic, Color = colorAsiento })
+	pieza("Espaldar", 0.46, 0.38, 0.04, 0, 0.76, 0.21, { Material = Enum.Material.SmoothPlastic, Color = colorAsiento }, CFrame.Angles(math.rad(10), 0, 0))
 	-- patas traseras (suben hasta el espaldar) y delanteras
 	pieza("Pata_TrasIzq", 0.03, 0.95, 0.03, -0.20, 0.475, 0.20, metal)
 	pieza("Pata_TrasDer", 0.03, 0.95, 0.03, 0.20, 0.475, 0.20, metal)
