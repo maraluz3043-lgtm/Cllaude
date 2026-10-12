@@ -14,11 +14,13 @@ y los dos interiores completos.
 4. Para mover la construcción cambiar `ORIGEN` (studs) al principio del script; para cambiar
    la escala, `ESCALA` (studs por metro). Todas las medidas internas están en metros.
 5. Volver a ejecutar el script reemplaza únicamente el modelo generado por él (lo reconoce por
-   el atributo `GeneradoPorScriptSalones`); nunca toca otros objetos del mapa. `Ctrl+Z` deshace
-   la generación completa (se registran waypoints en ChangeHistoryService).
+   el atributo `GeneradoPorScriptSalones`, aunque se haya renombrado o movido dentro de Workspace);
+   nunca toca otros objetos del mapa. `Ctrl+Z` deshace la generación completa (se registra en
+   ChangeHistoryService).
 
 Si ocurre un error o se supera el límite de 1000 BaseParts, el script elimina la construcción
-parcial y lo reporta en Output.
+parcial, deja intacto el modelo anterior y lo reporta en Output. Si en Workspace ya hay un objeto
+ajeno llamado `Salones_Realistas`, el nuevo modelo se llama `Salones_Realistas_generado`.
 
 ## Interpretación de la distribución (análisis de las fotos)
 
@@ -63,8 +65,11 @@ Sistema de referencia fijo: observador de pie en el corredor mirando la fachada 
 ## Elementos no visibles y valores por defecto (no confirmados por las fotos)
 
 - Largo interior 7,5 m, fondo 6,5 m, altura libre 3,0 m, muros 0,15 m (estimados por proporción).
-- Anchos de puerta: 6B 0,90 m de hueco (hoja 0,80 m, la verde se ve algo más estrecha), 7B 0,96 m
-  (hoja 0,86 m); ambas de 2,15 m de alto.
+- Anchos de puerta: 6B 0,84 m de hueco (hoja 0,74 m; en la foto la verde mide ~0,85 de la metálica),
+  7B 0,96 m (hoja 0,86 m); ambas de 2,15 m de alto, con 0,39 m entre hojas y la columna en medio.
+- Las hojas se construyen cerradas (como en la foto) pero sin colisión, para que el avatar pueda entrar.
+- La ventana se modela según la foto (un solo panel opaco de 0,95 × 1,20 m con marco de dos tonos);
+  el render interior muestra una ventana mayor de tres paños, pero la foto real tiene prioridad.
 - Fachada de 7B a la derecha de su puerta (ventana, calado, aire acondicionado) = espejo de 6B.
 - Fachada de 6B a la izquierda de la ventana: muro blanco liso (en la foto se corta ahí; el
   fragmento de mural pintado del borde izquierdo no se reproduce).
@@ -81,17 +86,18 @@ Sistema de referencia fijo: observador de pie en el corredor mirando la fachada 
 
 | Modelo | BaseParts |
 |---|---|
-| Estructura (pisos, muros ciegos, medianera, losa) | 9 |
-| Corredor (baldosa, franja, columna, canaleta, 2 vigas) | 8 |
+| Estructura (piso, muros ciegos en dos capas, medianera, losa) | 9 |
+| Corredor (baldosa, franja de cemento, columna, canaleta en 2 tramos) | 5 |
 | Salon_1_6B (fachada 67 · techo 58 · acabados 17 · mobiliario 235) | 377 |
 | Salon_2_7B (fachada 102 · techo 58 · acabados 17 · mobiliario 235) | 412 |
-| **Total** | **806 / 1000** |
+| **Total** | **803 / 1000** |
 
 Desglose por salón: 20 pupitres × 11 parts, escritorio 6, silla del profesor 9, 10 vigas,
 9 luminarias fluorescentes × 4, 4 plafones redondos, 2 ventiladores de jaula × 4, aire
 acondicionado 3, interruptor 1, tablero 3, carteles 7 + riel 1, canaletas 2, ventana 9, calado 20,
 puerta 6B 20 (hoja, marco 3, 12 piezas de lápices, pomo, pegatina) o puerta 7B 51 (hoja, marco 3,
-umbral, 42 piezas de paneles, rótulo 3, manija 2) y letrero 1, más los tramos de muro de fachada.
+umbral, 42 piezas de paneles, rótulo 3, manija 2) y letrero 1, caja eléctrica 2, más los tramos de
+muro de fachada (dos capas: piel exterior blanca y capa interior gris).
 Todos los textos (6B, 7B, letrero, riel) son `SurfaceGui` + `TextLabel`: 0 Parts.
 
 ### Cómo verificar el recuento real después de ejecutar
@@ -109,5 +115,6 @@ print("BaseParts en Salones_Realistas:", n)
 
 ## Escala
 
-`ESCALA = 4` studs por metro: puertas de 3,8 × 8,6 studs (un avatar R15 de 5 studs pasa con
-holgura), escritorio a 3 studs de altura, asientos a 1,9 studs, techo a 12 studs.
+`ESCALA = 4` studs por metro: luz libre de puertas de 3,0 (6B) y 3,4 (7B) × 8,4 studs (el
+HumanoidRootPart de 2 studs pasa; las hojas cerradas no colisionan), pasillos entre filas de
+pupitres ≥ 2,9 studs, escritorio a 3 studs de altura, asientos a 1,9 studs, techo a 12 studs.

@@ -5,10 +5,10 @@
   Pegar completo en la Command Bar de Roblox Studio (Vista > Command Bar) y pulsar Enter.
 
   * Crea el modelo  workspace.Salones_Realistas  con Salon_1_6B, Salon_2_7B, Estructura y Corredor.
-  * Es idempotente: si ya existe un modelo generado por este script lo reemplaza.
-    Nunca borra objetos ajenos (se identifica por un atributo propio).
+  * Es idempotente: si ya existe un modelo generado por este script (reconocido por un atributo
+    propio, aunque se haya renombrado o movido) lo reemplaza. Nunca borra objetos ajenos.
   * Si ocurre un error o se supera el límite de 1000 BaseParts, elimina la construcción
-    parcial y lo informa en Output.
+    parcial, deja intacto el modelo anterior y lo informa en Output.
   * Unidad de trabajo: METROS (medidas tomadas de las fotos) -> studs mediante ESCALA.
 
   SISTEMA DE COORDENADAS (fijo durante toda la construcción):
@@ -24,7 +24,7 @@
 -- ETAPA 0 · CONFIGURACIÓN
 -------------------------------------------------------------------------------
 local LIMITE_PARTS   = 1000
-local ESCALA         = 4                       -- studs por metro (puerta 0.95 m = 3.8 studs; avatar R15 pasa cómodo)
+local ESCALA         = 4                       -- studs por metro (luz libre de puertas 0.74/0.86 m = 3.0/3.4 studs; el avatar pasa)
 local ORIGEN         = Vector3.new(0, 0.1, 0)  -- esquina exterior IZQUIERDA de la fachada, a nivel de piso terminado (studs)
 local NOMBRE_MODELO  = "Salones_Realistas"
 local ATRIBUTO_MARCA = "GeneradoPorScriptSalones"
@@ -50,9 +50,9 @@ local ChangeHistoryService = game:GetService("ChangeHistoryService")
 local C = {
 	blancoFachada   = Color3.fromRGB(232, 232, 226),
 	grisInterior    = Color3.fromRGB(160, 162, 162),
-	grisLosa        = Color3.fromRGB(196, 196, 190),
-	grisViga        = Color3.fromRGB(178, 180, 176),
-	pisoInterior    = Color3.fromRGB(178, 76, 52),
+	grisLosa        = Color3.fromRGB(188, 184, 170),
+	grisViga        = Color3.fromRGB(182, 186, 188),
+	pisoInterior    = Color3.fromRGB(190, 88, 62),
 	baldosaCorredor = Color3.fromRGB(150, 75, 55),
 	cementoGris     = Color3.fromRGB(128, 126, 120),
 	calado          = Color3.fromRGB(228, 228, 222),
@@ -124,6 +124,9 @@ local function nuevaPart(nombre, size, cf, props, parent)
 	if props.CastShadow ~= nil then p.CastShadow = props.CastShadow end
 	p.Parent = parent
 	contadorParts = contadorParts + 1
+	if contadorParts > LIMITE_PARTS then
+		error(string.format("Se superó el límite de %d BaseParts al crear '%s'. Construcción cancelada.", LIMITE_PARTS, nombre))
+	end
 	return p
 end
 
@@ -139,7 +142,9 @@ end
 
 -- Cilindro entre dos puntos (metros) con diámetro (metros). El eje X de la Part sigue la dirección.
 local function cilindro(nombre, a, b, diametro, props, parent)
-	props = props or {}
+	local copia = {}
+	for k, v in pairs(props or {}) do copia[k] = v end
+	props = copia
 	props.Shape = Enum.PartType.Cylinder
 	local pa, pb = P(a.X, a.Y, a.Z), P(b.X, b.Y, b.Z)
 	local dirv = pb - pa
@@ -219,7 +224,8 @@ local function piezasDeMuro(x0, x1, y0, y1, huecos)
 		local bloqueos = {}
 		for _, h in ipairs(huecos) do
 			if h.y0 <= mid and h.y1 >= mid then
-				table.insert(bloqueos, { math.max(h.x0, x0), math.min(h.x1, x1) })
+				local bx0, bx1 = math.max(h.x0, x0), math.min(h.x1, x1)
+				if bx1 - bx0 > 1e-6 then table.insert(bloqueos, { bx0, bx1 }) end
 			end
 		end
 		table.sort(bloqueos, function(a, b) return a[1] < b[1] end)
@@ -276,7 +282,7 @@ local SALONES = {
 	{
 		nombre = "Salon_1_6B", etiqueta = "6B", dir = 1,
 		tx = function(x) return x end,
-		anchoPuerta = 0.90,      -- la hoja verde se ve algo más estrecha (0.80 m) que la metálica
+		anchoPuerta = 0.84,      -- la hoja verde (0.74 m) mide ~0.85 de la metálica en la foto
 		desfaseVentana = 0,      -- ventana y calado exactamente donde los muestra la foto
 	},
 	{
@@ -297,8 +303,8 @@ local function rnormal(sal, dx, dz) return Vector3.new(dx * sal.dir, 0, dz) end
 
 -- Posiciones locales (metros) comunes a ambos salones
 local X_INT0, X_INT1 = T, T + L               -- 0.15 .. 7.65 interior
-local Z_INT0, Z_INT1 = -T - D, -T             -- -6.65+0.15 = -6.50 .. -0.15 interior
-local PUERTA_X1 = X_INT1 - 0.14      -- 7.51: borde del hueco de puerta junto a la columna de la medianera
+local Z_INT0, Z_INT1 = -T - D, -T             -- interior Z: -6.65 .. -0.15 (fondo D = 6.50 m); muro de fondo en -6.80 .. -6.65
+local PUERTA_X1 = X_INT1 - 0.07      -- 7.58: borde del hueco de puerta en la cara de la columna de la medianera
 local PUERTA_H = 2.15
 local MARCO = 0.05
 
@@ -397,6 +403,7 @@ end
 local raiz -- modelo principal
 
 local function construir()
+	contadorParts = 0
 	raiz = Instance.new("Model")
 	raiz.Name = NOMBRE_MODELO
 	raiz:SetAttribute(ATRIBUTO_MARCA, true)
@@ -433,19 +440,18 @@ local function construir()
 	caja("Muro_Medianero", T + L, T + L + T, 0, H, Z_INT0 - 0.10, 0, gris, mEstructura)
 
 	---------------------------------------------------------------------------
-	-- ETAPA 5 (parte compartida) · Cubierta, columna y detalles exteriores
+	-- ETAPA 3 (cont.) · Cubierta, columna de la medianera y canaleta exterior (estructura compartida)
 	---------------------------------------------------------------------------
 	-- Losa de cubierta sobre salones y corredor (su cara inferior es el cielo raso de concreto)
 	caja("Losa_Cubierta", 0, ANCHO_TOTAL, H, H + LOSA, Z_INT0 - T, CORREDOR, { Material = Enum.Material.Concrete, Color = C.grisLosa }, mEstructura)
 	-- Columna entre las dos puertas (sobresale 10 cm hacia el corredor), alineada con la medianera
 	local xMed = T + L + T / 2
-	caja("Columna_Entre_Puertas", xMed - 0.14, xMed + 0.14, 0, H, 0, 0.10, blanco, mCorredor)
+	caja("Columna_Entre_Puertas", xMed - 0.145, xMed + 0.145, 0, H, 0, 0.10, blanco, mCorredor) -- caras en los bordes de ambos huecos
 	-- Canaleta eléctrica a lo largo de la fachada bajo la losa (se interrumpe en la columna); en tres tramos
-	-- para no atravesar la viga del corredor (x 5.78..5.98) ni la caja eléctrica de la ventana (x 6.11..6.21)
+	-- para no atravesar la caja eléctrica de la ventana (x 6.11..6.21)
 	local canProps = { Material = Enum.Material.Metal, Color = C.conducto, CanCollide = false, CastShadow = false }
-	cilindro("Canaleta_Electrica", Vector3.new(0.05, 2.85, 0.03), Vector3.new(5.77, 2.85, 0.03), 0.03, canProps, mCorredor)
-	cilindro("Canaleta_Electrica", Vector3.new(5.99, 2.85, 0.03), Vector3.new(6.10, 2.85, 0.03), 0.03, canProps, mCorredor)
-	cilindro("Canaleta_Electrica", Vector3.new(6.22, 2.85, 0.03), Vector3.new(xMed - 0.15, 2.85, 0.03), 0.03, canProps, mCorredor)
+	cilindro("Canaleta_Electrica", Vector3.new(0.05, 2.85, 0.03), Vector3.new(6.10, 2.85, 0.03), 0.03, canProps, mCorredor)
+	cilindro("Canaleta_Electrica", Vector3.new(6.22, 2.85, 0.03), Vector3.new(xMed - 0.155, 2.85, 0.03), 0.03, canProps, mCorredor)
 
 	---------------------------------------------------------------------------
 	-- ETAPAS 4 a 7 por salón
@@ -464,9 +470,9 @@ local function construir()
 		local PUERTA_X0 = PUERTA_X1 - sal.anchoPuerta
 		local HOJA_X0, HOJA_X1 = PUERTA_X0 + MARCO, PUERTA_X1 - MARCO
 		-- Huecos de la fachada en coordenadas locales (metros)
-		local VENT_X0, VENT_X1 = 4.97 + dv, 6.11 + dv      -- marco exterior de la ventana 1.14 x 1.20
+		local VENT_X0, VENT_X1 = 5.16 + dv, 6.11 + dv      -- marco exterior de la ventana 0.95 x 1.20 (formato vertical, como en la foto)
 		local VENT_Y0, VENT_Y1 = 1.65, 2.85
-		local CAL_X0, CAL_X1 = 4.51 + dv, 5.76 + dv        -- panel de calado 1.25 x 1.05 (5 x 4 bloques)
+		local CAL_X0, CAL_X1 = 4.67 + dv, 5.92 + dv        -- panel de calado 1.25 x 1.05 (5 x 4 bloques), 0.19 m más corto que la ventana a la derecha
 		local CAL_Y0, CAL_Y1 = 0.45, 1.50
 		local huecos = {
 			{ x0 = sal.tx(PUERTA_X0), x1 = sal.tx(PUERTA_X1), y0 = 0, y1 = PUERTA_H },
@@ -496,13 +502,13 @@ local function construir()
 		rcaja(sal, "Marco_Dintel", HOJA_X0, HOJA_X1, PUERTA_H - MARCO, PUERTA_H, -T, 0, marcoProps, mPuerta)
 
 		local hojaCX = sal.tx((HOJA_X0 + HOJA_X1) / 2)
-		local hojaAncho = HOJA_X1 - HOJA_X0  -- 0.80 (6B) / 0.86 (7B)
+		local hojaAncho = HOJA_X1 - HOJA_X0  -- 0.74 (6B) / 0.86 (7B)
 		local normalExterior = Vector3.new(0, 0, 1)
 
 		if sal.etiqueta == "6B" then
-			-- Hoja verde lisa (hueco 0.90 m: hoja 0.80 x 2.09)
+			-- Hoja verde lisa (hueco 0.84 m: hoja 0.74 x 2.09); sin colisión para que el avatar pueda entrar
 			local hoja = placa("Hoja_Puerta_6B", Vector3.new(hojaCX, 0.01 + 2.09 / 2, -0.04), hojaAncho, 2.09, 0.04, normalExterior,
-				{ Material = Enum.Material.SmoothPlastic, Color = C.verdePuerta }, mPuerta)
+				{ Material = Enum.Material.SmoothPlastic, Color = C.verdePuerta, CanCollide = false }, mPuerta)
 			-- Rótulo "6B": "6" casi negro y "B" verde azulado, centrado; texto pequeño azul marino debajo
 			texto(hoja, '<font color="#141E14">6</font><font color="#286E5F">B</font>', Color3.fromRGB(20, 30, 20),
 				{ RichText = true, Font = Enum.Font.FredokaOne, Size = UDim2.new(1, 0, 0.16, 0), Position = UDim2.new(0, 0, 0.30, 0) })
@@ -510,13 +516,13 @@ local function construir()
 				{ Font = Enum.Font.GothamBold, Size = UDim2.new(0.5, 0, 0.032, 0), Position = UDim2.new(0.22, 0, 0.472, 0) })
 			-- Cuatro lápices colgando del borde superior, punta hacia abajo (naranja, verde azulado, naranja, verde azulado)
 			local coloresLapiz = { C.naranja, C.verdeAzulado, C.naranja, C.verdeAzulado }
-			local offsets = { 0.13, 0.28, 0.43, 0.59 }
+			local offsets = { 0.18 * hojaAncho, 0.41 * hojaAncho, 0.62 * hojaAncho, 0.85 * hojaAncho }
 			local yTope = 0.01 + 2.09
 			for i = 1, 4 do
 				local lx = sal.tx(HOJA_X0 + offsets[i])
 				local deco = { Material = Enum.Material.SmoothPlastic, Color = coloresLapiz[i], CanCollide = false, CastShadow = false }
-				caja("Lapiz_Cuerpo", lx - 0.045, lx + 0.045, yTope - 0.23, yTope, -0.02, -0.012, deco, mPuerta)
-				caja("Lapiz_Punta", lx - 0.03, lx + 0.03, yTope - 0.30, yTope - 0.23, -0.02, -0.013, { Material = Enum.Material.SmoothPlastic, Color = C.crema, CanCollide = false, CastShadow = false }, mPuerta)
+				caja("Lapiz_Cuerpo", lx - 0.035, lx + 0.035, yTope - 0.23, yTope, -0.02, -0.012, deco, mPuerta)
+				caja("Lapiz_Punta", lx - 0.025, lx + 0.025, yTope - 0.30, yTope - 0.23, -0.02, -0.013, { Material = Enum.Material.SmoothPlastic, Color = C.crema, CanCollide = false, CastShadow = false }, mPuerta)
 				caja("Lapiz_Grafito", lx - 0.012, lx + 0.012, yTope - 0.33, yTope - 0.30, -0.02, -0.014, { Material = Enum.Material.SmoothPlastic, Color = C.grafito, CanCollide = false, CastShadow = false }, mPuerta)
 			end
 			-- Cerradura/pomo pequeño en el borde izquierdo de la hoja (visto desde el corredor)
@@ -529,7 +535,7 @@ local function construir()
 			-- Puerta 7B: lámina metálica blanca con 3 x 7 paneles cuadrados estampados, sobre un pequeño umbral de cemento
 			rcaja(sal, "Umbral_Cemento", HOJA_X0, HOJA_X1, 0, 0.05, -T, 0.12, { Material = Enum.Material.Concrete, Color = C.cementoGris }, mPuerta)
 			local hoja = placa("Hoja_Puerta_7B", Vector3.new(hojaCX, 0.06 + 2.04 / 2, -0.05), hojaAncho, 2.04, 0.04, normalExterior,
-				{ Material = Enum.Material.Metal, Color = C.puertaMetal }, mPuerta)
+				{ Material = Enum.Material.Metal, Color = C.puertaMetal, CanCollide = false }, mPuerta) -- cerrada pero transitable
 			local panelProps = { Material = Enum.Material.Metal, Color = C.puertaMetal, CanCollide = false, CastShadow = false }
 			local filas = { 0.22, 0.49, 0.76, 1.03, 1.30, 1.57, 1.84 }
 			local cols = { HOJA_X0 + hojaAncho * (0.5 / 3), HOJA_X0 + hojaAncho * (1.5 / 3), HOJA_X0 + hojaAncho * (2.5 / 3) }
@@ -556,8 +562,8 @@ local function construir()
 			-- (los bordes del hueco se pasan a MUNDO antes de aplicar los desfases: en 7B lo local está reflejado)
 			local dx0, dx1 = sal.tx(PUERTA_X0), sal.tx(PUERTA_X1)
 			if dx0 > dx1 then dx0, dx1 = dx1, dx0 end
-			local xS0, xS1 = dx0 + 0.68, dx1 + 0.07
-			local senal = placa("Senal_Evacuacion", Vector3.new((xS0 + xS1) / 2, 2.40, 0.006), xS1 - xS0, 0.14, 0.012, normalExterior,
+			local xS0, xS1 = dx0 + 0.72, dx1 + 0.14
+			local senal = placa("Senal_Evacuacion", Vector3.new((xS0 + xS1) / 2, 2.56, 0.006), xS1 - xS0, 0.14, 0.012, normalExterior,
 				{ Material = Enum.Material.SmoothPlastic, Color = C.verdeSenal, CanCollide = false, CastShadow = false }, mFachada)
 			texto(senal, "←", Color3.fromRGB(255, 255, 255), { Font = Enum.Font.GothamBold, Size = UDim2.new(0.32, 0, 0.9, 0), Position = UDim2.new(0.02, 0, 0.05, 0) })
 			texto(senal, "RUTA DE\nEVACUACIÓN", Color3.fromRGB(255, 255, 255), { Font = Enum.Font.GothamBold, Size = UDim2.new(0.62, 0, 0.8, 0), Position = UDim2.new(0.36, 0, 0.1, 0) })
@@ -615,16 +621,15 @@ local function construir()
 			end
 		end
 
-		-- Detalle eléctrico exterior junto a la esquina superior de la ventana (cajita blanca con tubo corto) y viga del corredor
+		-- Detalle eléctrico exterior junto a la esquina superior de la ventana (cajita blanca con tubo corto)
 		do
 			local xCaja = sal.tx(VENT_X1 + 0.05)
 			caja("Caja_Electrica", xCaja - 0.05, xCaja + 0.05, 2.63, 2.88, 0, 0.06, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false }, mFachada)
 			rcaja(sal, "Tubo_Corto", VENT_X1 - 0.13, VENT_X1 + 0.05, 2.735, 2.765, 0.03, 0.06, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mFachada)
-			rcaja(sal, "Viga_Corredor", CAL_X1 + 0.02, CAL_X1 + 0.22, H - 0.30, H, 0, CORREDOR, { Material = Enum.Material.Concrete, Color = C.grisLosa }, mCorredor)
 		end
 
 		-----------------------------------------------------------------------
-		-- ETAPA 5 (interior) · Vigas de concreto a la vista en retícula
+		-- ETAPA 5 · Vigas de concreto a la vista en retícula
 		-----------------------------------------------------------------------
 		local vigaProps = { Material = Enum.Material.Concrete, Color = C.grisViga }
 		local Y_VIGA = H - 0.30
@@ -653,17 +658,18 @@ local function construir()
 				cilindro("Luminaria_Redonda", Vector3.new(xw, H - 0.05, z), Vector3.new(xw, H, z), 0.30, { Material = Enum.Material.Neon, Color = C.neon, CanCollide = false, CastShadow = false }, mTecho)
 			end
 		end
-		-- Dos ventiladores de jaula colgados de la losa en la banda central, soplando hacia el fondo del salón (lado de los carteles)
-		ventiladorJaula(mTecho, sal.tx(2.70), -3.33, H, rnormal(sal, -1, 0))
-		ventiladorJaula(mTecho, sal.tx(5.10), -3.33, H, rnormal(sal, -1, 0))
+		-- Dos ventiladores de jaula colgados de la losa en la banda central: el más cercano a la puerta muestra la rejilla
+		-- hacia la puerta (como en el render); el del fondo cuelga de perfil, hacia el muro de fondo
+		ventiladorJaula(mTecho, sal.tx(2.70), -3.33, H, Vector3.new(0, 0, -1))
+		ventiladorJaula(mTecho, sal.tx(5.10), -3.33, H, rnormal(sal, 1, 0))
 
 		-- Aire acondicionado split en la cara interior de la fachada, más allá de la ventana (lado opuesto a la puerta)
-		local AC_X0, AC_X1 = 3.45 + dv, 4.35 + dv
+		local AC_X0, AC_X1 = 3.91 + dv, 4.81 + dv          -- justo pasada la ventana (0.35 m), como en el render
 		rcaja(sal, "Aire_Acondicionado", AC_X0, AC_X1, 2.30, 2.62, -T - 0.22, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco }, mMuros)
 		rcaja(sal, "AC_Rejilla", AC_X0 + 0.05, AC_X1 - 0.05, 2.31, 2.35, -T - 0.225, -T - 0.21, { Material = Enum.Material.SmoothPlastic, Color = C.metalClaro, CanCollide = false, CastShadow = false }, mMuros)
 		cilindro("AC_Tuberia", rpunto(sal, AC_X1 - 0.03, 1.45, -T - 0.02), rpunto(sal, AC_X1 - 0.03, 2.30, -T - 0.02), 0.025, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
 		-- Interruptor bajo el aire acondicionado, sobre muro macizo (a la izquierda del calado)
-		rcaja(sal, "Interruptor", 4.10 + dv, 4.20 + dv, 1.30, 1.40, -T - 0.02, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
+		rcaja(sal, "Interruptor", 4.30 + dv, 4.40 + dv, 1.30, 1.40, -T - 0.02, -T, { Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false, CastShadow = false }, mMuros)
 
 		-- Tablero acrílico blanco con marco de aluminio y bandeja, en la MEDIANERA (pared del frente de la clase,
 		-- la misma de la puerta), empezando a 0.10 m de la esquina trasera, como en la imagen del escritorio
@@ -677,21 +683,22 @@ local function construir()
 		-- Carteles de colores colgados de un riel blanco en el MURO EXTREMO (opuesto a la medianera) + cartel pequeño con borde rojo
 		do
 			local xCara = X_INT0
-			-- riel blanco con rótulos pequeños, de 1.5 m a 4.5 m de la fachada; 5 hojas A3 a paso 0.6 m debajo
+			-- riel blanco con rótulos pequeños, de 1.5 m a 4.5 m de la fachada; 5 hojas A3 a paso 0.6 m colgando justo debajo
 			local riel = placa("Riel_Carteles", rpunto(sal, xCara + 0.015, 2.37, -3.00), 3.00, 0.12, 0.03, rnormal(sal, 1, 0),
 				{ Material = Enum.Material.SmoothPlastic, Color = C.blanco, CanCollide = false }, mMuros)
-			texto(riel, "·  LECTURA   ·   MATEMÁTICAS   ·   CIENCIAS   ·   SOCIALES   ·   VALORES  ·", C.grafito, { Font = Enum.Font.Gotham, Size = UDim2.new(1, 0, 0.5, 0), Position = UDim2.new(0, 0, 0.25, 0) })
+			-- rótulos del riel ilegibles en el render: marcas neutras
+			texto(riel, "▬▬   ▬▬▬   ▬▬   ▬▬▬▬   ▬▬", C.grafito, { Font = Enum.Font.Gotham, Size = UDim2.new(1, 0, 0.5, 0), Position = UDim2.new(0, 0, 0.25, 0) })
 			local colores = { C.posterAmarillo, C.posterCeleste, C.posterRojo, C.posterAmarillo, C.posterVerde }
 			for i, col in ipairs(colores) do
 				local zc = -(1.90 + (i - 1) * 0.60)
-				local cartel = placa("Cartel_" .. i, rpunto(sal, xCara + 0.012, 1.70, zc), 0.30, 0.42, 0.01, rnormal(sal, 1, 0),
+				local cartel = placa("Cartel_" .. i, rpunto(sal, xCara + 0.012, 2.07, zc), 0.30, 0.42, 0.01, rnormal(sal, 1, 0),
 					{ Material = Enum.Material.SmoothPlastic, Color = col, CanCollide = false, CastShadow = false }, mMuros)
 				texto(cartel, "▬▬▬▬\n▬▬▬▬▬▬\n▬▬▬▬▬", C.grafito, { Font = Enum.Font.Gotham, Size = UDim2.new(0.6, 0, 0.22, 0), Position = UDim2.new(0.2, 0, 0.42, 0) })
 			end
 			-- cartel pequeño blanco con borde rojo, a ~1 m de la fachada
-			placa("Cartel_Pequeno_Borde", rpunto(sal, xCara + 0.012, 1.68, -1.00), 0.36, 0.40, 0.01, rnormal(sal, 1, 0),
+			placa("Cartel_Pequeno_Borde", rpunto(sal, xCara + 0.012, 2.05, -1.00), 0.36, 0.40, 0.01, rnormal(sal, 1, 0),
 				{ Material = Enum.Material.SmoothPlastic, Color = C.posterRojo, CanCollide = false, CastShadow = false }, mMuros)
-			local cp = placa("Cartel_Pequeno", rpunto(sal, xCara + 0.021, 1.68, -1.00), 0.33, 0.37, 0.006, rnormal(sal, 1, 0),
+			local cp = placa("Cartel_Pequeno", rpunto(sal, xCara + 0.021, 2.05, -1.00), 0.33, 0.37, 0.006, rnormal(sal, 1, 0),
 				{ Material = Enum.Material.SmoothPlastic, Color = C.posterBlanco, CanCollide = false, CastShadow = false }, mMuros)
 			texto(cp, "▬▬▬▬", C.posterRojo, { Font = Enum.Font.Gotham, Size = UDim2.new(0.7, 0, 0.1, 0), Position = UDim2.new(0.15, 0, 0.82, 0) })
 		end
@@ -711,7 +718,7 @@ local function construir()
 
 		-- 20 sillas universitarias azules en 4 filas x 5, mirando hacia la medianera (lado de la puerta),
 		-- con una ligera irregularidad determinista (±8°, ±0.10 m) como en el render de referencia
-		local filasX = { 1.70, 3.00, 4.30, 5.60 }
+		local filasX = { 1.40, 2.85, 4.30, 5.75 }   -- paso 1.45 m: pasillos de ~2.8 studs entre filas
 		local colsZ = { -0.80, -1.82, -2.84, -3.86, -4.88 }
 		local semilla = 7
 		local function ruido() -- generador Park-Miller: exacto en doubles, idéntico en cada ejecución
@@ -721,7 +728,7 @@ local function construir()
 		for _, x in ipairs(filasX) do
 			for _, z in ipairs(colsZ) do
 				local ang = math.rad(ruido() * 8)
-				local dx, dz = ruido() * 0.10, ruido() * 0.10
+				local dx, dz = ruido() * 0.05, ruido() * 0.10
 				local mirar = Vector3.new(math.cos(ang) * sal.dir, 0, -math.sin(ang))
 				sillaUniversitaria(mMob, rpunto(sal, x + dx, 0, z + dz), mirar)
 			end
@@ -807,29 +814,46 @@ local function construir()
 end
 
 -------------------------------------------------------------------------------
--- EJECUCIÓN: reemplazo seguro del modelo anterior, construcción protegida y resumen
+-- EJECUCIÓN: construcción protegida, reemplazo seguro del modelo anterior (sólo si la nueva construcción
+-- terminó bien) y registro en el historial de deshacer.
 -------------------------------------------------------------------------------
-ChangeHistoryService:SetWaypoint("Antes de generar " .. NOMBRE_MODELO)
-
--- Solo se elimina un modelo previo si fue generado por este mismo script (atributo de marca)
-for _, obj in ipairs(Workspace:GetChildren()) do
-	if obj.Name == NOMBRE_MODELO then
-		if obj:IsA("Model") and obj:GetAttribute(ATRIBUTO_MARCA) == true then
-			obj:Destroy()
-		else
-			advertir("Existe un objeto ajeno llamado " .. NOMBRE_MODELO .. " en Workspace; no se tocó.")
-		end
-	end
+local grabacion = nil
+if ChangeHistoryService.TryBeginRecording then
+	local okRec, rec = pcall(function() return ChangeHistoryService:TryBeginRecording("Generar " .. NOMBRE_MODELO) end)
+	if okRec then grabacion = rec end
+end
+if not grabacion then
+	ChangeHistoryService:SetWaypoint("Antes de generar " .. NOMBRE_MODELO)
 end
 
 local ok, resultado = pcall(construir)
 if not ok then
 	if raiz then raiz:Destroy() end
-	error("[" .. NOMBRE_MODELO .. "] Error durante la construcción; se eliminó la construcción parcial.\n" .. tostring(resultado), 0)
+	if grabacion then
+		pcall(function() ChangeHistoryService:FinishRecording(grabacion, Enum.FinishRecordingOperation.Cancel) end)
+	end
+	for _, a in ipairs(advertencias) do warn("  · " .. a) end
+	error("[" .. NOMBRE_MODELO .. "] Error durante la construcción; se eliminó la construcción parcial y el modelo anterior no se tocó.\n" .. tostring(resultado), 0)
+end
+
+-- Sólo ahora se retira cualquier modelo previo generado por este script (reconocido por su atributo,
+-- aunque haya sido renombrado o movido dentro de Workspace). Los objetos ajenos nunca se tocan.
+for _, obj in ipairs(Workspace:GetDescendants()) do
+	if obj:IsA("Model") and obj:GetAttribute(ATRIBUTO_MARCA) == true then
+		obj:Destroy()
+	end
+end
+if Workspace:FindFirstChild(NOMBRE_MODELO) then
+	raiz.Name = NOMBRE_MODELO .. "_generado"
+	advertir("Ya existe un objeto ajeno llamado " .. NOMBRE_MODELO .. " en Workspace; no se tocó. El nuevo modelo se llama " .. raiz.Name .. ".")
 end
 
 raiz.Parent = Workspace
-ChangeHistoryService:SetWaypoint("Generar " .. NOMBRE_MODELO)
+if grabacion then
+	pcall(function() ChangeHistoryService:FinishRecording(grabacion, Enum.FinishRecordingOperation.Commit) end)
+else
+	ChangeHistoryService:SetWaypoint("Generar " .. NOMBRE_MODELO)
+end
 
 ---------------------------------------------------------------------------
 -- ETAPA 10 · Resumen en Output
@@ -847,13 +871,13 @@ for _, hijo in ipairs(raiz:GetChildren()) do
 end
 
 print("==============================================")
-print(" " .. NOMBRE_MODELO .. " generado correctamente")
+print(" " .. raiz.Name .. " generado correctamente")
 print(string.format(" Salones construidos : %d (6B izquierda, 7B derecha)", numSalones))
 print(string.format(" BaseParts totales   : %d / %d", totalParts, LIMITE_PARTS))
 for _, nombre in ipairs({ "Estructura", "Corredor", "Salon_1_6B", "Salon_2_7B" }) do
 	print(string.format("   - %-12s %4d parts", nombre, porModelo[nombre] or 0))
 end
-print(string.format(" Escala: %d studs = 1 m · Origen: (%.1f, %.1f, %.1f)", ESCALA, ORIGEN.X, ORIGEN.Y, ORIGEN.Z))
+print(string.format(" Escala: %g studs = 1 m · Origen: (%.1f, %.1f, %.1f)", ESCALA, ORIGEN.X, ORIGEN.Y, ORIGEN.Z))
 print(" Orientación: fachada en Z=0 mirando a +Z (corredor); 6B en X menor (izquierda), 7B en X mayor (derecha)")
 if #advertencias == 0 then
 	print(" Advertencias        : ninguna")
