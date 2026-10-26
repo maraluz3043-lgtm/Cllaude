@@ -84,7 +84,7 @@ local function cargarServicio(nombre, modulo)
 	local ok, resultado = pcall(require, modulo)
 	if not ok then
 		fallosCarga[nombre] = tostring(resultado)
-		warn(PREFIJO .. " Error al cargar el servicio " .. nombre .. ": " .. tostring(resultado))
+		warn(PREFIJO .. " " .. nombre .. ": " .. "error al cargar el módulo: " .. tostring(resultado))
 		return
 	end
 	if typeof(resultado) ~= "table" then
@@ -175,7 +175,7 @@ for _, nombre in ipairs(orden) do
 		local ok, err = pcall(servicio.Init, servicio, registro)
 		if not ok then
 			fallosInit[nombre] = tostring(err)
-			warn(PREFIJO .. " Error en " .. nombre .. ":Init(): " .. tostring(err))
+			warn(PREFIJO .. " " .. nombre .. ": " .. "error en Init(): " .. tostring(err))
 		elseif os.clock() - t0 > 1 then
 			warn(PREFIJO .. " " .. nombre .. ":Init() tardó " .. string.format("%.2f", os.clock() - t0) .. " s (Init no debería esperar).")
 		end
@@ -187,13 +187,13 @@ end
 for _, nombre in ipairs(orden) do
 	local servicio = servicios[nombre]
 	if fallosInit[nombre] then
-		warn(PREFIJO .. " Se omite " .. nombre .. ":Start() porque Init falló.")
+		warn(PREFIJO .. " " .. nombre .. ": " .. "se omite Start() porque Init() falló.")
 	elseif typeof(servicio.Start) == "function" then
 		local t0 = os.clock()
 		local ok, err = pcall(servicio.Start, servicio)
 		if not ok then
 			fallosStart[nombre] = tostring(err)
-			warn(PREFIJO .. " Error en " .. nombre .. ":Start(): " .. tostring(err))
+			warn(PREFIJO .. " " .. nombre .. ": " .. "error en Start(): " .. tostring(err))
 		else
 			table.insert(iniciados, nombre)
 			local dt = os.clock() - t0
@@ -259,6 +259,10 @@ local function resumen()
 			else
 				table.insert(lineas, "  Sin advertencias de MapService.")
 			end
+		elseif ok and typeof(tabla) == "string" and tabla ~= "" then
+			-- Inventario() devolvió directamente un informe de texto.
+			table.insert(lineas, "Mapa lógico:")
+			table.insert(lineas, tabla)
 		elseif not ok then
 			table.insert(lineas, "  (No se pudo obtener el inventario del mapa: " .. tostring(tabla) .. ")")
 		end

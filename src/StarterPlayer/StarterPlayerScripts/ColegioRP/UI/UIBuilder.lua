@@ -4,7 +4,8 @@
 	Constructor de widgets de interfaz con el tema UITheme: pantallas, paneles, títulos, textos, botones,
 	entradas, listas, interruptores, selectores, modales, toasts, barras y logo. Garantiza tamaño táctil
 	mínimo (44 px), UIScale por dispositivo y por ajuste de accesibilidad, foco de mando, sonido de clic
-	opcional y animaciones que respetan MovimientoReducido. Deja libres 150 px inferiores en táctil.
+	opcional y animaciones que respetan MovimientoReducido (ajuste o atributo local del Player). Deja libres
+	150 px inferiores en táctil (Contenedor) y ofrece cierre por Escape / botón B (TeclaCerrar).
 
 	Convención de props: las claves Size / Position / AnchorPoint / LayoutOrder / ZIndex / Nombre se pasan tal
 	cual a la instancia; el resto son semánticas en español (Estilo, Tamano, Color, Fuente, Alineacion, ...).
@@ -145,7 +146,7 @@ end
 function UIBuilder.AltoBoton()
 	local base = 40
 	if UIBuilder.EsTactil() then
-		base = math.ceil(UITheme.TamanoMinimoTactil / math.max(0.5, UIBuilder.EscalaTotal()))
+		base = UIBuilder.MinimoTactil()
 	end
 	return math.max(base, 36)
 end
@@ -164,8 +165,37 @@ function UIBuilder.AltoUI()
 	return UIBuilder.Viewport().Y / math.max(0.5, UIBuilder.EscalaTotal())
 end
 
+-- Movimiento reducido: ajuste local de UIBuilder o atributo local "MovimientoReducido" del Player
+-- (lo fija SettingsController; también lo lee la pantalla de carga).
 function UIBuilder.MovimientoReducido()
-	return UIBuilder.Ajustes.MovimientoReducido == true
+	if UIBuilder.Ajustes.MovimientoReducido == true then
+		return true
+	end
+	local ok, valor = pcall(function()
+		return LocalPlayer:GetAttribute("MovimientoReducido")
+	end)
+	return ok and valor == true
+end
+
+-- Lado mínimo (en unidades de UI, antes de la UIScale) para que un control táctil mida 44 px en pantalla.
+function UIBuilder.MinimoTactil()
+	return math.ceil(UITheme.TamanoMinimoTactil / math.max(0.5, UIBuilder.EscalaTotal()))
+end
+
+-- Aplica el tamaño táctil mínimo a un GuiObject (UISizeConstraint) si la entrada principal es táctil.
+function UIBuilder.AsegurarTactil(obj)
+	if typeof(obj) ~= "Instance" or not obj:IsA("GuiObject") or not UIBuilder.EsTactil() then
+		return nil
+	end
+	local minimo = UIBuilder.MinimoTactil()
+	local restriccion = obj:FindFirstChild("MinimoTactil")
+	if not restriccion then
+		restriccion = Instance.new("UISizeConstraint")
+		restriccion.Name = "MinimoTactil"
+		restriccion.Parent = obj
+	end
+	restriccion.MinSize = Vector2.new(minimo, minimo)
+	return restriccion
 end
 
 -- Destruye una instancia sin lanzar errores.
@@ -225,7 +255,7 @@ function UIBuilder.Escalar(gui, extra)
 		escala.Name = "EscalaColegioRP"
 		escala.Parent = gui
 	end
-	local factor = tonumber(extra) or 1
+	local factor = tonumber(extra) or escalasRegistradas[escala] or 1
 	escalasRegistradas[escala] = factor
 	escala.Scale = UIBuilder.EscalaTotal() * factor
 	return escala
@@ -242,6 +272,34 @@ function UIBuilder.RefrescarEscalas()
 		end
 	end
 	ultimaEscalaTotal = total
+end
+
+-- ¿Es una ScreenGui del sistema ("ColegioRP_*") que admite escala? Se excluyen las marcadas con el atributo
+-- SinEscala y las que gestionan su propia UIScale (p. ej. la pantalla de carga, con "EscalaCarga").
+function UIBuilder.EsPantallaSistema(gui)
+	if typeof(gui) ~= "Instance" or not gui:IsA("ScreenGui") then
+		return false
+	end
+	if string.sub(gui.Name, 1, #UIBuilder.Prefijo) ~= UIBuilder.Prefijo or gui:GetAttribute("SinEscala") == true then
+		return false
+	end
+	local propia = gui:FindFirstChildOfClass("UIScale")
+	if propia and propia.Name ~= "EscalaColegioRP" then
+		return false
+	end
+	return true
+end
+
+-- Aplica (o actualiza) la UIScale en todas las ScreenGui "ColegioRP_*" de PlayerGui. Devuelve cuántas.
+function UIBuilder.EscalarPantallas()
+	local n = 0
+	for _, hijo in ipairs(PlayerGui:GetChildren()) do
+		if UIBuilder.EsPantallaSistema(hijo) then
+			UIBuilder.Escalar(hijo)
+			n = n + 1
+		end
+	end
+	return n
 end
 
 -- Fija la escala de texto del usuario (0.7 .. 1.4) y refresca las pantallas.
@@ -653,6 +711,7 @@ function UIBuilder.Pantalla(nombre, displayOrder, props)
 	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui.DisplayOrder = tonumber(displayOrder) or UITheme.Capas.Panel
 	gui.Enabled = props.Visible ~= false
+	gui:SetAttribute("SinEscala", props.SinEscala == true)
 	if props.SinEscala ~= true then
 		UIBuilder.Escalar(gui)
 	end
@@ -685,6 +744,9 @@ function UIBuilder.Panel(parent, props)
 	local alturaCabecera = 0
 	if props.Titulo ~= nil then
 		alturaCabecera = 48
+		if UIBuilder.EsTactil() then
+			alturaCabecera = math.max(48, UIBuilder.MinimoTactil() + 4)
+		end
 		local cabecera = Instance.new("Frame")
 		cabecera.Name = "Cabecera"
 		cabecera.BackgroundTransparency = 1
@@ -912,7 +974,14 @@ function UIBuilder.Boton(parent, texto, onClick, props)
 	boton.TextXAlignment = props.Alineacion or Enum.TextXAlignment.Center
 	boton.Text = (props.Icono and (tostring(props.Icono) .. "  ") or "") .. tostring(texto or "")
 	local alto = tonumber(props.Alto) or UIBuilder.AltoBoton()
-	boton.Size = UDim2.new(0, tonumber(props.Ancho) or 160, 0, alto)
+	local ancho = tonumber(props.Ancho) or 160
+	local tactil = UIBuilder.EsTactil() and props.SinMinimoTactil ~= true
+	if tactil then
+		local minimo = UIBuilder.MinimoTactil()
+		alto = math.max(alto, minimo)
+		ancho = math.max(ancho, minimo)
+	end
+	boton.Size = UDim2.new(0, ancho, 0, alto)
 	boton.Selectable = props.Selectable ~= false
 	boton:SetAttribute("Estilo", estilosBoton[props.Estilo] and props.Estilo or "Secundario")
 	boton:SetAttribute("Desactivado", props.Desactivado == true)
@@ -954,6 +1023,10 @@ function UIBuilder.Boton(parent, texto, onClick, props)
 		end
 	end)
 	aplicarComunes(boton, props)
+	if tactil then
+		-- Garantiza 44 px aunque props.Size use un tamaño menor.
+		UIBuilder.AsegurarTactil(boton)
+	end
 	boton.Parent = parent
 	return boton
 end
@@ -1005,7 +1078,11 @@ function UIBuilder.Entrada(parent, placeholder, props)
 		caja.TextYAlignment = Enum.TextYAlignment.Center
 	end
 	caja.TextEditable = props.Editable ~= false
-	caja.Size = UDim2.new(1, 0, 0, tonumber(props.Alto) or UIBuilder.AltoBoton())
+	local altoCaja = tonumber(props.Alto) or UIBuilder.AltoBoton()
+	if UIBuilder.EsTactil() then
+		altoCaja = math.max(altoCaja, UIBuilder.MinimoTactil())
+	end
+	caja.Size = UDim2.new(1, 0, 0, altoCaja)
 	caja.Selectable = true
 	UIBuilder.Esquinas(caja, UITheme.RadioPequeno)
 	local borde = UIBuilder.Borde(caja, Colores.Borde)
@@ -1211,6 +1288,10 @@ function UIBuilder.Interruptor(parent, texto, valor, onChange, props)
 	zona.Text = ""
 	zona.Selectable = false
 	zona.Size = UDim2.new(1, -70, 1, 0)
+	if UIBuilder.EsTactil() then
+		-- En táctil toda la fila (alto >= 44 px) cambia el valor, incluido el propio interruptor.
+		zona.Size = UDim2.new(1, 0, 1, 0)
+	end
 	zona.ZIndex = fila.ZIndex
 	zona.Parent = fila
 	zona.Activated:Connect(function()
@@ -1253,11 +1334,18 @@ function UIBuilder.Selector(parent, texto, opciones, valor, onChange, props)
 	local grupo = Instance.new("Frame")
 	grupo.Name = "Grupo"
 	grupo.BackgroundTransparency = 1
-	grupo.Size = UDim2.new(0, anchoGrupo, 0, alto - 6)
+	local altoGrupo = alto - 6
+	if UIBuilder.EsTactil() then
+		altoGrupo = alto
+	end
+	grupo.Size = UDim2.new(0, anchoGrupo, 0, altoGrupo)
 	grupo.Position = UDim2.new(1, 0, 0, alto / 2)
 	grupo.AnchorPoint = Vector2.new(1, 0.5)
 	grupo.Parent = fila
 	local anchoFlecha = 40
+	if UIBuilder.EsTactil() then
+		anchoFlecha = math.max(anchoFlecha, UIBuilder.MinimoTactil())
+	end
 	local etiquetaValor = Instance.new("TextLabel")
 	etiquetaValor.Name = "Valor"
 	etiquetaValor.BackgroundColor3 = Colores.Entrada
@@ -1314,10 +1402,10 @@ function UIBuilder.Selector(parent, texto, opciones, valor, onChange, props)
 	end
 	local izquierda = UIBuilder.Boton(grupo, "‹", function()
 		mover(-1)
-	end, { Estilo = "Secundario", Ancho = anchoFlecha, Alto = alto - 6, Nombre = "Anterior", Tamano = "Subtitulo", Position = UDim2.new(0, 0, 0, 0) })
+	end, { Estilo = "Secundario", Ancho = anchoFlecha, Alto = altoGrupo, Nombre = "Anterior", Tamano = "Subtitulo", Position = UDim2.new(0, 0, 0, 0) })
 	local derecha = UIBuilder.Boton(grupo, "›", function()
 		mover(1)
-	end, { Estilo = "Secundario", Ancho = anchoFlecha, Alto = alto - 6, Nombre = "Siguiente", Tamano = "Subtitulo", Position = UDim2.new(1, 0, 0, 0), AnchorPoint = Vector2.new(1, 0) })
+	end, { Estilo = "Secundario", Ancho = anchoFlecha, Alto = altoGrupo, Nombre = "Siguiente", Tamano = "Subtitulo", Position = UDim2.new(1, 0, 0, 0), AnchorPoint = Vector2.new(1, 0) })
 	izquierda.NextSelectionRight = derecha
 	derecha.NextSelectionLeft = izquierda
 	control.Botones = { izquierda, derecha }
@@ -1687,14 +1775,75 @@ function UIBuilder.Toast(parent, texto, nivel, duracion, props)
 end
 
 ---------------------------------------------------------------------------------------------------
--- Reacción a cambios de dispositivo (mando conectado, teclado, etc.)
+-- Cierre por teclado / mando
 ---------------------------------------------------------------------------------------------------
+
+-- Conecta Escape y el botón B del mando a 'fn' (cierre de paneles). Escape se ignora mientras se escribe
+-- en un TextBox. Devuelve la RBXScriptConnection (guardarla en un Maid) o nil.
+function UIBuilder.TeclaCerrar(fn)
+	if typeof(fn) ~= "function" then
+		return nil
+	end
+	local ok, conexion = pcall(function()
+		return UserInputService.InputBegan:Connect(function(entrada)
+			local tecla = entrada.KeyCode
+			if tecla ~= Enum.KeyCode.ButtonB and tecla ~= Enum.KeyCode.Escape then
+				return
+			end
+			if tecla == Enum.KeyCode.Escape and UserInputService:GetFocusedTextBox() ~= nil then
+				return
+			end
+			local exito, err = pcall(fn)
+			if not exito then
+				warn("[ColegioRP][UIBuilder] Error al cerrar con tecla: " .. tostring(err))
+			end
+		end)
+	end)
+	if ok then
+		return conexion
+	end
+	return nil
+end
+
+---------------------------------------------------------------------------------------------------
+-- Reacción a cambios de dispositivo (mando conectado, teclado, tamaño de pantalla) y de ajustes
+---------------------------------------------------------------------------------------------------
+local function refrescarSiCambia()
+	local total = UIBuilder.EscalaTotal()
+	if ultimaEscalaTotal == nil or math.abs(total - ultimaEscalaTotal) > 0.001 then
+		UIBuilder.RefrescarEscalas()
+	end
+end
+
 pcall(function()
-	UserInputService.LastInputTypeChanged:Connect(function()
-		local total = UIBuilder.EscalaTotal()
-		if ultimaEscalaTotal == nil or math.abs(total - ultimaEscalaTotal) > 0.001 then
-			UIBuilder.RefrescarEscalas()
-		end
+	UserInputService.LastInputTypeChanged:Connect(refrescarSiCambia)
+end)
+
+-- El umbral móvil/tableta depende del tamaño del viewport (rotación de pantalla, ventana).
+local conexionViewport = nil
+local function vigilarCamara()
+	if conexionViewport then
+		conexionViewport:Disconnect()
+		conexionViewport = nil
+	end
+	local camara = workspace.CurrentCamera
+	if camara then
+		conexionViewport = camara:GetPropertyChangedSignal("ViewportSize"):Connect(refrescarSiCambia)
+	end
+end
+pcall(vigilarCamara)
+pcall(function()
+	workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+		pcall(vigilarCamara)
+		refrescarSiCambia()
+	end)
+end)
+
+-- El atributo local MovimientoReducido del Player (SettingsController) se refleja en UIBuilder.Ajustes.
+pcall(function()
+	UIBuilder.Ajustes.MovimientoReducido = LocalPlayer:GetAttribute("MovimientoReducido") == true
+	LocalPlayer:GetAttributeChangedSignal("MovimientoReducido"):Connect(function()
+		UIBuilder.Ajustes.MovimientoReducido = LocalPlayer:GetAttribute("MovimientoReducido") == true
 	end)
 end)
 

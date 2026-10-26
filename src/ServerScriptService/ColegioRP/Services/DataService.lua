@@ -15,7 +15,6 @@ local RP = ReplicatedStorage:WaitForChild("ColegioRP")
 local Shared = RP:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local RoleDefinitions = require(Shared:WaitForChild("RoleDefinitions"))
-local TimetableDefinitions = require(Shared:WaitForChild("TimetableDefinitions"))
 local RemoteContracts = require(Shared:WaitForChild("RemoteContracts"))
 local Util = Shared:WaitForChild("Util")
 local Validate = require(Util:WaitForChild("Validate"))
@@ -276,9 +275,10 @@ function DataService:Sanear(origen)
 		for i = 1, math.min(#cuaderno.Paginas, cuadernoCfg.MaxPaginas or 20) do
 			local pagina = cuaderno.Paginas[i]
 			if typeof(pagina) == "table" then
+				-- Código de materia libre (máx. 8 caracteres); vacío o inválido -> "MAT".
 				local materia = texto(pagina.Materia, "MAT", 8)
-				if not TimetableDefinitions.ExisteMateria(materia) then
-					materia = texto(pagina.Materia, "MAT", 8)
+				if materia == "" then
+					materia = "MAT"
 				end
 				local entrada = {
 					Materia = materia,

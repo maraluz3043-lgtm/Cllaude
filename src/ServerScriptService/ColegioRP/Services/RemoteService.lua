@@ -292,6 +292,14 @@ function RemoteService:Rechazar(player, nombre, motivo, detalle)
 	if self.AuditLog then
 		self.AuditLog:Registrar("Remoto", player, nombre, texto)
 	end
+	-- Métricas de rechazos (MetricsService es opcional y arranca después).
+	local MetricsService = self.registro.Get("MetricsService")
+	if MetricsService and typeof(MetricsService.IncrementarRechazo) == "function" then
+		local okMetricas, errMetricas = pcall(MetricsService.IncrementarRechazo, MetricsService, nombre, motivo)
+		if not okMetricas then
+			warn(PREFIJO .. " MetricsService:IncrementarRechazo falló: " .. tostring(errMetricas))
+		end
+	end
 	if esJugador(player) and not self.MotivosSinCulpa[motivo] then
 		self:ContarSospecha(player)
 	end
@@ -528,8 +536,12 @@ function RemoteService:EnviarAZona(zonaId, tipo, datos)
 	return self:EnviarALista(self:JugadoresEnZona(zonaId), tipo, datos)
 end
 
--- Envía a los jugadores de un aula: delega en RoomService:JugadoresEn(roomId) si existe; si no, por zona.
+-- Envía a los jugadores de un aula. La zona del aula tiene la misma id que el aula (MapaLogico), así que se
+-- envía por zona; solo si el aula no existe como zona se delega en RoomService:JugadoresEn(roomId).
 function RemoteService:EnviarAAula(roomId, tipo, datos)
+	if Zones.Zona(roomId) then
+		return self:EnviarAZona(roomId, tipo, datos)
+	end
 	local RoomService = self.registro.Get("RoomService")
 	if RoomService and typeof(RoomService.JugadoresEn) == "function" then
 		local ok, lista = pcall(RoomService.JugadoresEn, RoomService, roomId)
@@ -537,7 +549,7 @@ function RemoteService:EnviarAAula(roomId, tipo, datos)
 			return self:EnviarALista(lista, tipo, datos)
 		end
 	end
-	return self:EnviarAZona(roomId, tipo, datos)
+	return 0
 end
 
 ---------------------------------------------------------------------------------------------------
