@@ -534,6 +534,33 @@ function SchoolDayService:Periodo()
 	}
 end
 
+-- Lista de todos los periodos con los valores vigentes (editor de horario de StaffService):
+-- { {Estado, Nombre, HoraEscolar, Duracion (base, escala 1), DuracionReal, EsClase, Materia, MateriaNombre, Actual} }.
+function SchoolDayService:Periodos()
+	local lista = {}
+	for i, periodo in ipairs(TimetableDefinitions.Periodos) do
+		local materia = self:MateriaDe(periodo.Estado)
+		local materiaNombre = nil
+		if materia then
+			materiaNombre = TimetableDefinitions.NombreMateria(materia)
+		end
+		lista[i] = {
+			Estado = periodo.Estado,
+			Nombre = periodo.Nombre,
+			HoraEscolar = periodo.HoraEscolar,
+			Duracion = self.Duraciones[periodo.Estado] or periodo.Duracion,
+			DuracionReal = self:DuracionDe(periodo.Estado),
+			EsClase = periodo.EsClase == true,
+			ComidaGratis = periodo.ComidaGratis == true,
+			Deporte = periodo.Deporte == true,
+			Materia = materia,
+			MateriaNombre = materiaNombre,
+			Actual = periodo.Estado == self.EstadoActual,
+		}
+	end
+	return lista
+end
+
 -- ¿Es un periodo de clase (con la jornada en marcha)?
 function SchoolDayService:EnPeriodoClase()
 	return not self.EnEspera and TimetableDefinitions.EsClase(self.EstadoActual)
@@ -1239,11 +1266,6 @@ function SchoolDayService:_FinalizarJornada(motivo, actor)
 		table.remove(self.Historial)
 	end
 
-	-- Sesiones de clase (en otro hilo: no bloquea la máquina de estados).
-	task.spawn(function()
-		self:_Llamar("ClassroomService", "CerrarTodas", "fin_jornada")
-	end)
-
 	-- Progreso: todos los perfiles quedan marcados para el próximo guardado.
 	for _, player in ipairs(Players:GetPlayers()) do
 		self:_Llamar("DataService", "Marcar", player)
@@ -1257,7 +1279,12 @@ function SchoolDayService:_FinalizarJornada(motivo, actor)
 		resumen.Presentes, resumen.Tardanzas, resumen.Ausentes), "info", 6)
 	self:_Auditar("Sistema", actor, "FinJornada", string.format("Jornada %d (%s): %d presentes, %d tardanzas, %d ausentes en %d clases",
 		jornada.Numero, tostring(motivo), resumen.Presentes, resumen.Tardanzas, resumen.Ausentes, #resumen.Clases))
+	-- Los oyentes (ClassroomService cierra sus sesiones con un texto propio, FoodService renueva lotes...)
+	-- reciben la señal primero; después se cierran las sesiones que queden (en otro hilo: no bloquea).
 	self.JornadaTerminada:Fire(resumen)
+	task.spawn(function()
+		self:_Llamar("ClassroomService", "CerrarTodas", "fin_jornada")
+	end)
 	return resumen
 end
 
@@ -1892,10 +1919,16 @@ function SchoolDayService:_CerrarAsistencia(motivo)
 		clase.Fase = 2
 		self:_AuditarAsistencia(clase)
 	end
-	-- Clase completa (terminó por tiempo): cuenta para quien asistió y sigue conectado.
+	-- Clase completa (terminó por tiempo): cuenta para quien asistió y sigue conectado. Si el aula tiene una
+	-- sesión de ClassroomService abierta, la cuenta la hace ClassroomService al cerrarla (no se duplica).
 	if motivo == "tiempo" then
+		local conSesion = {}
+		for roomId in pairs(clase.PorAula) do
+			local okSesion, sesion = self:_Llamar("ClassroomService", "SesionDe", roomId)
+			conSesion[roomId] = okSesion and typeof(sesion) == "table"
+		end
 		for userId, reg in pairs(clase.PorJugador) do
-			if reg.Estado == "Presente" or reg.Estado == "Tardanza" then
+			if (reg.Estado == "Presente" or reg.Estado == "Tardanza") and not conSesion[reg.RoomId] then
 				local player = Players:GetPlayerByUserId(userId)
 				if player then
 					self:_SumarProgreso(player, "ClasesCompletadas", 1)
@@ -2330,8 +2363,17 @@ function SchoolDayService:_ManejarSnapshot(player, _datos)
 		end
 	end
 	agregar("Economia", "EconomyService", "Snapshot", player)
+	if resultado.Economia == nil then
+		local okSaldo, saldo = self:_Llamar("EconomyService", "Saldo", player)
+		if okSaldo and esFinito(saldo) then
+			resultado.Economia = { Saldo = saldo }
+		end
+	end
 	agregar("Aula", "ClassroomService", "Snapshot", player)
 	agregar("Anuncios", "AnnouncementService", "Ultimos")
+	if resultado.Anuncios == nil then
+		agregar("Anuncios", "AnnouncementService", "Historial")
+	end
 	agregar("Comida", "FoodService", "Snapshot")
 	agregar("Cafeteria", "CafeteriaService", "Snapshot")
 	agregar("Futbol", "FootballService", "Estado")
@@ -2340,9 +2382,38 @@ function SchoolDayService:_ManejarSnapshot(player, _datos)
 	if asistencia then
 		resultado.Asistencia = asistencia
 	end
+	self:_AgregarPartesAportadas(player, resultado)
 	-- La hora del servidor se toma al final para que el cliente sincronice con el valor más reciente.
 	resultado.HoraServidor = ahora()
 	return RemoteContracts.Ok(resultado)
+end
+
+-- Este handler sustituye al StateSnapshot por defecto de RemoteService; para no perder lo que otros
+-- servicios aportan con RemoteService:AportarSnapshot (Puertas, Futbol...), se añaden aquí esas partes
+-- (sobrescriben, igual que en el snapshot por defecto). Jornada, Rol, Version y HoraServidor no se sustituyen.
+local CLAVES_PROPIAS_SNAPSHOT = { Jornada = true, Rol = true, Version = true, HoraServidor = true }
+
+function SchoolDayService:_AgregarPartesAportadas(player, resultado)
+	local RemoteService = self:_Servicio("RemoteService")
+	local partes = RemoteService and RemoteService.PartesSnapshot
+	if typeof(partes) ~= "table" then
+		return
+	end
+	for clave, fn in pairs(partes) do
+		if typeof(clave) == "string" and typeof(fn) == "function" and not CLAVES_PROPIAS_SNAPSHOT[clave] then
+			local ok, valor = pcall(fn, player)
+			if ok then
+				if valor ~= nil then
+					local copia = copiaSegura(valor)
+					if copia ~= nil then
+						resultado[clave] = copia
+					end
+				end
+			else
+				self:_Avisar("snapshot_parte:" .. clave, valor)
+			end
+		end
+	end
 end
 
 -- SettingsUpdate (RemoteEvent): RemoteService ya validó el esquema estricto; aquí se sanea cada clave

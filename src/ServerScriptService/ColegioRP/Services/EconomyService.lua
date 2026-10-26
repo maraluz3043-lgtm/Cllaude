@@ -95,7 +95,7 @@ function EconomyService:Init(registro)
 	self.registro = registro
 	self.EnTransaccion = {} -- userId -> true mientras dura un débito (bloqueo por jugador)
 	self.Memoria = {} -- userId -> { Economia = {...} } si no hay DataService
-	self.Transacciones = table.create(self.TamanoTransacciones)
+	self.BufferTx = table.create(self.TamanoTransacciones) -- buffer circular (no confundir con el método Transacciones)
 	self.IndiceTx = 0 -- última posición escrita en el buffer circular
 	self.TotalTx = 0 -- transacciones registradas desde el arranque (también Id)
 	self.Totales = { Acreditado = 0, Debitado = 0, RechazosSaldo = 0, RechazosLimite = 0, RechazosBloqueo = 0, PorTipo = {} }
@@ -287,7 +287,7 @@ function EconomyService:_RegistrarTransaccion(player, userId, tipo, monto, saldo
 	if typeof(player) == "Instance" then
 		nombre = player.Name
 	end
-	self.Transacciones[self.IndiceTx] = {
+	self.BufferTx[self.IndiceTx] = {
 		Id = self.TotalTx,
 		T = os.time(),
 		UserId = userId,
@@ -502,7 +502,7 @@ function EconomyService:Transacciones(n)
 	local disponibles = math.min(self.TotalTx, self.TamanoTransacciones)
 	local indice = self.IndiceTx
 	for _ = 1, math.min(limite, disponibles) do
-		local tx = self.Transacciones[indice]
+		local tx = self.BufferTx[indice]
 		if tx then
 			table.insert(lista, {
 				Id = tx.Id, T = tx.T, UserId = tx.UserId, Jugador = tx.Jugador, Tipo = tx.Tipo,

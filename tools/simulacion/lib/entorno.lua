@@ -133,7 +133,7 @@ local function coroutineLuau()
 			if res[3] == "esperar" then
 				local dt = res[4] or 0
 				if dt < 1 / 60 then dt = 1 / 60 end
-				table.insert(P.cola, { t = P.ahora + dt, co = co, args = { "__dt", P.ahora } })
+				P.programar(co, P.ahora + dt, { "__dt", P.ahora })
 			end
 			return true
 		end

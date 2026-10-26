@@ -430,7 +430,7 @@ function M.Destroy(inst)
 end
 M.Remove = function(inst) inst.Parent = nil end
 function M.Clone(inst)
-	if not inst._p.Archivable then return nil end
+	if inst._p.Archivable == false then return nil end
 	local copia = I.nuevo(inst._c.nombre)
 	for k, v in pairs(inst._p) do
 		if k ~= "Parent" then copia._p[k] = v end

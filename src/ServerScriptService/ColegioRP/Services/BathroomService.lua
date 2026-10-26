@@ -477,7 +477,7 @@ function BathroomService:Usar(player, objetoId, accion, origen)
 		self.UltimoUsoJugador[player.UserId] = ahora
 		objeto.UltimoUso = ahora
 		self:BloquearTemporal(objeto, self.CooldownObjetoSeg)
-		if accion == "Usar" and objeto.Tipo == "Inodoro" then
+		if accion == "Usar" then
 			self:ReproducirCisterna(objeto.Punto)
 		end
 	end

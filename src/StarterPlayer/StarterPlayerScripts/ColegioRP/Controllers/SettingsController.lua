@@ -284,7 +284,20 @@ end
 -- Modo y valores efectivos
 ---------------------------------------------------------------------------------------------------
 
--- Modo efectivo: "Calidad" | "Bajos". Automático = Bajos en móvil/tableta, Calidad en PC/mando.
+-- ¿La calidad gráfica guardada en los ajustes de Roblox es 3 o menor? (false si es automática o no se puede leer).
+local function calidadRobloxBaja()
+	local ok, nivel = pcall(function()
+		return UserSettings():GetService("UserGameSettings").SavedQualityLevel
+	end)
+	if ok and typeof(nivel) == "EnumItem" then
+		local valor = nivel.Value
+		return valor > 0 and valor <= 3
+	end
+	return false
+end
+
+-- Modo efectivo: "Calidad" | "Bajos". Automático = Bajos en móvil/tableta o si la calidad gráfica guardada
+-- de Roblox es <= 3 (cuando es legible); si no, Calidad (docs/ARQUITECTURA.md §7).
 function SettingsController.Modo()
 	local modo = ajustes.ModoGraficos
 	if modo == "Calidad" or modo == "Bajos" then
@@ -292,6 +305,9 @@ function SettingsController.Modo()
 	end
 	local dispositivo = UITheme.Dispositivo()
 	if dispositivo == "Movil" or dispositivo == "Tableta" then
+		return "Bajos"
+	end
+	if calidadRobloxBaja() then
 		return "Bajos"
 	end
 	return "Calidad"
@@ -910,7 +926,8 @@ local function construirUI()
 	ui.Gui = gui
 	ui.Controles = {}
 	ui.Aviso = nil
-	local contenedor = UIBuilder.Contenedor(gui)
+	-- Panel a casi toda la altura: con la franja táctil de 150 px quedaría de ~160 px en un teléfono horizontal.
+	local contenedor = UIBuilder.Contenedor(gui, { SinMargenTactil = true })
 	local panel, lista = UIBuilder.Panel(contenedor, {
 		Nombre = "PanelAjustes",
 		Titulo = "Ajustes y optimización",
@@ -952,7 +969,7 @@ local function construirUI()
 	})
 	UIBuilder.Subtitulo(lista, "Gráficos y rendimiento", { LayoutOrder = siguiente() })
 	selector("ModoGraficos", "Modo gráfico", OPCIONES_MODO)
-	UIBuilder.Texto(lista, "Automático usa Bajos recursos en móvil y tableta y Calidad en PC y consola. Bajos recursos apaga siempre partículas, postprocesado, sombras, decoración pesada, ventiladores y espejo, y reduce la niebla. Todo se aplica solo en tu dispositivo.", {
+	UIBuilder.Texto(lista, "Automático usa Bajos recursos en móvil y tableta (o si la calidad gráfica de Roblox es 3 o menos) y Calidad en el resto. Bajos recursos apaga siempre partículas, postprocesado, sombras, decoración pesada, ventiladores y espejo, y reduce la niebla. Todo se aplica solo en tu dispositivo.", {
 		Nombre = "NotaModo", Tamano = "Pequeno", Color = Colores.TextoApagado, LayoutOrder = siguiente(),
 	})
 	interruptor("Particulas", "Partículas", "Humo, chispas, fuego, rayos y estelas")

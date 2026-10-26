@@ -932,6 +932,39 @@ function CafeteriaService:_RespuestaGestion(player, mensaje, extra)
 	return { ok = true, datos = datos }
 end
 
+-- Fija el precio validado en [PrecioMin, PrecioMax]. Devuelve ok, mensaje | (false, codigo, mensaje).
+function CafeteriaService:_FijarPrecio(productoId, valor, player)
+	local producto = typeof(productoId) == "string" and self.Productos[productoId] or nil
+	if not producto then
+		return fallo("producto_inexistente")
+	end
+	if not esFinito(valor) then
+		return fallo("precio_invalido", self.PrecioMin, self.PrecioMax)
+	end
+	local precio = math.floor(valor + 0.5)
+	if precio < self.PrecioMin or precio > self.PrecioMax then
+		return fallo("precio_invalido", self.PrecioMin, self.PrecioMax)
+	end
+	local anterior = producto.Precio
+	producto.Precio = precio
+	self:_Auditar(player, "PrecioCambiado", producto.Id .. ": " .. anterior .. " -> " .. precio)
+	self:_ProgramarInventario()
+	return true, "Precio de " .. producto.Nombre .. ": " .. Format.Moneda(precio) .. "."
+end
+
+-- API para otros servicios (StaffService): FijarPrecio(productoId, precio, actor?) -> ok, mensajeOError.
+-- Si se indica el jugador que actúa, debe poder fijar precios (cafeteria.precios).
+function CafeteriaService:FijarPrecio(productoId, precio, player)
+	if esJugador(player) and not self:PuedeFijarPrecios(player) then
+		return false, MENSAJES.permiso
+	end
+	local ok, a, b = self:_FijarPrecio(productoId, precio, player)
+	if ok then
+		return true, a
+	end
+	return false, b
+end
+
 -- Devuelve ok, mensaje | (false, codigo, mensaje), extra.
 function CafeteriaService:Gestionar(player, datos)
 	local accion = datos.Accion
@@ -940,22 +973,11 @@ function CafeteriaService:Gestionar(player, datos)
 		if not self:PuedeFijarPrecios(player) then
 			return fallo("permiso")
 		end
-		local producto = self.Productos[datos.ProductoId]
-		if typeof(datos.ProductoId) ~= "string" or not producto then
-			return fallo("producto_inexistente")
+		local ok, codigoOMensaje, mensaje = self:_FijarPrecio(datos.ProductoId, datos.Valor, player)
+		if not ok then
+			return false, codigoOMensaje, mensaje
 		end
-		if not esFinito(datos.Valor) then
-			return fallo("precio_invalido", self.PrecioMin, self.PrecioMax)
-		end
-		local precio = math.floor(datos.Valor + 0.5)
-		if precio < self.PrecioMin or precio > self.PrecioMax then
-			return fallo("precio_invalido", self.PrecioMin, self.PrecioMax)
-		end
-		local anterior = producto.Precio
-		producto.Precio = precio
-		self:_Auditar(player, "PrecioCambiado", producto.Id .. ": " .. anterior .. " -> " .. precio)
-		self:_ProgramarInventario()
-		return true, "Precio de " .. producto.Nombre .. ": " .. Format.Moneda(precio) .. "."
+		return true, codigoOMensaje
 	end
 
 	-- El resto de acciones son del vendedor (cafeteria.vender; RemoteService ya lo exige).

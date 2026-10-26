@@ -11,6 +11,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local MenuController = {}
 MenuController.Nombre = "MenuController"
+MenuController.EsperaUnionSeg = 20 -- Tiempo máximo esperando RequestJoinRole antes de reactivar los botones.
 
 local UIBuilder, UITheme, Net, Maid, Format, RoleDefinitions, Catalogs, Config
 
@@ -132,7 +133,8 @@ function MenuController:_Construir()
 	degradado.Parent = fondo
 	self.fondo = fondo
 
-	local contenido = UIBuilder.Contenedor(fondo, { Nombre = "Contenido" })
+	-- El menú cubre la pantalla y no se juega mientras está abierto: no reserva los 150 px táctiles inferiores.
+	local contenido = UIBuilder.Contenedor(fondo, { Nombre = "Contenido", SinMargenTactil = true })
 	self.contenido = contenido
 
 	-- Créditos.
@@ -173,14 +175,37 @@ function MenuController:_Construir()
 	})
 	UIBuilder.Subtitulo(marca, tostring(Config.Lema or ""), { LayoutOrder = 3, Alineacion = Enum.TextXAlignment.Center, Tamano = "Texto" })
 
-	local columna = Instance.new("Frame")
+	local columna
+	if bajo then
+		-- Pantalla baja (teléfono en horizontal): 7 botones de 44 px no caben; la columna se desplaza.
+		columna = Instance.new("ScrollingFrame")
+		columna.Size = UDim2.new(0, 300, 1, 0)
+		columna.CanvasSize = UDim2.new(0, 0, 0, 0)
+		columna.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		columna.ScrollingDirection = Enum.ScrollingDirection.Y
+		columna.ScrollBarThickness = 4
+		columna.ScrollBarImageColor3 = Colores.Borde
+		columna.BorderSizePixel = 0
+		columna.Selectable = false
+		columna.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
+	else
+		columna = Instance.new("Frame")
+		columna.Size = UDim2.new(0, 300, 0, 0)
+		columna.AutomaticSize = Enum.AutomaticSize.Y
+	end
 	columna.Name = "Botones"
 	columna.BackgroundTransparency = 1
-	columna.Size = UDim2.new(0, 300, 0, 0)
-	columna.AutomaticSize = Enum.AutomaticSize.Y
 	columna.LayoutOrder = 2
 	columna.Parent = principal
-	UIBuilder.Disposicion(columna, { Espaciado = 8, Alineacion = Enum.HorizontalAlignment.Center })
+	UIBuilder.Disposicion(columna, {
+		Espaciado = 8,
+		Alineacion = Enum.HorizontalAlignment.Center,
+		AlineacionVertical = bajo and Enum.VerticalAlignment.Center or nil,
+	})
+	if bajo then
+		-- Margen interior para que el borde de foco del mando no quede recortado por el ScrollingFrame.
+		UIBuilder.Relleno(columna, 4, 4, 4, 8)
+	end
 	self.columna = columna
 
 	local alto = UIBuilder.AltoBoton() + 4
@@ -408,9 +433,10 @@ function MenuController:_PintarCargos(vista, datos)
 					local def = RoleDefinitions.Obtener(id)
 					explicacion = def and def.Descripcion or ""
 				else
+					-- RoleService envía Motivo (código interno) y MotivoTexto (texto legible para el jugador).
 					explicacion = "Requiere autorización"
-					if typeof(cargo.Motivo) == "string" and cargo.Motivo ~= "" and cargo.Motivo ~= explicacion then
-						explicacion = explicacion .. ": " .. Format.Truncar(cargo.Motivo, 120)
+					if typeof(cargo.MotivoTexto) == "string" and cargo.MotivoTexto ~= "" then
+						explicacion = Format.Truncar(cargo.MotivoTexto, 120)
 					end
 				end
 				if explicacion ~= "" then
@@ -444,6 +470,8 @@ function MenuController:_Unirse(id, nombre, vista, botones, disponibles)
 		return
 	end
 	self.uniendo = true
+	self.tokenUnion = (self.tokenUnion or 0) + 1
+	local tokenUnion = self.tokenUnion
 	for _, b in ipairs(botones) do
 		UIBuilder.Habilitar(b, false)
 	end
@@ -451,9 +479,30 @@ function MenuController:_Unirse(id, nombre, vista, botones, disponibles)
 		vista.EstadoUnion.Text = "Entrando como " .. nombre .. "…"
 		vista.EstadoUnion.Visible = true
 	end
+	-- InvokeServer no tiene tiempo máximo: si el servidor no responde, se reactivan los botones (nunca se bloquea).
+	task.delay(self.EsperaUnionSeg, function()
+		if not self.uniendo or self.tokenUnion ~= tokenUnion then
+			return
+		end
+		self.uniendo = false
+		self.puedeContinuar = true
+		if self:_VistaVigente(vista) then
+			for _, b in ipairs(botones) do
+				if disponibles[b] then
+					UIBuilder.Habilitar(b, true)
+				end
+			end
+			if vista.EstadoUnion then
+				vista.EstadoUnion.Text = "El servidor tarda en responder. Inténtalo de nuevo o cierra el menú."
+				vista.EstadoUnion.TextColor3 = UITheme.Colores.Amarillo
+			end
+		end
+	end)
 	task.spawn(function()
 		local ok, respuesta = Net.Invocar("RequestJoinRole", { Cargo = id })
-		self.uniendo = false
+		if self.tokenUnion == tokenUnion then
+			self.uniendo = false
+		end
 		if ok then
 			local datos = typeof(respuesta.datos) == "table" and respuesta.datos or {}
 			local cargo = RoleDefinitions.Existe(datos.Cargo) and datos.Cargo or id
@@ -480,6 +529,16 @@ function MenuController:_Unirse(id, nombre, vista, botones, disponibles)
 			return
 		end
 		local mensajeError = UIBuilder.MensajeError(respuesta and respuesta.error)
+		-- RoleService: { error = "no_autorizado", datos = { MotivoTexto } } o { error = "cooldown", datos = { RestanteSeg } }.
+		local extra = typeof(respuesta) == "table" and typeof(respuesta.datos) == "table" and respuesta.datos or nil
+		if extra and typeof(extra.MotivoTexto) == "string" and extra.MotivoTexto ~= "" then
+			mensajeError = Format.Truncar(extra.MotivoTexto, 120)
+		elseif extra and tonumber(extra.RestanteSeg) then
+			mensajeError = "Espera " .. math.max(1, math.floor(tonumber(extra.RestanteSeg))) .. " s antes de cambiar de cargo."
+		end
+		if self.tokenUnion ~= tokenUnion then
+			return -- Respuesta tardía de un intento ya reactivado por la vigilancia.
+		end
 		self.puedeContinuar = true
 		if self:_VistaVigente(vista) then
 			for _, b in ipairs(botones) do
@@ -581,8 +640,9 @@ function MenuController:_Suspender(controlador)
 	self.suspendido = controlador
 	self.fondo.Visible = false
 	UIBuilder.Desenfocar(self.gui)
-	self.botonVolverMenu.Visible = true
-	-- Si el controlador informa de su estado, el menú vuelve solo al cerrarse el panel.
+	-- Si el controlador informa de su estado, el menú vuelve solo al cerrarse el panel y el botón flotante
+	-- (que taparía el panel) solo aparece como respaldo si el panel no llega a abrirse.
+	self.botonVolverMenu.Visible = typeof(controlador.EstaAbierto) ~= "function"
 	if typeof(controlador.EstaAbierto) == "function" then
 		local visto = false
 		local inicio = os.clock()
@@ -597,12 +657,15 @@ function MenuController:_Suspender(controlador)
 				self:_Reanudar()
 				return
 			end
-			if not visto and os.clock() - inicio > 5 then
+			if not visto and os.clock() - inicio > 1.5 then
+				-- El panel no llegó a abrirse: se restaura el menú para no dejar al jugador sin interfaz.
+				self:_Reanudar()
+				self:_Notificar("No se pudo abrir el panel; inténtalo de nuevo.", "aviso")
 				return
 			end
 			task.delay(0.5, vigilar)
 		end
-		task.delay(0.5, vigilar)
+		task.defer(vigilar)
 	end
 end
 

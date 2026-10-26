@@ -886,6 +886,8 @@ function FootballService:_Activar()
 	end
 	self.activo = true
 	self.posAnterior = nil
+	-- Cuenta como presencia: evita que el siguiente tick ancle el balón justo después de una patada.
+	self.ultimoConJugadores = os.clock()
 	pcall(function()
 		balon.Anchored = false
 	end)

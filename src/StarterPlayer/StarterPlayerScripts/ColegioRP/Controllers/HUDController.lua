@@ -400,7 +400,12 @@ function HUDController:_ActualizarReloj()
 		table.insert(partes, " · " .. TimetableDefinitions.NombreMateria(j.Materia))
 	end
 	if j.Pausada == true then
-		table.insert(partes, " (en pausa)")
+		-- SchoolDayService marca Pausada también mientras espera el inicio (EnEspera / MotivoPausa "espera_inicio").
+		if j.EnEspera == true or j.MotivoPausa == "espera_inicio" then
+			table.insert(partes, " (esperando inicio)")
+		else
+			table.insert(partes, " (en pausa)")
+		end
 	else
 		table.insert(partes, " (" .. Format.Tiempo(restante) .. ")")
 	end
@@ -617,6 +622,15 @@ end
 function HUDController:FijarEstado(snapshot)
 	if typeof(snapshot) ~= "table" or typeof(snapshot.Estado) ~= "string" then
 		return
+	end
+	-- Descarta snapshots más antiguos que el último aplicado (p. ej. la respuesta de StateSnapshot que llega
+	-- después de un evento "Jornada" más reciente): evita saltos hacia atrás del reloj escolar.
+	local horaSnapshot = numero(snapshot.HoraServidor)
+	if horaSnapshot and self.horaUltimaJornada and horaSnapshot < self.horaUltimaJornada then
+		return
+	end
+	if horaSnapshot then
+		self.horaUltimaJornada = horaSnapshot
 	end
 	local copia = {}
 	for clave, valor in pairs(snapshot) do

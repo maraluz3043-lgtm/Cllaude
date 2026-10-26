@@ -373,6 +373,42 @@ function BoardService:Start()
 		end
 	end
 
+	-- Sesiones de clase: al abrir se avisa del docente al aula; al cerrar se limpia el tablero
+	-- (si ClassroomService ya lo limpió, Limpiar no hace nada).
+	local Classroom = self.registro.Get("ClassroomService")
+	if Classroom then
+		local function aulaDeSesion(sesion)
+			if typeof(sesion) == "table" and typeof(sesion.RoomId) == "string" then
+				return sesion.RoomId
+			end
+			if typeof(sesion) == "string" then
+				return sesion
+			end
+			return nil
+		end
+		local abierta = conectar(Classroom.SesionAbierta, function(sesion)
+			local roomId = aulaDeSesion(sesion)
+			if roomId and self:EsAula(roomId) then
+				self.DocenteConocido[roomId] = self:DocenteDe(roomId) or 0
+				self:_Difundir(roomId, self:_DatosTurno(roomId, "Sesion"))
+			end
+		end)
+		if abierta then
+			self.Maid:GiveTask(abierta)
+		end
+		local cerrada = conectar(Classroom.SesionCerrada, function(sesion)
+			local roomId = aulaDeSesion(sesion)
+			if roomId and self:EsAula(roomId) then
+				self:Limpiar(roomId, "SesionCerrada")
+				self.DocenteConocido[roomId] = self:DocenteDe(roomId) or 0
+				self:_Difundir(roomId, self:_DatosTurno(roomId, "Sesion"))
+			end
+		end)
+		if cerrada then
+			self.Maid:GiveTask(cerrada)
+		end
+	end
+
 	-- Ocupación de asientos: adelanta el ciclo para que quien se sienta reciba el tablero enseguida.
 	local RoomService = self.registro.Get("RoomService")
 	if RoomService then

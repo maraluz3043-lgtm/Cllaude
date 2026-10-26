@@ -257,7 +257,8 @@ end
 local function construirUI()
 	local gui = UIBuilder.Pantalla("Soporte", ORDEN_PANTALLA)
 	ui.Gui = gui
-	local contenedor = UIBuilder.Contenedor(gui)
+	-- Panel a casi toda la altura: con la franja táctil de 150 px quedaría de ~160 px en un teléfono horizontal.
+	local contenedor = UIBuilder.Contenedor(gui, { SinMargenTactil = true })
 	local panel, lista = UIBuilder.Panel(contenedor, {
 		Nombre = "PanelSoporte",
 		Titulo = "Soporte",

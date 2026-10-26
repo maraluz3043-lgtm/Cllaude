@@ -42,9 +42,12 @@ function P.registrarError(msg, co)
 	end
 end
 
+local secuencia = 0
 local function programar(co, t, args)
-	table.insert(P.cola, { t = t, co = co, args = args })
+	secuencia = secuencia + 1
+	table.insert(P.cola, { t = t, co = co, args = args, n = secuencia })
 end
+P.programar = programar
 
 function P.reanudar(co, ...)
 	if P.cancelados[co] then return end
@@ -229,7 +232,7 @@ local function procesarVencidos()
 		end
 		if #vencidos == 0 then break end
 		P.cola = resto
-		table.sort(vencidos, function(a, b) return a.t < b.t end)
+		table.sort(vencidos, function(a, b) if a.t ~= b.t then return a.t < b.t end return (a.n or 0) < (b.n or 0) end)
 		for _, e in ipairs(vencidos) do
 			iter = iter + 1
 			if e.args and e.args[1] == "__dt" then

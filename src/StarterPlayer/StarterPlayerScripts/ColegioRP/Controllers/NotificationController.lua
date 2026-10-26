@@ -474,7 +474,12 @@ function NotificationController:_AlRecibirNotificacion(datos)
 	if duracion then
 		duracion = math.clamp(duracion, 1, 15)
 	end
-	self:Notificar(datos.Texto, datos.Nivel, duracion)
+	-- Algunos servicios (RoleService, FootballService) envían también Titulo y el nivel en Tipo.
+	local opciones = nil
+	if typeof(datos.Titulo) == "string" and datos.Titulo ~= "" then
+		opciones = { Titulo = Format.Truncar(datos.Titulo, 60) }
+	end
+	self:Notificar(datos.Texto, datos.Nivel or datos.Tipo, duracion, opciones)
 end
 
 -- Cambio de periodo de la jornada -> timbre (el primer snapshot solo fija la referencia).

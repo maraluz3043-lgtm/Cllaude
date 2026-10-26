@@ -18,13 +18,23 @@ local GuiService = game:GetService("GuiService")
 local UserInputService = game:GetService("UserInputService")
 local SoundService = game:GetService("SoundService")
 
-local RP = ReplicatedStorage:WaitForChild("ColegioRP")
-local Shared = RP:WaitForChild("Shared")
-local Config = require(Shared:WaitForChild("Config"))
-local UITheme = require(Shared:WaitForChild("UITheme"))
+-- Esperas acotadas (nunca infinitas): si algo falta, el require falla con un mensaje claro y Main lo registra.
+local ESPERA_SEG = 30
+local function esperarHijo(padre, nombre)
+	local hijo = padre and (padre:FindFirstChild(nombre) or padre:WaitForChild(nombre, ESPERA_SEG))
+	if not hijo then
+		error("[ColegioRP][UIBuilder] No apareció '" .. tostring(nombre) .. "' en " .. ESPERA_SEG .. " s")
+	end
+	return hijo
+end
+
+local RP = esperarHijo(ReplicatedStorage, "ColegioRP")
+local Shared = esperarHijo(RP, "Shared")
+local Config = require(esperarHijo(Shared, "Config"))
+local UITheme = require(esperarHijo(Shared, "UITheme"))
 
 local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local PlayerGui = LocalPlayer:FindFirstChildOfClass("PlayerGui") or esperarHijo(LocalPlayer, "PlayerGui")
 
 local UIBuilder = {}
 
@@ -236,6 +246,19 @@ local mensajesRechazo = {
 	bloqueado = "Esta acción está bloqueada temporalmente.",
 	cooldown = "Espera un momento antes de repetir la acción.",
 	desconocido = "El servidor rechazó la petición.",
+	-- Motivos de RemoteService (rechazado:<motivo>).
+	remoto_desconocido = "El servidor no reconoce esta acción.",
+	datos_no_tabla = "Los datos enviados no son válidos.",
+	argumentos_extra = "Los datos enviados no son válidos.",
+	sin_servicio = "Esta función todavía no está disponible en el servidor.",
+	sin_personaje = "Tu personaje todavía no ha aparecido.",
+	jugador_invalido = "No se pudo identificar a tu jugador.",
+	error_interno = "El servidor tuvo un problema; inténtalo de nuevo.",
+	-- Códigos simples de los servicios (RemoteContracts.Error("<codigo>")), p. ej. RoleService.
+	no_autorizado = "Requiere autorización de la dirección.",
+	cargo_invalido = "Cargo desconocido.",
+	error = "Ocurrió un error inesperado.",
+	rechazado = "El servidor rechazó la petición.",
 }
 function UIBuilder.MensajeError(err)
 	if typeof(err) ~= "string" or err == "" then
@@ -245,6 +268,13 @@ function UIBuilder.MensajeError(err)
 	if motivo then
 		local clave = string.lower(string.match(motivo, "^([%a_]+)") or motivo)
 		return mensajesRechazo[clave] or ("Petición rechazada: " .. motivo)
+	end
+	-- Código simple sin prefijo ("cooldown", "no_autorizado"...): se traduce si se conoce.
+	if string.match(err, "^[%a_]+$") then
+		local traducido = mensajesRechazo[string.lower(err)]
+		if traducido then
+			return traducido
+		end
 	end
 	if string.find(err, "remoto no disponible", 1, true) then
 		return "El servidor todavía no está listo. Inténtalo en unos segundos."
