@@ -152,9 +152,8 @@ def build_puerta(ctx, parent, u, y, v, variante, hoja_abierta_grados=None, bisag
 
     if variante == 'morada':
         # ---- rótulo (fondo claro redondeado + letras moradas) en la parte superior
-        ctx.frame(g_ext, pos=(0.16, 0, 0.055, 0), size=(0.68, 0, 0.105, 0), color=(244, 238, 228), corner=(0.3, 0), name='Rotulo_Fondo')
-        ctx.text(g_ext, texto, pos=(0.19, 0, 0.065, 0), size=(0.62, 0, 0.085, 0), color=(104, 36, 150),
-                 font=FONT_FREDOKA, xalign=2, yalign=1, name='Rotulo_Texto')
+        ctx.text(g_ext, texto.lower() if texto.upper().startswith('GRADO') else texto, pos=(0.14, 0, 0.055, 0), size=(0.72, 0, 0.10, 0), color=(246, 240, 232),
+                 font=FONT_PERMANENT, xalign=2, yalign=1, name='Rotulo_Texto')
         # ---- mariposas 3D: 2 alas (cilindros elípticos delgados) despegadas de la hoja + cuerpo (Frame)
         mariposas = [  # (fracción del ancho desde la bisagra, fracción de la altura, color, escala)
             (0.14, 0.80, (242, 122, 32), 1.05), (0.80, 0.76, (250, 216, 64), 1.0), (0.50, 0.70, (246, 246, 240), 0.95),
@@ -178,8 +177,8 @@ def build_puerta(ctx, parent, u, y, v, variante, hoja_abierta_grados=None, bisag
     elif variante == 'azul':
         # ---- rótulo: banda blanca con letras amarillas/borde azul oscuro
         ctx.frame(g_ext, pos=(0.14, 0, 0.055, 0), size=(0.72, 0, 0.08, 0), color=(242, 242, 240), name='Rotulo_Fondo')
-        ctx.text(g_ext, texto, pos=(0.16, 0, 0.06, 0), size=(0.68, 0, 0.07, 0), color=(250, 214, 70),
-                 font=FONT_FREDOKA, stroke=(18, 36, 120), xalign=2, yalign=1, name='Rotulo_Texto')
+        ctx.text(g_ext, texto, pos=(0.16, 0, 0.06, 0), size=(0.68, 0, 0.07, 0), color=(196, 34, 40),
+                 font=FONT_FREDOKA, xalign=2, yalign=1, name='Rotulo_Texto')
         # ---- luna creciente: disco amarillo + disco "recorte" del color de la hoja delante (2 parts)
         hu_l, hy_l = s * (0.46 * HOJA_W), HOJA_Y0 + 0.62 * HOJA_H
         ctx.cylinder('Luna_Disco', hoja(hu_l, hy_l, hv_ext - 0.02), 0.04, 1.18, axis='v', yaw=yaw_t,
@@ -282,7 +281,7 @@ def build_media_ventana(ctx, parent, u, y, v, ancho=4.4, alto=5.7, yaw=0):
 
 
 # ================================================================ AFICHE pegado por fuera del vidrio
-def build_afiche_ventana(ctx, parent, u, y, v, tema='dios', yaw=0):
+def build_afiche_ventana(ctx, parent, u, y, v, tema='dios', yaw=0, ancho=2.0, alto=2.6):
     """Afiche de 2.0 x 2.6 x 0.03 con diseño en SurfaceGui (texto + Frames) mirando a -v.
 
     (u,y,v) = centro del afiche (v ≈ 0.28 → pegado al vidrio exterior v=0.30 de las ventanas).
@@ -297,7 +296,7 @@ def build_afiche_ventana(ctx, parent, u, y, v, tema='dios', yaw=0):
         raise ValueError(f'tema desconocido: {tema}')
     nombre, fondo = temas[tema]
     m = ctx.model(nombre, parent=parent)
-    p = ctx.box(nombre, place(u, y, v, yaw, 0, 0, 0), (2.0, 2.6, 0.03), yaw=yaw, color=fondo,
+    p = ctx.box(nombre, place(u, y, v, yaw, 0, 0, 0), (ancho, alto, 0.03), yaw=yaw, color=fondo,
                 material='SmoothPlastic', parent=m, cancollide=False, castshadow=False)
     g = ctx.surface_gui(p, face_toward(0, (0, 0, -1)), pixels_per_stud=100)
     if tema == 'dios':

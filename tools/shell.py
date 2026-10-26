@@ -27,7 +27,7 @@ ROOMS = [
          left_existing=True, right_existing=False),
     dict(key='salon2', nombre='Salon_2_Cuarto', texto='CUARTO', u0=35.19+WALL_T/2, u1=58.2, door=(36.7, 40.9), half=(41.3, 45.7), bays=[4], halfwin_h=5.7, door_variant='azul', hinge='izq', open_deg=0,
          left_existing=False, right_existing=True),
-    dict(key='salon3', nombre='Salon_3_6C', texto='6C', u0=62.0, u1=96.98-WALL_T/2, door=(79.3, 83.5), half=(74.5, 78.9), bays=[5, 7], halfwin_h=2.8, door_variant='blanca_6C', hinge='der', open_deg=75,
+    dict(key='salon3', nombre='Salon_3_6C', texto='6C', u0=62.0, u1=96.98-WALL_T/2, door=(79.3, 83.5), half=(74.5, 78.9), bays=[5, 7], halfwin_h=5.7, door_variant='blanca_6C', hinge='der', open_deg=75,
          left_existing=True, right_existing=False),
 ]
 HALLS = [dict(u0=-0.8, u1=59.2, doors=[(12.7, 16.9), (36.7, 40.9)]), dict(u0=61.0, u1=121.0, doors=[(79.3, 83.5)])]
