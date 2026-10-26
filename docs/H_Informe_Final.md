@@ -9,7 +9,7 @@
 |---|---|
 | Arranque con el mapa real (67.117 instancias) | Servidor sin errores, 21 remotos, 202 asientos detectados en aulas, 2 clientes con 11 interfaces sin duplicados |
 | P14 fuzzing: 312 cargas maliciosas en 20 remotos | 0 errores del servidor, todas rechazadas, límite de frecuencia activo, auditoría y marca de sospechoso |
-| Funcional: P3 cargos y reaparición, P4 aulas paralelas aisladas, P5 respuesta de otra aula rechazada, P6 cuaderno y privacidad, P7 respuesta única, P8 snapshot y control de jornada, P9 comida 0 y compra descontada una vez, moderación por permisos | 6/6 |
+| Funcional: P3 cargos y reaparición, P4 aulas paralelas aisladas, P5 respuesta de otra aula rechazada, P6 cuaderno y privacidad, P7 respuesta única, P8 snapshot y control de jornada, P9 comida 0 y compra descontada una vez, tablero por turno, soporte, anuncios, paneles de personal, moderación por permisos | 9/9 |
 | Revisiones adversariales | Núcleo servidor (14 hallazgos, 11 corregidos), cliente (14, 10), jornada (7, 6), fútbol (6, 5) |
 
 **No verificado**: ejecución real en Roblox Studio, FPS/memoria (P15) y aspecto visual. Usar `docs/G_Pruebas.md`.
