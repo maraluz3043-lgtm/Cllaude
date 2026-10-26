@@ -317,7 +317,8 @@ definir("FootballAction", {
 	Tipo = "RemoteFunction", Direccion = "C2S", Limite = { Max = 4, VentanaSeg = 5 },
 	Permiso = porAccion({
 		Unirse = false, Salir = false, Estado = false,
-		Iniciar = "futbol.arbitro", Reiniciar = "futbol.arbitro", Finalizar = "futbol.arbitro",
+		Iniciar = false, -- FootballService valida: árbitro, o inicio libre si no hay árbitro y el periodo permite deporte
+		Reiniciar = "futbol.arbitro", Finalizar = "futbol.arbitro",
 	}),
 	Esquema = Esq({
 		Accion = Enum(A.Futbol),

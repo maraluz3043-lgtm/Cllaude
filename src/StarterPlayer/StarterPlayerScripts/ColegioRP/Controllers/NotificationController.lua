@@ -327,7 +327,7 @@ function NotificationController:Notificar(contenido, nivel, duracion, opciones)
 	end
 	local clave = normalizarNivel(nivel)
 	if clave == "timbre" then
-		self:Timbre(mensaje, duracion)
+		self:Timbre(mensaje, duracion, typeof(opciones) == "table" and opciones.SonidoServidor == true)
 		return
 	end
 	local def = NIVELES[clave]
@@ -349,14 +349,16 @@ end
 
 -- Timbre escolar: sonido (si Config.Sonidos.Timbre > 0) y subtítulo si el ajuste Subtitulos está activo;
 -- con los subtítulos desactivados se muestra como toast informativo.
-function NotificationController:Timbre(contenido, duracion)
+function NotificationController:Timbre(contenido, duracion, sonidoServidor)
 	local ahora = os.clock()
 	if ahora - self.ultimoTimbre < self.VentanaTimbreSeg then
 		return
 	end
 	self.ultimoTimbre = ahora
 	local mensaje = Format.Truncar(texto(contenido), 160)
-	UIBuilder.Sonido("Timbre", 0.6)
+	if not sonidoServidor then
+		UIBuilder.Sonido("Timbre", 0.6) -- el servidor ya reproduce el timbre cuando SonidoServidor = true
+	end
 	if mensaje == "" then
 		mensaje = "Suena el timbre"
 	end
@@ -478,6 +480,10 @@ function NotificationController:_AlRecibirNotificacion(datos)
 	local opciones = nil
 	if typeof(datos.Titulo) == "string" and datos.Titulo ~= "" then
 		opciones = { Titulo = Format.Truncar(datos.Titulo, 60) }
+	end
+	if datos.SonidoServidor == true then
+		opciones = opciones or {}
+		opciones.SonidoServidor = true
 	end
 	self:Notificar(datos.Texto, datos.Nivel or datos.Tipo, duracion, opciones)
 end

@@ -593,6 +593,13 @@ function DataService:Cargar(player)
 	end
 
 	self.Perfiles[userId] = perfil
+	-- Ajustes que necesita la pantalla de carga de la siguiente sesión (lee atributos del Player)
+	if typeof(perfil.Ajustes) == "table" then
+		pcall(function()
+			player:SetAttribute("IntroVista", perfil.Ajustes.IntroVista == true)
+			player:SetAttribute("MovimientoReducido", perfil.Ajustes.MovimientoReducido == true)
+		end)
+	end
 	if datos == nil then
 		meta.Estado = "nuevo"
 		meta.Sucio = true

@@ -1,0 +1,391 @@
+{
+ "version": "2.0.0",
+ "generado": "2026-10-26T23:02:57.968217+00:00",
+ "archivos": [
+  {
+   "destino": "ReplicatedFirst.ColegioRP_Carga",
+   "clase": "LocalScript",
+   "origen": "src/ReplicatedFirst/ColegioRP_Carga.client.lua",
+   "lineas": 1239,
+   "sha1": "4627ef2f086e"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Catalogs",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Catalogs.lua",
+   "lineas": 802,
+   "sha1": "53820dd1f51b"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Config",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Config.lua",
+   "lineas": 321,
+   "sha1": "dec6cabc284b"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.MapaLogico",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/MapaLogico.lua",
+   "lineas": 886,
+   "sha1": "ff6571af8b56"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.RemoteContracts",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/RemoteContracts.lua",
+   "lineas": 509,
+   "sha1": "01b18f9f2030"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.RoleDefinitions",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/RoleDefinitions.lua",
+   "lineas": 460,
+   "sha1": "4284335450de"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.TimetableDefinitions",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/TimetableDefinitions.lua",
+   "lineas": 277,
+   "sha1": "93aacf4b8f2c"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.UITheme",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/UITheme.lua",
+   "lineas": 203,
+   "sha1": "685a61897290"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Format",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Format.lua",
+   "lineas": 247,
+   "sha1": "4129579c948b"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Maid",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Maid.lua",
+   "lineas": 132,
+   "sha1": "793be5d92c6c"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Net",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Net.lua",
+   "lineas": 253,
+   "sha1": "7e2a4eb340b6"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Signal",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Signal.lua",
+   "lineas": 130,
+   "sha1": "b14a08689491"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Validate",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Validate.lua",
+   "lineas": 434,
+   "sha1": "05fed538d387"
+  },
+  {
+   "destino": "ReplicatedStorage.ColegioRP.Shared.Util.Zones",
+   "clase": "ModuleScript",
+   "origen": "src/ReplicatedStorage/ColegioRP/Shared/Util/Zones.lua",
+   "lineas": 287,
+   "sha1": "14f8e454f4b3"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Main",
+   "clase": "Script",
+   "origen": "src/ServerScriptService/ColegioRP/Main.server.lua",
+   "lineas": 283,
+   "sha1": "e0369178bff4"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.AnnouncementService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/AnnouncementService.lua",
+   "lineas": 526,
+   "sha1": "166089d99b19"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.AuditLogService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/AuditLogService.lua",
+   "lineas": 286,
+   "sha1": "8e78296c7d03"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.BathroomService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/BathroomService.lua",
+   "lineas": 637,
+   "sha1": "1106c583c179"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.BoardService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/BoardService.lua",
+   "lineas": 1808,
+   "sha1": "f94ee751740c"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.CafeteriaService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/CafeteriaService.lua",
+   "lineas": 1084,
+   "sha1": "754547fcd17a"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.ClassroomService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/ClassroomService.lua",
+   "lineas": 1923,
+   "sha1": "5b267b345599"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.DataService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/DataService.lua",
+   "lineas": 984,
+   "sha1": "225ea60a0c97"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.DoorService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/DoorService.lua",
+   "lineas": 1698,
+   "sha1": "98866af1e2e2"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.EconomyService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/EconomyService.lua",
+   "lineas": 558,
+   "sha1": "7ccd1e40c626"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.FoodService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/FoodService.lua",
+   "lineas": 1521,
+   "sha1": "97b072640e59"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.FootballService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/FootballService.lua",
+   "lineas": 1964,
+   "sha1": "b7f3f219f16e"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.MapService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/MapService.lua",
+   "lineas": 1754,
+   "sha1": "6d040a5222ac"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.MetricsService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/MetricsService.lua",
+   "lineas": 579,
+   "sha1": "b10b6e311a3f"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.ModerationService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/ModerationService.lua",
+   "lineas": 1426,
+   "sha1": "bd14e7c6564f"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.NotebookService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/NotebookService.lua",
+   "lineas": 647,
+   "sha1": "770ee3154678"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.PCService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/PCService.lua",
+   "lineas": 2177,
+   "sha1": "da10674f1e55"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.RemoteService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/RemoteService.lua",
+   "lineas": 750,
+   "sha1": "e7b67713e3a2"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.ReportService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/ReportService.lua",
+   "lineas": 531,
+   "sha1": "62c2af2ebc78"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.RoleService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/RoleService.lua",
+   "lineas": 980,
+   "sha1": "5375a6c94bc6"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.RoomService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/RoomService.lua",
+   "lineas": 619,
+   "sha1": "7196880b83da"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.SchoolDayService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/SchoolDayService.lua",
+   "lineas": 2539,
+   "sha1": "f28ff364743c"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.SpawnService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/SpawnService.lua",
+   "lineas": 533,
+   "sha1": "5cc806054545"
+  },
+  {
+   "destino": "ServerScriptService.ColegioRP.Services.StaffService",
+   "clase": "ModuleScript",
+   "origen": "src/ServerScriptService/ColegioRP/Services/StaffService.lua",
+   "lineas": 2937,
+   "sha1": "a527159fdecd"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.BoardController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/BoardController.lua",
+   "lineas": 1940,
+   "sha1": "094ab94c92b2"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.CafeteriaController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/CafeteriaController.lua",
+   "lineas": 1089,
+   "sha1": "d0abc453ec0d"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.ClassroomController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/ClassroomController.lua",
+   "lineas": 2551,
+   "sha1": "bc3377cfa864"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.FoodController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/FoodController.lua",
+   "lineas": 922,
+   "sha1": "c0f378a766a8"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.FootballController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/FootballController.lua",
+   "lineas": 1204,
+   "sha1": "eafd263b743c"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.HUDController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/HUDController.lua",
+   "lineas": 736,
+   "sha1": "3b8e2918d9f0"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.HelpController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/HelpController.lua",
+   "lineas": 599,
+   "sha1": "5f938c016d5e"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.InteractionController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/InteractionController.lua",
+   "lineas": 746,
+   "sha1": "1db06a17b7f5"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.MenuController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/MenuController.lua",
+   "lineas": 752,
+   "sha1": "7fa1fb5898f8"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.NametagController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/NametagController.lua",
+   "lineas": 452,
+   "sha1": "cfe54520f677"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.NotificationController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/NotificationController.lua",
+   "lineas": 510,
+   "sha1": "21350cb13f7b"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.PCController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/PCController.lua",
+   "lineas": 2444,
+   "sha1": "cde53a74f1d2"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.SettingsController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/SettingsController.lua",
+   "lineas": 1565,
+   "sha1": "5e7739b10930"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.StaffController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/StaffController.lua",
+   "lineas": 3077,
+   "sha1": "de2a42a4a337"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.SupportController",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/SupportController.lua",
+   "lineas": 479,
+   "sha1": "68295911651c"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Main",
+   "clase": "LocalScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Main.client.lua",
+   "lineas": 312,
+   "sha1": "c025475fe6b1"
+  },
+  {
+   "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.UI.UIBuilder",
+   "clase": "ModuleScript",
+   "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/UI/UIBuilder.lua",
+   "lineas": 1913,
+   "sha1": "9b7bb5d929e3"
+  }
+ ]
+}
