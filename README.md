@@ -1,6 +1,6 @@
 # Salones faltantes de la planta baja + portón blanco (modelos .rbxm para Roblox Studio)
 
-Generados a partir del archivo `Donde_pondras_los_salones_faltantes.rbxm` (edificio de dos pisos, 12 250 parts) y de las
+Generados a partir del archivo `Donde_pondras_los_salones_faltantes.rbxm` (edificio de dos pisos, 12 270 BaseParts) y de las
 cuatro fotos de referencia. Los tres vanos marcados en rojo en la captura (vanos 1, 3 y 6 de la planta baja) reciben
 las puertas de los tres salones: **"GRADO 5°"** (puerta morada con mariposas, foto 1), **"CUARTO"** (puerta azul con luna
 y estrellas, foto 2) y **"6C"** (puerta metálica blanca abierta, foto 3). Los interiores siguen a los tres salones del piso
@@ -11,9 +11,9 @@ de pared y techo, split, luminarias fluorescentes, cielo raso PVC, papelera, arm
 
 | Archivo | Contenido | Parts |
 |---|---|---|
-| `modelos/Salones_Planta_Baja.rbxm` | Los 3 salones con fachada (puertas, calados, medias ventanas, afiches, condensadores, maceta) e interiores completos, más los tramos de muro de fachada de reemplazo con los huecos de puerta | 2 254 |
+| `modelos/Salones_Planta_Baja.rbxm` | Los 3 salones con fachada (puertas, calados, medias ventanas, afiches, condensadores, maceta) e interiores completos, más los tramos de muro de fachada de reemplazo con los huecos de puerta | **2 245** (16 fachada + 789 + 658 + 782) |
 | `modelos/Porton_Blanco.rbxm` | El portón metálico blanco de la foto 4 (modelo independiente) | 256 |
-| `modelos/Edificio_Completo_con_Salones.rbxm` | El edificio original completo **ya con los salones integrados** (muros de fachada cortados, ventanas de los vanos de puerta retiradas) | 12 250 + 2 254 |
+| `modelos/Edificio_Completo_con_Salones.rbxm` | El edificio original completo **ya con los salones integrados** (muros de fachada cortados, ventanas de los vanos de puerta retiradas) | 14 487 (12 270 originales − 28 reemplazadas + 2 245) |
 | `modelos/*.rbxmx` | Las mismas piezas en formato XML (por si una versión de Studio rechazara el binario) | — |
 
 ## Opción A (recomendada): usar el edificio completo
@@ -55,9 +55,9 @@ Coordenadas en el marco del edificio (u = a lo largo de la fachada, desde la pri
 
 | Salón | Puerta | Vanos | Ancho interior | Interior |
 |---|---|---|---|---|
-| **Salon_1_Grado5** (788 parts) | morada con 9 mariposas y rótulo "GRADO 5°", cerrada, bisagra izquierda; calado + ventana alta a su derecha con el condensador del aire encima (como en la foto 1) | 0-2 | 34,7 studs | 20 pupitres azules en 5 filas de 4 mirando al tablero de la pared derecha; mesa docente de madera con silla azul; 2 carteleras (HORARIO, VALORES), afiches, reloj, bandera; 2 ventiladores de pared + 1 de techo, split, 6 luminarias, armario, papelera, escoba, dispensador de agua, mochila |
+| **Salon_1_Grado5** (789 parts) | morada con 9 mariposas y rótulo "GRADO 5°", cerrada, bisagra izquierda; calado + ventana alta a su derecha con el condensador del aire encima (como en la foto 1) | 0-2 | 34,7 studs | 20 pupitres azules en 5 filas de 4 mirando al tablero de la pared derecha; mesa docente de madera con silla azul; 2 carteleras (HORARIO, VALORES), afiches, reloj, bandera; 2 ventiladores de pared + 1 de techo, split, 6 luminarias, armario, papelera, escoba, dispensador de agua, mochila |
 | **Salon_2_Cuarto** (658 parts) | azul con luna y estrellas y rótulo "CUARTO", cerrada; maceta con palma en la acera; calado + media ventana a su derecha | 3-4 | 22,7 studs | 15 pupitres de madera en 3 filas de 5 mirando al tablero de la pared del fondo; escritorio metálico crema con silla negra; carteleras y afiches, reloj, bandera; ventiladores en las paredes laterales + techo, split, 4 luminarias, armario, papelera, escoba, dispensador, mochila |
-| **Salon_3_6C** (792 parts) | metálica blanca con paneles en relieve 3×7 y rótulo "6C", **abierta 75° hacia dentro** (foto 3); calado + ventana alta a su izquierda con condensador | 5-7 | 34,7 studs | 20 pupitres azules en 5 filas de 4 mirando al tablero de la pared izquierda; mesa de madera + silla azul; carteleras, afiches, reloj, bandera; 2 ventiladores de pared + techo, split, 6 luminarias, armario, papelera, escoba, dispensador, mochila |
+| **Salon_3_6C** (782 parts) | metálica blanca con paneles en relieve 3×7 y rótulo "6C", **abierta 75° hacia dentro** (foto 3); calado + ventana completa a su izquierda, afiche en la ventana de la derecha | 5-7 | 34,7 studs | 20 pupitres azules en 5 filas de 4 mirando al tablero de la pared izquierda; mesa de madera + silla azul; carteleras, afiches, reloj, bandera; 2 ventiladores de pared + techo, split, 6 luminarias, armario, papelera, escoba, dispensador, mochila |
 
 Común a los tres: piso de baldosa cerámica terracota, zócalo rojo, paredes en yeso blanco (pieles de 4 cm sobre el concreto
 existente), tabiques nuevos de 0,6 studs sobre las columnas u = 35,19 y u = 96,98, cielo raso de tablillas PVC con moldura,
