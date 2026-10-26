@@ -1,0 +1,8 @@
+{
+  "name": "colegio-rp-simulador",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Simulador headless de Roblox (Lua 5.3 sobre fengari) para probar el código de Colegio RP fuera de Studio.",
+  "scripts": { "test": "node run.js escenarios/todos.lua" },
+  "dependencies": { "fengari": "0.1.5" }
+}
