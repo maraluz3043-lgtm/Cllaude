@@ -48,11 +48,22 @@ local function nombreRuta(ruta)
 	return ruta
 end
 
-local function unirRuta(ruta, clave)
-	if ruta == nil or ruta == "" then
+-- Las claves pueden venir del cliente: solo se muestran si son identificadores cortos (nunca texto libre).
+local function claveSegura(clave)
+	if typeof(clave) == "number" then
 		return tostring(clave)
 	end
-	return ruta .. "." .. tostring(clave)
+	if typeof(clave) == "string" and #clave <= 24 and string.match(clave, "^[%w_]+$") then
+		return clave
+	end
+	return "?"
+end
+
+local function unirRuta(ruta, clave)
+	if ruta == nil or ruta == "" then
+		return claveSegura(clave)
+	end
+	return ruta .. "." .. claveSegura(clave)
 end
 
 local function enLista(lista, valor)
@@ -161,7 +172,7 @@ local function comprobarCampos(campos, estricto, valor, ruta, ctx, profundidad)
 			return false, "demasiados datos en la petición"
 		end
 		if estricto and (typeof(clave) ~= "string" or campos[clave] == nil) then
-			return false, string.format("%s tiene una clave desconocida (%s)", nombreRuta(ruta), tostring(clave))
+			return false, string.format("%s tiene una clave desconocida (%s)", nombreRuta(ruta), claveSegura(clave))
 		end
 	end
 	return true

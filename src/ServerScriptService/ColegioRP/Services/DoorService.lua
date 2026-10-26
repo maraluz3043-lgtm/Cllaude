@@ -767,6 +767,7 @@ function DoorService:ConstruirPuerta(id, cfg)
 		Normal = normal,
 		EjeAncho = ejeAncho,
 		MedioAncho = math.max(0.5, (maxW - minW) / 2),
+		MedioGrosor = math.max(0, ejes[iFino][2] / 2),
 		Referencia = referencia,
 		CargosBloqueo = cargosSet,
 		CargosTexto = cargosTexto,
@@ -1114,7 +1115,14 @@ function DoorService:EsDentro(puerta, posicion)
 	local rel = plano(posicion - puerta.Punto)
 	local dp = rel:Dot(puerta.Normal)
 	local lateral = math.abs(rel:Dot(puerta.EjeAncho))
-	if math.abs(dp) < 0.75 and lateral <= puerta.MedioAncho + 1 then
+	-- Con la hoja cerrada (sólida) solo cuenta como umbral quien quedó dentro de la propia hoja: pegarse a ella
+	-- desde fuera no basta para abrir una puerta bloqueada ni un baño con privacidad. Sin referencia ni zona no hay
+	-- otra forma de saber el lado, así que se mantiene el umbral amplio (nunca se encierra a nadie).
+	local umbral = 0.75
+	if not puerta.Abierta and (puerta.Referencia or puerta.ZonaDef) then
+		umbral = math.min(umbral, (puerta.MedioGrosor or 0) + 0.25)
+	end
+	if math.abs(dp) < umbral and lateral <= puerta.MedioAncho + 1 then
 		return true
 	end
 	local zona = puerta.ZonaDef

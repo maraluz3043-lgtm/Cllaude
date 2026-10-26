@@ -108,6 +108,16 @@ function MenuController:Start()
 	end
 	self.maid:GiveTask(player:GetAttributeChangedSignal("Cargo"):Connect(revisarCargo))
 	revisarCargo()
+
+	-- La escala de texto del perfil llega después de construir el menú: se reajusta la disposición.
+	local Settings = self.registro.Get("SettingsController")
+	if Settings and typeof(Settings.Cambiado) == "table" and typeof(Settings.Cambiado.Connect) == "function" then
+		self.maid:GiveTask(Settings.Cambiado:Connect(function()
+			if self.abierto and not self.suspendido and self.vista == "Principal" and self:_EsBajo() ~= self.bajo then
+				self:_MostrarPrincipal()
+			end
+		end))
+	end
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -152,7 +162,8 @@ function MenuController:_Construir()
 	principal.Parent = contenido
 	self.principal = principal
 
-	local bajo = UIBuilder.AltoUI() < 700
+	local bajo = self:_EsBajo()
+	self.bajo = bajo
 	UIBuilder.Disposicion(principal, {
 		Horizontal = bajo,
 		Espaciado = bajo and 40 or 18,
@@ -249,6 +260,23 @@ function MenuController:_Construir()
 	self:_ActualizarBotones()
 end
 
+-- ¿Pantalla baja (teléfono en horizontal, escala de texto grande)? Decide la disposición del menú principal.
+function MenuController:_EsBajo()
+	return UIBuilder.AltoUI() < 700
+end
+
+-- Si cambió el alto disponible (escala de texto del perfil, ventana, rotación) se rehace la pantalla
+-- para que los 7 botones sigan cabiendo. Solo desde la vista principal (no hay vistas que perder).
+function MenuController:_RevisarDisposicion()
+	if self.bajo == nil or self:_EsBajo() == self.bajo then
+		return false
+	end
+	self.panelVista = nil
+	self:_Construir()
+	self.gui.Enabled = self.abierto == true
+	return true
+end
+
 -- Visibilidad de CONTINUAR y navegación con mando entre los botones visibles.
 function MenuController:_ActualizarBotones()
 	if not self.botonContinuar then
@@ -280,6 +308,7 @@ function MenuController:_MostrarPrincipal()
 		UIBuilder.Destruir(self.panelVista)
 		self.panelVista = nil
 	end
+	self:_RevisarDisposicion()
 	self.vista = "Principal"
 	self.principal.Visible = true
 	self:_ActualizarBotones()
@@ -313,6 +342,8 @@ function MenuController:_NuevaVista(titulo)
 		end,
 	})
 	self.panelVista = panel
+	-- Vistas de solo texto (ACTUALIZACIONES, EQUIPO): la lista es seleccionable para desplazarla con el mando.
+	lista.Selectable = true
 	local orden = 0
 	local function siguiente()
 		orden = orden + 1

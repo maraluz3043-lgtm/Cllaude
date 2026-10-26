@@ -23,6 +23,7 @@ local RP = ReplicatedStorage:WaitForChild("ColegioRP")
 local Shared = RP:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Catalogs = require(Shared:WaitForChild("Catalogs"))
+local Respuestas = require(script.Parent.Parent:WaitForChild("Datos"):WaitForChild("CuestionariosRespuestas"))
 local TimetableDefinitions = require(Shared:WaitForChild("TimetableDefinitions"))
 local MapaLogico = require(Shared:WaitForChild("MapaLogico"))
 local UITheme = require(Shared:WaitForChild("UITheme"))
@@ -1004,7 +1005,7 @@ function PCService:Usar(player, pcId, origen)
 		self:Liberar(pcId, nil, true)
 	end
 	local sala = self:Sala(info.RoomId)
-	if estado.Bloqueado or sala.Bloqueado then
+	if (estado.Bloqueado or sala.Bloqueado) and not self:EsControlDocente(player) then
 		return false, "Este equipo está bloqueado por el docente."
 	end
 
@@ -1298,7 +1299,7 @@ function PCService:ComprobarOcupante(player, pcId, requiereActivo)
 		return nil, "No estás usando este equipo."
 	end
 	if requiereActivo then
-		if estado.Bloqueado then
+		if estado.Bloqueado and not self:EsControlDocente(player) then
 			return nil, "El docente bloqueó este equipo."
 		end
 		if not estado.Encendido then
@@ -1327,7 +1328,7 @@ function PCService:AccionEnergia(player, pcId, encender)
 	if not estado then
 		return fallo(err)
 	end
-	if encender and estado.Bloqueado then
+	if encender and estado.Bloqueado and not self:EsControlDocente(player) then
 		return fallo("El docente bloqueó este equipo.")
 	end
 	if estado.Encendido ~= encender then
@@ -1522,7 +1523,7 @@ function PCService:ResultadoCuestionario(player, pcId, extra)
 	end
 	local id = extra.CuestionarioId
 	local cuestionario = Catalogs.Cuestionario(id)
-	local correctas = cuestionario and Catalogs.CuestionariosRespuestas and Catalogs.CuestionariosRespuestas[id]
+	local correctas = cuestionario and Respuestas.Respuestas[id]
 	if not cuestionario or typeof(correctas) ~= "table" then
 		self:Rechazo(player, "cuestionario_invalido", tostring(id), true)
 		return nil, "Ese cuestionario no existe."
@@ -1563,7 +1564,7 @@ function PCService:ResultadoCuestionario(player, pcId, extra)
 		return copia
 	end
 
-	local aciertos, total, detalle = Catalogs.CorregirCuestionario(id, limpias)
+	local aciertos, total, detalle = Respuestas.Corregir(id, limpias)
 	local fraccion = 0
 	if total > 0 then
 		fraccion = aciertos / total
@@ -1819,6 +1820,13 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Control docente: bloqueo y proyección de la sala
 ---------------------------------------------------------------------------------------------------
+
+-- ¿El jugador controla las salas (pc.bloquear)? El bloqueo de la sala no le impide usar su propio equipo: desde él
+-- se desbloquea la sala y se proyecta (si no, quedaría fuera de los controles hasta el fin de la jornada).
+function PCService:EsControlDocente(player)
+	local okT, tiene = invocar(self:Servicio("RoleService"), "Tiene", player, "pc.bloquear")
+	return okT and tiene == true
+end
 
 -- Sala que el docente puede controlar a partir de un PcId, un id de sala o su posición. Devuelve roomId | nil, mensaje.
 function PCService:SalaDeDocente(player, pcIdOSala)

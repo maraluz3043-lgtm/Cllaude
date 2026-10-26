@@ -12,7 +12,7 @@ Todas las interfaces se construyen por código (StarterGui vacío) con `UIBuilde
 | `ColegioRP_Soporte` | 50 | SupportController | Categoría, ubicación (zona actual), descripción con contador; estado de envío e id. |
 | `ColegioRP_HUD` | 10 | HUDController | Hora real (aprox.), hora escolar y estado, cargo, salón, próxima actividad, saldo, avisos; botones ☰, Cuaderno, Panel de cargo; acciones contextuales; minimizable. |
 | `ColegioRP_Aula` | 50 | ClassroomController | Docente: sesión, tema, aviso, asistencia (sentados/de pie), actividades, respuestas, calificar, resultados, invitar al tablero. Estudiante: Cuaderno (autoguardado), Actividad, Levantar mano, Ver tablero. |
-| `ColegioRP_Tablero` | 50 | BoardController | Vista del tablero del aula; texto, plantillas, 4 colores, dibujo con turno temporizado. |
+| `ColegioRP_Tablero` | 51 | BoardController | Vista del tablero del aula; texto, plantillas, 4 colores, dibujo con turno temporizado. |
 | `ColegioRP_Comedor`, `ColegioRP_Cafeteria` | 50 | Food/CafeteriaController | Estado de raciones y reclamo; cocina por pasos; catálogo, carrito, recibo; panel del vendedor (abrir, precios, reponer, cierre). |
 | `ColegioRP_Futbol` | 50 | FootballController | Marcador, reloj, unirse A/B, Patear (E / X / botón táctil con carga). |
 | `ColegioRP_PC` | 50 | PCController | Escritorio escolar: Procesador, Cuestionario, Simulador, Programación (cuadrícula 8×8), Pantalla de clase. |

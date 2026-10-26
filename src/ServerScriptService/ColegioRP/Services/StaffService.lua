@@ -834,7 +834,9 @@ function StaffService:Manejar(player, peticion)
 	if def.Esquema then
 		local okEsquema, errEsquema = Validate.Comprobar(def.Esquema, datos)
 		if not okEsquema then
-			return self:Rechazar(player, nombre, "esquema: " .. tostring(errEsquema), "Datos no válidos: " .. tostring(errEsquema))
+			-- El detalle del esquema puede contener claves escritas por el cliente (texto sin filtrar): solo lo ve
+			-- quien envió la petición; la auditoría (visible para la dirección) guarda el motivo genérico.
+			return self:Rechazar(player, nombre, "esquema", "Datos no válidos: " .. tostring(errEsquema))
 		end
 	end
 	if def.Cooldown then
@@ -1566,6 +1568,12 @@ function StaffService:AccionReporteConvivencia(player, datos)
 	local objetivo, err = self:Objetivo(datos.ObjetivoUserId, false, player)
 	if not objetivo then
 		return fallo(err)
+	end
+	-- Jerarquía de moderación: nadie registra casos a un cargo igual o superior al suyo.
+	local okJerarquia, puede, mensajeJerarquia, codigoJerarquia = self:Llamar("ModerationService", "PuedeActuar", player, objetivo)
+	if okJerarquia and puede ~= true then
+		return self:Rechazar(player, "ReporteConvivencia", tostring(codigoJerarquia or "jerarquia"),
+			tostring(mensajeJerarquia or "No puedes actuar sobre esa persona."))
 	end
 	local clave = "Conv:" .. objetivo.UserId
 	local enEspera, restante = self:EnCooldown(player, clave, 20)

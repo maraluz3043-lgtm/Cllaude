@@ -464,8 +464,9 @@ function ModerationService:PuedeActuar(admin, objetivo)
 	if admin == objetivo then
 		return false, "No puedes aplicarte esta acción a ti mismo/a.", "propio"
 	end
-	if self:Rango(objetivo) > self:Rango(admin) then
-		return false, "No puedes actuar sobre alguien con un cargo superior al tuyo.", "objetivo_superior"
+	-- Ni superiores ni iguales (dos Directores o dos Coordinadores no se moderan entre sí).
+	if self:Rango(objetivo) >= self:Rango(admin) then
+		return false, "No puedes actuar sobre alguien con un cargo igual o superior al tuyo.", "objetivo_superior"
 	end
 	return true
 end

@@ -502,6 +502,8 @@ function StaffController:Start()
 				ok, err = pcall(self._AlPersonal, self, datos)
 			elseif carga.Tipo == "Jornada" then
 				ok, err = pcall(self._AlJornada, self, datos)
+			elseif carga.Tipo == "Moderacion" then
+				ok, err = pcall(self._AlModeracion, self, datos)
 			end
 			if not ok then
 				warn(LOG .. tostring(err))
@@ -751,10 +753,45 @@ function StaffController:_AlPersonal(datos)
 			self:_Refrescar("Casos")
 		end
 	elseif sub == "Certificado" then
+		if typeof(datos.Certificado) == "table" then
+			-- Certificado propio (matrícula): el servidor ya lo notifica; queda en un atributo local para el HUD.
+			local c = datos.Certificado
+			self.miCertificado = c
+			pcall(function()
+				Players.LocalPlayer:SetAttribute("CertificadoLocal", "Certificado " .. tostring(c.Id or "?") .. (c.Aula and (" · aula " .. tostring(c.Aula)) or ""))
+			end)
+		end
 		if typeof(datos.Certificados) == "table" then
 			self.certificados = listaDe(datos.Certificados)
 			self:_Refrescar("Certificados")
 		end
+	end
+end
+
+-- Avisos del canal Moderacion para el personal: reportes nuevos (ReportService) y jugadores marcados como
+-- sospechosos (RemoteService). Silencios y advertencias ya llegan al implicado como Notificacion.
+function StaffController:_AlModeracion(datos)
+	if datos.Sub == "Reporte" and typeof(datos.Reporte) == "table" then
+		if not (self:_Tiene("reportes.ver") or self:_Tiene("convivencia.gestionar")) then
+			return
+		end
+		local r = datos.Reporte
+		local partes = { "Nuevo reporte" }
+		local categoria = texto(r.CategoriaNombre or r.Categoria)
+		if categoria ~= "" then
+			table.insert(partes, categoria)
+		end
+		local ubicacion = texto(r.Ubicacion)
+		if ubicacion ~= "" then
+			table.insert(partes, Format.Truncar(ubicacion, 40))
+		end
+		self:_Toast(table.concat(partes, " · ") .. ": " .. Format.Truncar(texto(r.Descripcion), 100), "aviso")
+	elseif datos.Tipo == "Sospechoso" then
+		if not self:_Tiene("moderacion.basica") then
+			return
+		end
+		self:_Toast("Moderación: " .. texto(datos.Nombre) .. " acumula " .. texto(datos.Rechazos)
+			.. " peticiones rechazadas. Revisa su registro en el panel de cargo.", "aviso")
 	end
 end
 
@@ -1037,8 +1074,12 @@ function StaffController:_Moderar(accion, objetivoId, motivo, extra, etiqueta, a
 	for clave, valor in pairs(extra or {}) do
 		datos[clave] = valor
 	end
-	local critica = accion == "Expulsar" or accion == "BloquearTemporal" or accion == "AsignarCargo" or accion == "RevocarCargo"
-	local mensaje = "Paso 1 de 2 · " .. etiqueta .. " a " .. nombre .. ".\nMotivo: " .. motivo
+	-- Mismas acciones críticas que ModerationService.Criticas (el servidor emite Token solo para ellas).
+	local critica = accion == "Expulsar" or accion == "BloquearTemporal" or accion == "RevocarCargo"
+	local mensaje = etiqueta .. " a " .. nombre .. ".\nMotivo: " .. motivo
+	if critica then
+		mensaje = "Paso 1 de 2 · " .. mensaje
+	end
 	UIBuilder.Confirmar("Confirmar acción", mensaje, function()
 		self:_Pedir("ModerationAction", datos, function(ok, cuerpo)
 			if not ok then
@@ -1470,7 +1511,7 @@ function StaffController:_TabPersonal(cuerpo, o)
 		self:_Refrescar("ResumenPersonal")
 	end))
 
-	local gestion = seccion(cuerpo, "Asignar o revocar cargo", o(), "Ambas acciones piden confirmación en dos pasos y quedan auditadas.")
+	local gestion = seccion(cuerpo, "Asignar o revocar cargo", o(), "Asignar pide confirmación; revocar, confirmación en dos pasos. Ambas quedan auditadas.")
 	local selector = self:_SelectorJugadores(gestion, 10, { Alto = 200, MostrarSalon = true })
 	local opciones = {}
 	for _, rol in ipairs(RoleDefinitions.Lista()) do

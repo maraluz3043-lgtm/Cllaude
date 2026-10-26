@@ -685,9 +685,8 @@ Catalogs.Programacion = Programacion
 ---------------------------------------------------------------------------------------------------
 -- Cuestionarios por materia.
 -- CuestionariosPublicos: preguntas y opciones (el cliente puede mostrarlas).
--- CuestionariosRespuestas: índice de la opción correcta por pregunta. SOLO EL SERVIDOR (PCService /
--- ClassroomService) debe leer esta tabla para corregir; el cliente no debe usarla para mostrar
--- respuestas. Está en ReplicatedStorage por simplicidad (RP escolar, sin recompensas competitivas).
+-- Las respuestas correctas y la corrección viven solo en el servidor:
+-- ServerScriptService.ColegioRP.Datos.CuestionariosRespuestas (el cliente no puede leerlas).
 ---------------------------------------------------------------------------------------------------
 Catalogs.CuestionariosPublicos = {
 	{
@@ -719,13 +718,6 @@ Catalogs.CuestionariosPublicos = {
 	},
 }
 
--- SOLO SERVIDOR: índice (1..4) de la opción correcta de cada pregunta, por id de cuestionario.
-Catalogs.CuestionariosRespuestas = {
-	MAT_1 = { 3, 1, 4, 2 },
-	ESP_1 = { 3, 2, 1, 2 },
-	CIE_1 = { 2, 3, 1, 3 },
-}
-
 Catalogs.PuntosPorAcierto = (Config.Economia and Config.Economia.Recompensas and Config.Economia.Recompensas.Respuesta) or 5
 
 local cuestionariosPorId = {}
@@ -751,28 +743,6 @@ function Catalogs.CuestionarioDeMateria(materia)
 	return nil
 end
 
--- (Servidor) Corrige respuestas { [indicePregunta] = indiceOpcion }. Devuelve aciertos, total, detalle { bool... }.
-function Catalogs.CorregirCuestionario(id, respuestas)
-	local cuestionario = Catalogs.Cuestionario(id)
-	local correctas = Catalogs.CuestionariosRespuestas[id]
-	if not cuestionario or not correctas then
-		return 0, 0, {}
-	end
-	if typeof(respuestas) ~= "table" then
-		respuestas = {}
-	end
-	local aciertos = 0
-	local detalle = {}
-	for i = 1, #cuestionario.Preguntas do
-		local elegida = tonumber(respuestas[i])
-		local acierto = elegida ~= nil and elegida == correctas[i]
-		detalle[i] = acierto
-		if acierto then
-			aciertos = aciertos + 1
-		end
-	end
-	return aciertos, #cuestionario.Preguntas, detalle
-end
 
 ---------------------------------------------------------------------------------------------------
 -- Decoración pesada del mapa original. MapService pone el tag Config.Tags.Decoracion a las instancias

@@ -12,6 +12,7 @@
 ]]
 
 local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
 
 local ClassroomController = {}
 ClassroomController.Nombre = "ClassroomController"
@@ -19,6 +20,7 @@ ClassroomController.AnchoPanel = 420 -- Ancho del panel lateral en PC (unidades 
 ClassroomController.MargenSuperiorPC = 172 -- Deja libres los botones del HUD (esquina superior derecha).
 ClassroomController.IntervaloTickSeg = 1 -- Detección de aula, temporizadores y autoguardado (1 Hz).
 ClassroomController.MinConsultaSeg = 2 -- Mínimo entre dos ConsultarEstado automáticos.
+ClassroomController.ReintentoCuadernoSeg = 8 -- Reintento de la carga del cuaderno si falló (perfil aún cargando).
 
 local UIBuilder, UITheme, Net, Maid, Format, Zones, RoleDefinitions, TimetableDefinitions, MapaLogico, Config
 local Colores
@@ -78,6 +80,17 @@ local function limpiarHijos(marco)
 			hijo:Destroy()
 		end
 	end
+end
+
+-- Botones enfocables con el mando dentro de un marco, en orden de árbol.
+local function seleccionablesDe(marco)
+	local lista = {}
+	for _, descendiente in ipairs(marco:GetDescendants()) do
+		if descendiente:IsA("GuiButton") and descendiente.Selectable then
+			table.insert(lista, descendiente)
+		end
+	end
+	return lista
 end
 
 local function nombreAula(roomId)
@@ -162,6 +175,8 @@ function ClassroomController:Init(registro)
 	-- Cuaderno
 	self.cuaderno = nil
 	self.cargandoCuaderno = false
+	self.ultimoIntentoCuaderno = -math.huge
+	self.ultimoErrorCuaderno = -math.huge
 	self.paginaActual = 1
 	self.pendientes = {}
 	self.guardando = false
@@ -856,6 +871,11 @@ function ClassroomController:_Tick()
 	if self.abierto and not self.minimizado then
 		self:_RefrescarTemporizadores()
 	end
+	-- Si la carga del cuaderno falló (p. ej. el perfil aún se estaba cargando), se reintenta mientras se ve.
+	if self.abierto and not self.minimizado and self.pestana == "Cuaderno" and not self.cuaderno
+		and not self.cargandoCuaderno and os.clock() - self.ultimoIntentoCuaderno >= self.ReintentoCuadernoSeg then
+		self:_CargarCuaderno()
+	end
 	self:_ProcesarGuardado(false)
 end
 
@@ -1196,6 +1216,11 @@ function ClassroomController:_AplicarEstado(datos)
 		self.sala = datos.RoomId
 		self:_ReiniciarEstadoSala()
 	end
+	if datos.SesionAbierta ~= true then
+		-- Sin sesión abierta (p. ej. se cerró mientras estábamos fuera del aula y no llegó SesionCerrada):
+		-- la actividad, la mano y la invitación de la clase anterior ya no son válidas.
+		self:_ReiniciarEstadoSala()
+	end
 	self.estado = datos
 	if datos.Rol == "Docente" then
 		self.actividadDocente = datos.ActividadActiva or datos.ActividadRespuestas
@@ -1419,6 +1444,29 @@ function ClassroomController:_ConstruirSesionDocente(pagina)
 			self:_Notificar(string.format("Aviso enviado a %d jugador(es) del aula.", tonumber(d.Destinatarios) or 0), "exito")
 		end)
 	end, { Estilo = "Secundario", LayoutOrder = siguiente(), Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()) })
+	-- Sala de computadores (Informática / Robótica): proyectar el tema y bloquear o liberar los PC.
+	UIBuilder.Separador(pagina, { LayoutOrder = siguiente() })
+	UIBuilder.Texto(pagina, "Sala de computadores", { LayoutOrder = siguiente(), Tamano = "Pequeno", Color = Colores.TextoSecundario })
+	local filaPC = UIBuilder.Fila(pagina, { LayoutOrder = siguiente(), Espaciado = 6 })
+	local function accionPC(accion)
+		local PCController = self.registro and self.registro.Get and self.registro.Get("PCController")
+		if not PCController or typeof(PCController.AccionDocente) ~= "function" then
+			self:_Notificar("Los computadores no están disponibles.", "aviso")
+			return
+		end
+		local texto = recortar(self.ui.EntradaTema and self.ui.EntradaTema.Text or "")
+		if accion == "Proyectar" and texto == "" then
+			self:_Notificar("Escribe el tema para proyectarlo.", "aviso")
+			return
+		end
+		PCController.AccionDocente(accion, self.sala or "SALA", texto)
+	end
+	local botonesPC = {
+		UIBuilder.Boton(filaPC, "Proyectar tema", function() accionPC("Proyectar") end, { Estilo = "Secundario", Ancho = 140, LayoutOrder = 1 }),
+		UIBuilder.Boton(filaPC, "Bloquear PC", function() accionPC("Bloquear") end, { Estilo = "Secundario", Ancho = 120, LayoutOrder = 2 }),
+		UIBuilder.Boton(filaPC, "Liberar PC", function() accionPC("Desbloquear") end, { Estilo = "Secundario", Ancho = 120, LayoutOrder = 3 }),
+	}
+	UIBuilder.Encadenar(botonesPC, true)
 	UIBuilder.Separador(pagina, { LayoutOrder = siguiente() })
 	self.ui.BotonTableroDocente = UIBuilder.Boton(pagina, "Ver tablero", function()
 		self:_VerTablero()
@@ -1580,6 +1628,33 @@ local function textoVacio(parent, texto)
 	UIBuilder.Texto(parent, texto, { Tamano = "Pequeno", Color = Colores.TextoApagado, LayoutOrder = 0 })
 end
 
+-- Vacía y reconstruye una lista conservando el foco del mando: las listas se rehacen en cada actualización
+-- (ocupación, respuestas, manos...) y, si el botón enfocado estaba dentro, se enfoca el que ocupa la misma
+-- posición en la lista nueva en lugar de perder la selección.
+function ClassroomController:_Rehacer(marco, construir)
+	local seleccionado = GuiService.SelectedObject
+	local posicion = nil
+	if seleccionado ~= nil and seleccionado:IsDescendantOf(marco) then
+		for i, control in ipairs(seleccionablesDe(marco)) do
+			if control == seleccionado then
+				posicion = i
+				break
+			end
+		end
+	end
+	limpiarHijos(marco)
+	construir()
+	if posicion then
+		local nuevos = seleccionablesDe(marco)
+		local destino = nuevos[math.min(posicion, #nuevos)]
+		if destino then
+			pcall(function()
+				GuiService.SelectedObject = destino
+			end)
+		end
+	end
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Render dinámico
 ---------------------------------------------------------------------------------------------------
@@ -1590,29 +1665,30 @@ function ClassroomController:_RenderOpciones()
 	if not marco or marco.Parent == nil then
 		return
 	end
-	limpiarHijos(marco)
-	local act = self.actividad
-	if not act or act.Type ~= "Opciones" or typeof(act.Options) ~= "table" then
-		return
-	end
-	local enClase = self:_EnClase()
-	local puede = act.Estado == "Abierta" and self.miRespuesta == nil and enClase and self:_Presente()
-		and ahoraServidor() <= (tonumber(act.DueAt) or 0)
-	local creados = {}
-	for i, texto in ipairs(act.Options) do
-		local elegido = self.miRespuesta and self.miRespuesta.Indice == i
-		local boton = UIBuilder.Boton(marco, (LETRAS[i] or tostring(i)) .. ")  " .. tostring(texto), function()
-			self:_ResponderOpcion(i)
-		end, {
-			Estilo = elegido and "Primario" or "Secundario", LayoutOrder = i, Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()),
-			Alineacion = Enum.TextXAlignment.Left, Desactivado = not puede and not elegido,
-		})
-		if elegido then
-			boton:SetAttribute("Desactivado", false)
+	self:_Rehacer(marco, function()
+		local act = self.actividad
+		if not act or act.Type ~= "Opciones" or typeof(act.Options) ~= "table" then
+			return
 		end
-		table.insert(creados, boton)
-	end
-	UIBuilder.Encadenar(creados, false)
+		local enClase = self:_EnClase()
+		local puede = act.Estado == "Abierta" and self.miRespuesta == nil and enClase and self:_Presente()
+			and ahoraServidor() <= (tonumber(act.DueAt) or 0)
+		local creados = {}
+		for i, texto in ipairs(act.Options) do
+			local elegido = self.miRespuesta and self.miRespuesta.Indice == i
+			local boton = UIBuilder.Boton(marco, (LETRAS[i] or tostring(i)) .. ")  " .. tostring(texto), function()
+				self:_ResponderOpcion(i)
+			end, {
+				Estilo = elegido and "Primario" or "Secundario", LayoutOrder = i, Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()),
+				Alineacion = Enum.TextXAlignment.Left, Desactivado = not puede and not elegido,
+			})
+			if elegido then
+				boton:SetAttribute("Desactivado", false)
+			end
+			table.insert(creados, boton)
+		end
+		UIBuilder.Encadenar(creados, false)
+	end)
 end
 
 function ClassroomController:_RenderResumen(marco, resumen)
@@ -1692,7 +1768,6 @@ function ClassroomController:_RenderRespuestas()
 	if not marco or marco.Parent == nil then
 		return
 	end
-	limpiarHijos(marco)
 	local act = self.actividadDocente
 	if self.ui.RespTitulo then
 		if act then
@@ -1701,29 +1776,31 @@ function ClassroomController:_RenderRespuestas()
 			self.ui.RespTitulo.Text = "Crea una actividad para recibir respuestas."
 		end
 	end
-	if #self.respuestas == 0 then
-		textoVacio(marco, "Sin respuestas todavía.")
-		return
-	end
-	for i, registro in ipairs(self.respuestas) do
-		local partes = { tostring(registro.Nombre) .. ": " .. tostring(registro.Respuesta or "") }
-		if registro.Correcta ~= nil then
-			table.insert(partes, registro.Correcta and "✓ Correcta" or "✗ Incorrecta")
+	self:_Rehacer(marco, function()
+		if #self.respuestas == 0 then
+			textoVacio(marco, "Sin respuestas todavía.")
+			return
 		end
-		if registro.Puntos ~= nil then
-			local comentario = ""
-			if typeof(registro.Comentario) == "string" and registro.Comentario ~= "" then
-				comentario = " · “" .. registro.Comentario .. "”"
+		for i, registro in ipairs(self.respuestas) do
+			local partes = { tostring(registro.Nombre) .. ": " .. tostring(registro.Respuesta or "") }
+			if registro.Correcta ~= nil then
+				table.insert(partes, registro.Correcta and "✓ Correcta" or "✗ Incorrecta")
 			end
-			table.insert(partes, "Nota: " .. tostring(registro.Puntos) .. " / 10" .. comentario)
+			if registro.Puntos ~= nil then
+				local comentario = ""
+				if typeof(registro.Comentario) == "string" and registro.Comentario ~= "" then
+					comentario = " · “" .. registro.Comentario .. "”"
+				end
+				table.insert(partes, "Nota: " .. tostring(registro.Puntos) .. " / 10" .. comentario)
+			end
+			local copia = registro
+			self:_Fila(marco, table.concat(partes, "\n"), i, {
+				{ Texto = registro.Puntos ~= nil and "Cambiar nota" or "Calificar", Estilo = "Primario", Ancho = 140, Accion = function()
+					self:_AbrirCalificar(copia)
+				end },
+			})
 		end
-		local copia = registro
-		self:_Fila(marco, table.concat(partes, "\n"), i, {
-			{ Texto = registro.Puntos ~= nil and "Cambiar nota" or "Calificar", Estilo = "Primario", Ancho = 140, Accion = function()
-				self:_AbrirCalificar(copia)
-			end },
-		})
-	end
+	end)
 end
 
 function ClassroomController:_RenderAlumnos()
@@ -1732,10 +1809,11 @@ function ClassroomController:_RenderAlumnos()
 	end
 	local enSesion = self:_SoyDocenteDeSesion()
 	local enClase = self:_EnClase()
-	limpiarHijos(self.ui.AlManos)
-	if #self.manos == 0 then
-		textoVacio(self.ui.AlManos, "Nadie tiene la mano levantada.")
-	else
+	self:_Rehacer(self.ui.AlManos, function()
+		if #self.manos == 0 then
+			textoVacio(self.ui.AlManos, "Nadie tiene la mano levantada.")
+			return
+		end
 		for i, mano in ipairs(self.manos) do
 			local id = mano.UserId
 			self:_Fila(self.ui.AlManos, "✋  " .. tostring(mano.Nombre), i, {
@@ -1744,33 +1822,34 @@ function ClassroomController:_RenderAlumnos()
 				end },
 			}, Colores.Azul)
 		end
-	end
+	end)
 	if self.ui.TituloManos then
 		self.ui.TituloManos.Text = "Manos levantadas (" .. #self.manos .. ")"
 	end
 
 	local ocupacion = self.ocupacion or { Sentados = {}, DePie = {} }
 	local function rellenar(marco, lista, titulo, etiqueta)
-		limpiarHijos(marco)
 		if titulo then
 			titulo.Text = etiqueta .. " (" .. #lista .. ")"
 		end
-		if #lista == 0 then
-			textoVacio(marco, "Nadie.")
-			return
-		end
-		for i, alumno in ipairs(lista) do
-			local id = alumno.UserId
-			local nombre = alumno.Nombre
-			self:_Fila(marco, tostring(nombre), i, {
-				{ Texto = "Ver cuaderno", Ancho = 130, Desactivado = not enSesion, Accion = function()
-					self:_VerCuadernoDe(id, nombre)
-				end },
-				{ Texto = "Invitar", Ancho = 100, Desactivado = not (enSesion and enClase), Accion = function()
-					self:_Invitar(id, nombre)
-				end },
-			})
-		end
+		self:_Rehacer(marco, function()
+			if #lista == 0 then
+				textoVacio(marco, "Nadie.")
+				return
+			end
+			for i, alumno in ipairs(lista) do
+				local id = alumno.UserId
+				local nombre = alumno.Nombre
+				self:_Fila(marco, tostring(nombre), i, {
+					{ Texto = "Ver cuaderno", Ancho = 130, Desactivado = not enSesion, Accion = function()
+						self:_VerCuadernoDe(id, nombre)
+					end },
+					{ Texto = "Invitar", Ancho = 100, Desactivado = not (enSesion and enClase), Accion = function()
+						self:_Invitar(id, nombre)
+					end },
+				})
+			end
+		end)
 	end
 	rellenar(self.ui.AlSentados, ocupacion.Sentados or {}, self.ui.TituloSentados, "Sentados")
 	rellenar(self.ui.AlDePie, ocupacion.DePie or {}, self.ui.TituloDePie, "De pie")
@@ -2288,11 +2367,16 @@ function ClassroomController:_CargarCuaderno()
 		return
 	end
 	self.cargandoCuaderno = true
+	self.ultimoIntentoCuaderno = os.clock()
 	task.spawn(function()
 		local ok, respuesta = Net.Invocar("NotebookUpdate", { Accion = "Cargar" })
 		self.cargandoCuaderno = false
 		if not ok or typeof(respuesta.datos) ~= "table" then
-			self:_Notificar(mensajeDe(respuesta), "error")
+			-- _Tick reintenta la carga: el aviso no se repite en cada intento.
+			if os.clock() - self.ultimoErrorCuaderno > 30 then
+				self.ultimoErrorCuaderno = os.clock()
+				self:_Notificar(mensajeDe(respuesta), "error")
+			end
 			return
 		end
 		local d = respuesta.datos
@@ -2372,6 +2456,10 @@ end
 function ClassroomController:_RefrescarEstadoCuaderno()
 	if not self.ui.EstadoGuardado or self.ui.EstadoGuardado.Parent == nil then
 		return
+	end
+	-- Sin cuaderno cargado no se puede escribir: lo tecleado no quedaría pendiente y la carga lo sustituiría.
+	if self.ui.EntradaCuaderno then
+		self.ui.EntradaCuaderno.TextEditable = self.cuaderno ~= nil
 	end
 	local pagina = self.cuaderno and self.cuaderno.Paginas[self.paginaActual] or nil
 	if self.ui.ContadorCuaderno then

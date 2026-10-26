@@ -4,9 +4,10 @@
 	Panel del comedor gratuito (docs/ARQUITECTURA.md §7): muestra el ESTADO (abierto/cerrado y periodo, raciones,
 	lote, menú y el tiempo que falta para el próximo reclamo propio) cuando el jugador está en COCINA, en la fila de
 	la ventana de servicio o en los comedores (detección de zona a 1 Hz). El reclamo se hace con el ProximityPrompt
-	físico "Reclamar almuerzo" (lo procesa el servidor). Para el personal de cocina añade el panel de cocina:
-	receta activa, pasos, progreso, lote y botones que llaman a FoodAction (IniciarReceta, Paso, Entregar,
-	Reponer). Oculta localmente los prompts de las estaciones a quien no tiene permiso de cocina.
+	físico "Reclamar almuerzo" (lo procesa el servidor) o con el botón del panel junto a la ventana de servicio
+	(FoodAction "Reclamar"; el servidor valida distancia, periodo, cooldown y raciones). Para el personal de cocina
+	añade el panel de cocina: receta activa, pasos, progreso, lote y botones que llaman a FoodAction (IniciarReceta,
+	Paso, Entregar, Reponer). Oculta localmente los prompts de las estaciones a quien no tiene permiso de cocina.
 	ScreenGui "ColegioRP_Comedor" (DisplayOrder de paneles). Escucha EventoCliente Tipo "Comida".
 ]]
 
@@ -61,7 +62,7 @@ local INTERVALO_ZONA = 1
 local INTERVALO_UI = 0.2
 local CONSULTA_MIN_SEG = 5
 local ANCHO_PANEL = 330
-local ALTO_ESTADO = 300
+local ALTO_ESTADO = 340 -- incluye el botón «Reclamar almuerzo»
 local ALTO_COCINA = 560
 local MARGEN_BOTONES_HUD = 176 -- alto aproximado de la columna de botones del HUD (esquina superior derecha)
 local RACIONES_POR_LOTE = math.max(1, math.floor(tonumber(Config.Comedor and Config.Comedor.RacionesPorLote) or 40))
@@ -333,12 +334,16 @@ local function construirUI()
 	ui.Lotes = texto(lista, "", 4, { Tamano = "Pequeno", Color = Colores.TextoSecundario })
 	ui.Menu = texto(lista, "", 5, { Color = Colores.TextoSecundario })
 	ui.Turno = texto(lista, "", 6, { Rico = true, Fuente = "Subtitulo" })
-	ui.Ayuda = texto(lista, "El almuerzo es gratis: acércate a la ventana de servicio de la cocina y usa «Reclamar almuerzo».", 7, {
+	-- Reclamo desde el panel (solo junto a la ventana de servicio; el servidor vuelve a validarlo todo).
+	ui.BotonReclamar = botonAncho(lista, "Reclamar almuerzo", function()
+		pedir("Reclamar", nil)
+	end, 7, "Exito", "Reclamar")
+	ui.Ayuda = texto(lista, "El almuerzo es gratis: acércate a la ventana de servicio de la cocina y usa «Reclamar almuerzo».", 8, {
 		Tamano = "Pequeno", Color = Colores.TextoApagado,
 	})
 
 	-- Sección de cocina (solo personal con cocina.operar / comedor.reponer).
-	local cocina = UIBuilder.Marco(lista, { Nombre = "Cocina", AutoAlto = true, LayoutOrder = 8 })
+	local cocina = UIBuilder.Marco(lista, { Nombre = "Cocina", AutoAlto = true, LayoutOrder = 9 })
 	UIBuilder.Disposicion(cocina, { Espaciado = 6 })
 	ui.Cocina = cocina
 	UIBuilder.Separador(cocina, { LayoutOrder = 1 })
@@ -432,6 +437,19 @@ local function textoTurno()
 		return "<font color=\"" .. HEX_AMARILLO .. "\">Sin raciones por ahora: la cocina está preparando más.</font>"
 	end
 	return "<font color=\"" .. HEX_VERDE .. "\">¡Puedes reclamar tu almuerzo!</font>"
+end
+
+-- Botón de reclamo: visible en la fila de la ventana de servicio o en la cocina; activo si el servidor lo permitiría.
+local function refrescarReclamo()
+	if not ui.BotonReclamar then
+		return
+	end
+	local visible = estado ~= nil and (zonaActual == "FILA" or zonaActual == ZONA_COCINA)
+	ui.BotonReclamar.Visible = visible
+	if visible then
+		local raciones = tonumber(estado.RacionesDisponibles) or 0
+		UIBuilder.Habilitar(ui.BotonReclamar, not pidiendo and estado.Abierto == true and restanteReclamo() <= 0 and raciones > 0)
+	end
 end
 
 local function refrescarPaso()
@@ -569,6 +587,7 @@ local function refrescar()
 		end
 		ui.Turno.Text = textoTurno()
 	end
+	refrescarReclamo()
 	refrescarCocina()
 	ajustarPanel()
 end
@@ -625,6 +644,7 @@ pedir = function(accion, extra)
 		return
 	end
 	pidiendo = true
+	refrescarReclamo()
 	refrescarCocina()
 	task.spawn(function()
 		local datos = { Accion = accion }
@@ -907,6 +927,8 @@ function FoodController:Start()
 					if ui.Turno then
 						ui.Turno.Text = textoTurno()
 					end
+					-- El cooldown vence en el cliente: el botón de reclamo vuelve a activarse sin esperar al servidor.
+					refrescarReclamo()
 					if pasoActual and tonumber(pasoActual.FinServidor) and ahoraServidor() > pasoActual.FinServidor + 3 then
 						-- El paso debió terminar y no llegó la confirmación: se pide el estado.
 						pasoActual = nil

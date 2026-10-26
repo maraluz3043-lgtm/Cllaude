@@ -373,6 +373,16 @@ function ReportService:Procesar(player, categoria, ubicacion, descripcion, orige
 		self.Estadisticas.SoloMemoria = self.Estadisticas.SoloMemoria + 1
 	end
 
+	-- Id único también en memoria (reporte no persistido en el mismo segundo que otro del mismo autor).
+	if self:Obtener(reporte.Id) ~= nil then
+		local base = reporte.Id
+		local sufijo = 1
+		while self:Obtener(base .. "_m" .. sufijo) ~= nil do
+			sufijo = sufijo + 1
+		end
+		reporte.Id = base .. "_m" .. sufijo
+	end
+
 	-- Memoria (últimos MaxEnMemoria).
 	table.insert(self.Reportes, reporte)
 	while #self.Reportes > self.MaxEnMemoria do

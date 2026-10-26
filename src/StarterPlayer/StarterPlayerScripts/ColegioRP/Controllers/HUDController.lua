@@ -127,6 +127,9 @@ function HUDController:Start()
 		end
 		self:FijarCargo(nil, salon)
 	end))
+	self.maid:GiveTask(player:GetAttributeChangedSignal("CertificadoLocal"):Connect(function()
+		self:_RefrescarCargo()
+	end))
 	self.maid:GiveTask(player:GetAttributeChangedSignal("Atendido"):Connect(function()
 		self:_RefrescarAtendido()
 	end))
@@ -444,7 +447,11 @@ function HUDController:_RefrescarCargo()
 		if zona and typeof(zona.Nombre) == "string" and zona.Nombre ~= salon then
 			textoSalon = salon .. " · " .. zona.Nombre
 		end
-		self.lblSalon.Text = "Salón: " .. Format.Truncar(textoSalon, 48)
+		local certificado = player:GetAttribute("CertificadoLocal")
+		if typeof(certificado) == "string" and certificado ~= "" then
+			textoSalon = textoSalon .. " (" .. (string.match(certificado, "^Certificado (%S+)") or certificado) .. ")"
+		end
+		self.lblSalon.Text = "Salón: " .. Format.Truncar(textoSalon, 60)
 	else
 		self.lblSalon.Text = "Salón: sin asignar"
 	end

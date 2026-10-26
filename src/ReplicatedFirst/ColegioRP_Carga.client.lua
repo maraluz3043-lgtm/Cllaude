@@ -1177,8 +1177,29 @@ local function reproducirIntro()
 	return true
 end
 
+-- DataService fija el atributo IntroVista al cargar el perfil. Si aún no existe (perfil en carga), se espera
+-- como mucho 3 s para no repetir la intro a quien ya la vio; pulsar Saltar durante la espera omite la intro.
+local function esperarDatosIntro()
+	local ok, valor = pcall(function()
+		return player:GetAttribute("IntroVista")
+	end)
+	if not ok or valor ~= nil then
+		return false
+	end
+	conectar(player:GetAttributeChangedSignal("IntroVista"), notificarCambio)
+	local pulsacionesAntes = estado.Pulsaciones
+	esperarHasta(function()
+		return player:GetAttribute("IntroVista") ~= nil or estado.Pulsaciones > pulsacionesAntes
+	end, 3)
+	return player:GetAttribute("IntroVista") == nil and estado.Pulsaciones > pulsacionesAntes
+end
+
 local introMostrada = false
-if not introYaVista() then
+local okDatos, omitirIntro = pcall(esperarDatosIntro)
+if not okDatos then
+	omitirIntro = false
+end
+if not omitirIntro and not introYaVista() then
 	local okIntro, resultado = pcall(reproducirIntro)
 	if okIntro then
 		introMostrada = resultado == true

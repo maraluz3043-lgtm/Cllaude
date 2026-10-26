@@ -37,7 +37,9 @@ local CFG = Config.Comedor or {}
 FoodService.RacionesPorLote = math.max(1, math.floor(tonumber(CFG.RacionesPorLote) or 40))
 FoodService.LotesPorJornada = math.max(1, math.floor(tonumber(CFG.LotesPorJornada) or 3))
 FoodService.CooldownReclamo = math.max(0, tonumber(CFG.CooldownReclamo) or 120)
-FoodService.DistanciaMax = 12 -- studs hasta la estación / ventana de servicio (FoodAction y prompts)
+FoodService.DistanciaMax = 12 -- studs hasta la ventana de servicio (reclamo por FoodAction y prompt)
+-- studs hasta una estación de cocina (FoodAction "Paso"/"Entregar"/"Reponer" y prompts): Config.Distancias.Estacion.
+FoodService.DistanciaEstacion = math.max(1, tonumber(Config.Distancias and Config.Distancias.Estacion) or 10)
 FoodService.Tolerancia = 2 -- latencia y tamaño del personaje
 FoodService.DuracionBandeja = 20 -- segundos que el jugador sostiene la bandeja
 FoodService.InactividadRecetaSeg = 180 -- una receta sin actividad durante este tiempo se cancela
@@ -728,7 +730,7 @@ function FoodService:_PosicionEstacion(nombre)
 	return nil
 end
 
--- ¿El jugador está a <= DistanciaMax de la estación? Si la estación no tiene posición, basta con estar en la cocina.
+-- ¿El jugador está a <= DistanciaEstacion de la estación? Si la estación no tiene posición, basta con estar en la cocina.
 function FoodService:_CercaDeEstacion(player, nombre, extra)
 	local pos = posicionDe(player)
 	if not pos then
@@ -741,7 +743,7 @@ function FoodService:_CercaDeEstacion(player, nombre, extra)
 		end
 		return false, "lejos_cocina"
 	end
-	local limite = self.DistanciaMax + self.Tolerancia + (extra or 0)
+	local limite = self.DistanciaEstacion + self.Tolerancia + (extra or 0)
 	if (pos - objetivo).Magnitude <= limite then
 		return true
 	end

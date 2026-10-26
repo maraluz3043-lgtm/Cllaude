@@ -1775,7 +1775,8 @@ function refrescarOverlays()
 	if not ui.CapaApagado or not ui.CapaBloqueo then
 		return
 	end
-	local bloqueado = estado.Bloqueado == true
+	-- El docente con pc.bloquear no ve la capa de bloqueo: desde su equipo desbloquea la sala (el servidor lo permite).
+	local bloqueado = estado.Bloqueado == true and not tienePermisoDocente()
 	local apagado = (not bloqueado) and estado.Encendido == false
 	local antesBloqueo = ui.CapaBloqueo.Visible
 	local antesApagado = ui.CapaApagado.Visible
@@ -1806,7 +1807,7 @@ local function programarAvisoApp()
 	estado.AvisoAppPendiente = true
 	task.delay(DEBOUNCE_APP, function()
 		estado.AvisoAppPendiente = false
-		if not estado.Abierto or estado.Encendido ~= true or estado.Bloqueado then
+		if not estado.Abierto or estado.Encendido ~= true or (estado.Bloqueado and not tienePermisoDocente()) then
 			return
 		end
 		local app = estado.App
@@ -2400,6 +2401,7 @@ function PCController:Start()
 	end))
 	maidGlobal:GiveTask(LocalPlayer:GetAttributeChangedSignal("Cargo"):Connect(function()
 		refrescarControlesDocente()
+		refrescarOverlays()
 	end))
 
 	local remoto = Net.Evento(Net.NombreEventoCliente or "EventoCliente")

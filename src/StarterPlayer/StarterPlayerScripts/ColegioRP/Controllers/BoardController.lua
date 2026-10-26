@@ -56,7 +56,9 @@ BoardController.Actualizado = Signal.new() -- (roomId) tras aplicar un cambio de
 -- Constantes (deben coincidir con BoardService)
 ---------------------------------------------------------------------------------------------------
 local LOG = "[ColegioRP][BoardController] "
-local ORDEN_PANTALLA = UITheme.Capas.Panel
+-- Un nivel por encima de los paneles: se abre desde el panel del aula (pantalla completa en móvil), que con el
+-- mismo DisplayOrder podría dibujarse encima y ocultar el tablero.
+local ORDEN_PANTALLA = UITheme.Capas.Panel + 1
 local TABLERO = Config.Tablero or {}
 local MAX_CARACTERES = tonumber(TABLERO.MaxCaracteres) or 400
 local MAX_TRAZOS = tonumber(TABLERO.MaxTrazos) or 300

@@ -7,6 +7,7 @@
 ]]
 
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local TextChatService = game:GetService("TextChatService")
 
 local NotificationController = {}
 NotificationController.Nombre = "NotificationController"
@@ -95,7 +96,35 @@ function NotificationController:Init(registro)
 	self:_Construir()
 end
 
+-- Silencio de moderación: el servidor ya bloquea el envío (TextSource.CanSend); aquí se desactiva la barra
+-- de chat y se explica hasta cuándo, también en el chat heredado donde solo existe el atributo.
+function NotificationController:_VigilarSilencio()
+	local jugador = game:GetService("Players").LocalPlayer
+	local function aplicar()
+		local silenciado = jugador:GetAttribute("Silenciado") == true
+		pcall(function()
+			local barra = TextChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
+			if barra then
+				barra.Enabled = not silenciado
+			end
+		end)
+		if silenciado then
+			local hasta = tonumber(jugador:GetAttribute("SilenciadoHasta"))
+			local cuando = ""
+			if hasta and hasta > 0 then
+				cuando = " hasta las " .. os.date("%H:%M", math.floor(hasta))
+			end
+			self:Notificar("Estás silenciado" .. cuando .. ". No puedes escribir en el chat.", "aviso", 6)
+		end
+	end
+	jugador:GetAttributeChangedSignal("Silenciado"):Connect(aplicar)
+	if jugador:GetAttribute("Silenciado") == true then
+		aplicar()
+	end
+end
+
 function NotificationController:Start()
+	pcall(self._VigilarSilencio, self)
 	-- Aviso de la pantalla de carga si continuó sin todos los recursos.
 	local nombre = (Config.Nombres and Config.Nombres.SenalCargaLista) or "ColegioRP_CargaLista"
 	local senal = ReplicatedFirst:FindFirstChild(nombre)

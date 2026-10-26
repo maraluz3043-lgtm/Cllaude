@@ -1233,8 +1233,12 @@ local function cargarSnapshot()
 			elseif typeof(respuesta.Ajustes) == "table" then
 				remotos = respuesta.Ajustes
 			end
-			aplicarSnapshot(remotos)
-			return
+			-- Sin Ajustes el perfil aún no se cargó en el servidor: no se da por conocido (si no, el siguiente
+			-- guardado enviaría los predeterminados y sobrescribiría los ajustes guardados). Se reintenta.
+			if remotos then
+				aplicarSnapshot(remotos)
+				return
+			end
 		end
 	end
 	warn(LOG .. "No se pudo obtener StateSnapshot; se usan los ajustes locales (solo se guardarán los cambios).")

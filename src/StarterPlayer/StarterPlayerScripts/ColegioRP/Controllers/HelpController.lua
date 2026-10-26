@@ -436,6 +436,8 @@ local function construirUI()
 		})
 		ui.Contenido = contenido
 	end
+	-- El contenido es solo texto: seleccionable para que el mando pueda desplazarlo con el stick.
+	ui.Contenido.Selectable = true
 
 	local botones = {}
 	for i, seccion in ipairs(SECCIONES) do
