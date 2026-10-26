@@ -1,5 +1,5 @@
 """Assemble the three ground-floor classrooms + replacement facade; export rbxm/rbxmx; merge into the full building."""
-import sys, math, importlib, traceback
+import os, sys, math, importlib, traceback
 import numpy as np
 from build import Ctx, cframe, world_to_local, FACE
 from preview import render_ctx
@@ -7,7 +7,7 @@ from shell import (ROOMS, HALLS, Y_FLOOR, Y_CEIL, V_FACADE_IN, V_FACADE_OUT, V_B
                    build_fachada_reemplazo, build_cascaron, load_src, parts_to_remove, existing_parts_local,
                    merge_original, overlaps, baseline_overlap_refs, _name)
 
-OUT = '/tmp/claude-0/-home-user-Cllaude/89bfe5c6-d7de-5dd7-bcc5-21526445fdb5/scratchpad/out'
+OUT = os.environ.get('SALONES_OUT', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'modelos', '_vistas'))
 
 def imp(name):
     try:
@@ -195,7 +195,7 @@ def styles():
     # ---- Salón 1 (u 0.2..34.89): board on the right partition (+u); desks face +u ----
     s1 = dict(board_wall='+u', board_along=0.5, board_w=9.6, clock_off=0.36, desk='azul', desk_facing='+u',
               desks=grid([6.0, 10.6, 15.2, 19.8, 24.4], [5.4, 9.7, 14.0, 18.3]),
-              mesa=(30.6, 17.0, -90.0), silla=(32.6, 17.0, -90.0), mesa_estilo='madera', silla_color='azul', libros_off=(0.0, -3.0),
+              mesa=(30.6, 17.0, -90.0), silla=(32.6, 17.0, -90.0), mesa_estilo='madera', silla_color='azul', libros_off=(-0.6, -2.65),
               vent_pared=[(10.0, V_BACK-sk, '+v'), (26.0, V_BACK-sk, '+v')], split=('+u', 0.30),
               carteleras=[('+v', 0.25, 6.0, 'HORARIO'), ('+v', 0.62, 6.0, 'VALORES')], afiches=[('-u', 0.3, 'abc'), ('+v', 0.88, 'valores')],
               bandera=('+u', 0.12), afiches_ventana=[(0, 'dios', -2.55), (2, 'todo_lo_puedo', 2.55), ('half', 'todo_lo_puedo', -0.96)], condensador=True, maceta=None,
@@ -203,7 +203,7 @@ def styles():
     # ---- Salón 2 (u 35.49..58.2): board on the back wall (+v); desks face +v ----
     s2 = dict(board_wall='+v', board_along=0.55, board_w=9.6, clock_off=0.33, desk='madera', desk_facing='+v',
               desks=grid([38.0, 42.5, 47.0, 51.5, 56.0], [5.2, 9.6, 14.0]),
-              mesa=(39.8, 18.2, 0.0), silla=(39.8, 20.0, 0.0), mesa_estilo='metal', silla_color='negra', libros_off=(-2.0, -0.3),
+              mesa=(39.8, 18.2, 0.0), silla=(39.8, 20.0, 0.0), mesa_estilo='metal', silla_color='negra', libros_off=(-1.6, -0.3),
               vent_pared=[(ROOMS[1]['u0'], 8.0, '-u'), (58.2-sk, 8.0, '+u')], split=('-u', 0.7),
               carteleras=[('+u', 0.5, 6.0, 'CARTELERA'), ('-u', 0.6, 5.0, 'CUMPLEAÑOS')], afiches=[('-v', 0.52, 'valores'), ('+u', 0.2, 'abc')],
               bandera=('+v', 0.12), afiches_ventana=[('half', 'todo_lo_puedo', -0.96), (4, 'guitarra', -2.55)], condensador=False, maceta=(33.0, -2.2),
@@ -211,7 +211,7 @@ def styles():
     # ---- Salón 3 (u 62.0..96.68): board on the left wall (-u); desks face -u ----
     s3 = dict(board_wall='-u', board_along=0.5, board_w=9.6, clock_off=0.36, desk='azul', desk_facing='-u',
               desks=grid([71.8, 76.4, 81.0, 85.6, 90.2], [5.8, 10.0, 14.2, 18.4]),
-              mesa=(66.3, 17.0, 90.0), silla=(64.3, 17.0, 90.0), mesa_estilo='madera', silla_color='azul', libros_off=(0.0, -3.0),
+              mesa=(66.3, 17.0, 90.0), silla=(64.3, 17.0, 90.0), mesa_estilo='madera', silla_color='azul', libros_off=(0.6, 2.65),
               vent_pared=[(70.0, V_BACK-sk, '+v'), (88.0, V_BACK-sk, '+v')], split=('-u', 0.30),
               carteleras=[('+v', 0.35, 6.0, 'HORARIO'), ('+v', 0.72, 6.0, 'VALORES')], afiches=[('+u', 0.7, 'abc'), ('+v', 0.12, 'valores')],
               bandera=('-u', 0.12), afiches_ventana=[(7, 'dios', -2.55), (5, 'todo_lo_puedo', 2.55)], condensador=False, maceta=None,

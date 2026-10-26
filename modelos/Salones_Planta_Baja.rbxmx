@@ -20352,7 +20352,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>50.040582</X><Y>3.520000</Y><Z>-1454.450658</Z><R00>-0.9919802</R00><R01>0.0000000</R01><R02>0.1263765</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.1263783</R20><R21>0.0000000</R21><R22>-0.9919780</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>50.403693</X><Y>3.520000</Y><Z>-1455.042812</Z><R00>-0.9919802</R00><R01>0.0000000</R01><R02>0.1263765</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.1263783</R20><R21>0.0000000</R21><R22>-0.9919780</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -20464,7 +20464,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>50.011029</X><Y>3.700000</Y><Z>-1454.471313</Z><R00>-0.9978685</R00><R01>0.0000000</R01><R02>-0.0652242</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.0652220</R20><R21>0.0000000</R21><R22>-0.9978667</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>50.374140</X><Y>3.700000</Y><Z>-1455.063467</Z><R00>-0.9978685</R00><R01>0.0000000</R01><R02>-0.0652242</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.0652220</R20><R21>0.0000000</R21><R22>-0.9978667</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -20576,7 +20576,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.981476</X><Y>3.890000</Y><Z>-1454.491968</Z><R00>-0.9972348</R00><R01>0.0000000</R01><R02>0.0742870</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.0742889</R20><R21>0.0000000</R21><R22>-0.9972327</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>50.344587</X><Y>3.890000</Y><Z>-1455.084122</Z><R00>-0.9972348</R00><R01>0.0000000</R01><R02>0.0742870</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.0742889</R20><R21>0.0000000</R21><R22>-0.9972327</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -20688,7 +20688,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.951924</X><Y>4.070000</Y><Z>-1454.512623</Z><R00>-0.9908880</R00><R01>0.0000000</R01><R02>-0.1346731</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.1346708</R20><R21>0.0000000</R21><R22>-0.9908863</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>50.315035</X><Y>4.070000</Y><Z>-1455.104776</Z><R00>-0.9908880</R00><R01>0.0000000</R01><R02>-0.1346731</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.1346708</R20><R21>0.0000000</R21><R22>-0.9908863</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -63297,7 +63297,7 @@ alabanza</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>53.781274</X><Y>3.520000</Y><Z>-1447.166645</Z><R00>-0.1263765</R00><R01>0.0000000</R01><R02>-0.9919802</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9919780</R20><R21>0.0000000</R21><R22>-0.1263783</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>53.772476</X><Y>3.520000</Y><Z>-1446.766743</Z><R00>-0.1263765</R00><R01>0.0000000</R01><R02>-0.9919802</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9919780</R20><R21>0.0000000</R21><R22>-0.1263783</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -63409,7 +63409,7 @@ alabanza</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>53.760619</X><Y>3.700000</Y><Z>-1447.137092</Z><R00>0.0652242</R00><R01>0.0000000</R01><R02>-0.9978685</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9978667</R20><R21>0.0000000</R21><R22>0.0652220</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>53.751821</X><Y>3.700000</Y><Z>-1446.737190</Z><R00>0.0652242</R00><R01>0.0000000</R01><R02>-0.9978685</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9978667</R20><R21>0.0000000</R21><R22>0.0652220</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -63521,7 +63521,7 @@ alabanza</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>53.739964</X><Y>3.890000</Y><Z>-1447.107539</Z><R00>-0.0742870</R00><R01>0.0000000</R01><R02>-0.9972348</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9972327</R20><R21>0.0000000</R21><R22>-0.0742889</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>53.731166</X><Y>3.890000</Y><Z>-1446.707638</Z><R00>-0.0742870</R00><R01>0.0000000</R01><R02>-0.9972348</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9972327</R20><R21>0.0000000</R21><R22>-0.0742889</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -63633,7 +63633,7 @@ alabanza</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>53.719309</X><Y>4.070000</Y><Z>-1447.077987</Z><R00>0.1346731</R00><R01>0.0000000</R01><R02>-0.9908880</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9908863</R20><R21>0.0000000</R21><R22>0.1346708</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>53.710511</X><Y>4.070000</Y><Z>-1446.678085</Z><R00>0.1346731</R00><R01>0.0000000</R01><R02>-0.9908880</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.9908863</R20><R21>0.0000000</R21><R22>0.1346708</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -99857,7 +99857,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.255396</X><Y>3.520000</Y><Z>-1418.759440</Z><R00>0.9919802</R00><R01>0.0000000</R01><R02>-0.1263765</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.1263783</R20><R21>0.0000000</R21><R22>0.9919780</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>54.890821</X><Y>3.520000</Y><Z>-1418.035310</Z><R00>0.9919802</R00><R01>0.0000000</R01><R02>-0.1263765</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.1263783</R20><R21>0.0000000</R21><R22>0.9919780</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -99969,7 +99969,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.284949</X><Y>3.700000</Y><Z>-1418.738785</Z><R00>0.9978685</R00><R01>0.0000000</R01><R02>0.0652242</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.0652220</R20><R21>0.0000000</R21><R22>0.9978667</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>54.920374</X><Y>3.700000</Y><Z>-1418.014655</Z><R00>0.9978685</R00><R01>0.0000000</R01><R02>0.0652242</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.0652220</R20><R21>0.0000000</R21><R22>0.9978667</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -100081,7 +100081,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.314502</X><Y>3.890000</Y><Z>-1418.718130</Z><R00>0.9972348</R00><R01>0.0000000</R01><R02>-0.0742870</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.0742889</R20><R21>0.0000000</R21><R22>0.9972327</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>54.949927</X><Y>3.890000</Y><Z>-1417.994000</Z><R00>0.9972348</R00><R01>0.0000000</R01><R02>-0.0742870</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>0.0742889</R20><R21>0.0000000</R21><R22>0.9972327</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
@@ -100193,7 +100193,7 @@ BIEN,</string>
 <bool name="Anchored">true</bool>
 <token name="BackSurface">0</token>
 <token name="BottomSurface">0</token>
-<CoordinateFrame name="CFrame"><X>49.344055</X><Y>4.070000</Y><Z>-1418.697475</Z><R00>0.9908880</R00><R01>0.0000000</R01><R02>0.1346731</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.1346708</R20><R21>0.0000000</R21><R22>0.9908863</R22></CoordinateFrame>
+<CoordinateFrame name="CFrame"><X>54.979480</X><Y>4.070000</Y><Z>-1417.973345</Z><R00>0.9908880</R00><R01>0.0000000</R01><R02>0.1346731</R02><R10>0.0000000</R10><R11>1.0000000</R11><R12>0.0000000</R12><R20>-0.1346708</R20><R21>0.0000000</R21><R22>0.9908863</R22></CoordinateFrame>
 <bool name="CanCollide">false</bool>
 <bool name="CanQuery">true</bool>
 <bool name="CanTouch">true</bool>
