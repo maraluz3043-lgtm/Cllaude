@@ -1,0 +1,25 @@
+{
+  "name": "ColegioRP",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "$path": "src/ReplicatedFirst"
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "ColegioRP": { "$path": "src/ReplicatedStorage/ColegioRP" }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "ColegioRP": { "$path": "src/ServerScriptService/ColegioRP" }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "ColegioRP": { "$path": "src/StarterPlayer/StarterPlayerScripts/ColegioRP" }
+      }
+    }
+  }
+}

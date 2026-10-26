@@ -1,0 +1,333 @@
+{
+  "_descripcion": "Mapa lógico del lugar COLEGIO_JEAN_PIAGET.rbxl obtenido por lectura binaria del archivo (auditoría del 26/10/2026). Coordenadas en studs, sistema mundial de Roblox. piso 0 = planta baja (suelo en Y≈0), piso 1 = planta alta (suelo en Y≈14). 'spawn.estado' = confirmado (punto libre de colisiones verificado en el archivo) o provisional (la sala no existe en el mapa; se usa un punto cercano y se informa).",
+  "version": 1,
+  "unidades": "studs",
+  "pisos": { "0": { "sueloY": 0, "spawnY": 3 }, "1": { "sueloY": 14, "spawnY": 17 } },
+  "zonas": [
+    {
+      "id": "ENTRADA", "nombre": "Entrada principal, portería y recepción", "tipo": "entrada", "piso": 0,
+      "centro": [0, 6, -812], "tamano": [64, 16, 34],
+      "evidencia": ["Workspace/Porton_Blanco (-1,7,-794) 26x14x1 Hoja_Izquierda/Hoja_Derecha", "Workspace/Letrero 'INSTITUTO E. JEAN PIAGET' (-1,19,-792)", "Workspace/Pavimento_y_Umbrales (4,-1,-785) 112x1x69"],
+      "spawn": { "punto": [0, 3, -812], "estado": "confirmado", "cargos": ["Recepcionista", "Seguridad", "Enfermero"] },
+      "notas": "Recepción/portería no tienen sala propia: punto provisional junto al portón. Enfermería no existe en el mapa: spawn provisional aquí (reportado como pendiente)."
+    },
+    {
+      "id": "PATIO_ENTRADA", "nombre": "Patio de entrada", "tipo": "patio", "piso": 0,
+      "centro": [0, 6, -850], "tamano": [80, 16, 40],
+      "evidencia": ["Workspace/Pavimento_y_Umbrales/Baldosa_Patio (153 baldosas)", "Workspace/Model (palmera en maceta, 607 parts) (15,2,-778)", "Workspace/Contenedor_Azul_Izquierda_y_Gris_Derecha (-24,3,-828)"],
+      "spawn": null, "notas": "Zona abierta de circulación entre el portón y los bloques de aulas/oficinas."
+    },
+    {
+      "id": "ROBOTICA", "nombre": "Sala de robótica", "tipo": "aula_especial", "piso": 0,
+      "centro": [57.5, 6, -835.5], "tamano": [29, 16, 35],
+      "evidencia": ["TextLabel 'SALA DE ROBÓTICA' Workspace/Identificacion_robotica (41,10,-843)", "Workspace/Mesa_1_Estacion_1..3 y Mesa_2_Estacion_1..3 'ROBOT / TELEMETRÍA' (54/67,3,-833..-845)", "24 asientos Red Plastic Chair (50..71, 1.6, -827..-851)", "Workspace/Model/Pizarra (57,5,-818) 13x7", "Workspace/Puerta_Infantil 'Bienvenido personal' (42,4,-823)"],
+      "asientos": 24, "tablero": { "centro": [57, 5, -818], "normal": [0, 0, -1] }, "puestoDocente": [57, 3, -823],
+      "spawn": { "punto": [47, 3, -848], "estado": "confirmado", "cargos": ["ProfesorTitular"] },
+      "estacionesPC": [[54,3,-845],[54,3,-839],[54,3,-833],[67,3,-845],[67,3,-838],[67,3,-833]],
+      "notas": "Mesas de trabajo con portátiles (sin Seat propio). Las estaciones se usan como puestos de PC con pantalla pequeña."
+    },
+    {
+      "id": "DIRECCION", "nombre": "Dirección (Rectoría)", "tipo": "oficina", "piso": 0,
+      "centro": [48.5, 6, -865], "tamano": [11, 16, 14],
+      "evidencia": ["Workspace/Escritorio_ejecutivo (49,2,-866)", "Workspace/Senalizacion_y_avisos/Diploma_enmarcado 'RECTORIA' (54,6,-866)", "Workspace/Sillon_funcionario_frente_M/Seat (49.3,1.7,-869.2)", "Workspace/Visita_blanca_1/2/Seat (47.6/50.0, 1.4, -863.3)", "Workspace/Puesto_informatico (49,4,-866) 'INICIO AGENDA ARCHIVO INFORMES'"],
+      "asientos": 3, "puestoDocente": [49, 3, -869],
+      "spawn": { "punto": [45, 3, -860], "estado": "provisional", "cargos": ["Director", "Subdirector"] },
+      "notas": "Oficina gemela de COORDINACION; identificada como Dirección por el diploma 'RECTORIA' y el escritorio ejecutivo. Punto de spawn en el pasillo de acceso (41..45) por estar el interior ocupado por mobiliario; verificar en Studio."
+    },
+    {
+      "id": "COORDINACION", "nombre": "Coordinación académica y de convivencia", "tipo": "oficina", "piso": 0,
+      "centro": [61.5, 6, -865], "tamano": [13, 16, 14],
+      "evidencia": ["Workspace/COORDINACION (modelo, 127 parts) (61,4,-864)", "TextLabel 'COORDINACION' Workspace/COORDINACION/Senalizacion_y_avisos/Rotulo_oficina (62,8,-870)", "Workspace/COORDINACION/Escritorio_ejecutivo (61,2,-862)", "Workspace/COORDINACION/Sillon_funcionario_frente_M/Seat (61.2,1.9,-859.1)", "Workspace/COORDINACION/Archivo_y_biblioteca 'ARCHIVO COORDINACION'"],
+      "asientos": 3, "puestoDocente": [61, 3, -859],
+      "spawn": { "punto": [61, 3, -868], "estado": "confirmado", "cargos": ["CoordinadorAcademico", "CoordinadorConvivencia"] },
+      "notas": "Convivencia comparte la oficina (no hay sala propia)."
+    },
+    {
+      "id": "LABORATORIO", "nombre": "Laboratorio de ciencias", "tipo": "aula_especial", "piso": 0,
+      "centro": [50, 6, -888.5], "tamano": [16, 16, 35],
+      "evidencia": ["Workspace/01_Laboratorio_Electronica (608 parts) (50,5,-888) 15x10x34", "TextLabel 'LABORATORIO' Workspace/Identificacion_laboratorio (41,8,-889)", "Pizarra 'LABORATORIO DE CIENCIAS' (49,7,-905)", "Workspace/01_Laboratorio_Electronica/04_Taburetes_plasticos (24 taburetes sin Seat)"],
+      "asientos": 0, "tablero": { "centro": [49, 7, -905], "normal": [0, 0, 1] }, "puestoDocente": [52, 3, -902],
+      "spawn": { "punto": [52, 3, -902], "estado": "provisional", "cargos": ["ProfesorTitular"] },
+      "notas": "Taburetes sin objeto Seat: la ocupación se mide por presencia en la zona. Mesones a X≈46 y 50; pasillo lateral en X≈52..53."
+    },
+    {
+      "id": "BANOS_1", "nombre": "Baños bloque frontal (niños Z>-925, niñas Z<-925)", "tipo": "banos", "piso": 0,
+      "centro": [48.5, 6, -925], "tamano": [15, 16, 30],
+      "evidencia": ["TextLabel 'BAÑOS' Workspace/03_Accesorios/Cartel_banos_ninos (41,9,-917) y Cartel_banos_ninas (41,9,-933)", "Workspace/Bathroom Toilet x4 (52,3,-919..-931)", "Workspace/Urinario_1/2 (46/48,3,-912)", "Workspace/Lavamanos_bajo_* y Gabinete_alto_doble/Lavamanos_alto_* (41,3..4,-922..-930)", "Workspace/Arquitectura_interior/Tabique_central_completo (49,6,-925)"],
+      "objetos": { "inodoros": [[52,3,-919],[52,3,-923],[52,3,-928],[52,3,-931]], "urinarios": [[46,3,-912],[48,3,-912]], "lavamanos": [[41,3,-930],[41,3,-927],[41,4,-924],[41,4,-922]] },
+      "spawn": null,
+      "notas": "Los inodoros 'Bathroom Toilet' traen Seat + ClickDetector con sonido (script original conservado)."
+    },
+    {
+      "id": "AULA_E1", "nombre": "Aula junto a baños (sin placa)", "tipo": "aula", "piso": 0,
+      "centro": [52.5, 6, -958], "tamano": [19, 16, 34],
+      "evidencia": ["13 sillas Workspace/School Chair con Seat (44..61, 2.4, -949..-971)", "Workspace/Model/Pizarra (50,5,-940) 8x5 en muro norte"],
+      "asientos": 13, "tablero": { "centro": [50, 5, -940], "normal": [0, 0, -1] }, "puestoDocente": [57, 3, -944],
+      "spawn": { "punto": [57, 3, -944], "estado": "provisional", "cargos": ["ProfesorTitular"] },
+      "notas": "Cada School Chair contiene dos Seat superpuestos (duplicado del modelo); el sistema cuenta una silla por posición."
+    },
+    {
+      "id": "TIENDA", "nombre": "Tienda escolar (cafetería comercial)", "tipo": "cafeteria", "piso": 0,
+      "centro": [52.5, 6, -996], "tamano": [19, 16, 40],
+      "evidencia": ["Workspace/empanada_01 x4 (45,6,-986..-988)", "Workspace/Model/Botellas_Respaldo_30_Piezas (58,5,-982)", "Workspace/Model/Fryer* (57,3,-1011)", "Workspace/Tapa_Abierta_100_Grados/Canastilla_Alambre_18_Barras (55,1,-978)", "Foto 03 anotada 'tienda'"],
+      "mostrador": { "centro": [45, 3, -987], "frente": [-1, 0, 0] },
+      "spawn": { "punto": [52, 3, -995], "estado": "confirmado", "cargos": ["VendedorCafeteria"] },
+      "notas": "Los estudiantes compran desde el patio (X≈41) frente a la vitrina de empanadas."
+    },
+    { "id": "A05", "nombre": "Aula 05", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -853], "tamano": [33, 16, 20],
+      "evidencia": ["Placa 'AULA 05' Workspace/Equipamiento_y_Detalles/Placa_aula (-27,8,-860)", "Workspace/Puerta_Aula_05_Abierta (-28,4,-860)", "9 Workspace/School Chair/Seat (-29..-38, 2.3, -844..-855)", "Workspace/Model/Pizarra (-53,5,-853)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -853], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -853],
+      "spawn": { "punto": [-45, 3, -860], "estado": "confirmado", "cargos": ["ProfesorTitular"] } },
+    { "id": "A04", "nombre": "Aula 04", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -875], "tamano": [33, 16, 20],
+      "evidencia": ["Placa 'AULA 04' (-27,8,-882)", "Workspace/Puerta_Aula_04 'BIENVENIDOS' (-27,4,-882)", "9 School Chair/Seat (-29..-38, 2.3, -866..-877)", "Workspace/Model/Pizarra (-53,5,-875)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -875], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -875],
+      "spawn": { "punto": [-45, 3, -882], "estado": "provisional", "cargos": ["ProfesorTitular"] } },
+    { "id": "A03", "nombre": "Aula 03", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -897], "tamano": [33, 16, 20],
+      "evidencia": ["Placa 'AULA 03' (-27,8,-905)", "Workspace/Puerta_Aula_Abierta (-28,4,-905)", "9 School Chair/Seat (-29..-38, 2.3, -888..-899)", "Workspace/Model/Pizarra (-53,5,-897)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -897], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -897],
+      "spawn": { "punto": [-45, 3, -904], "estado": "provisional", "cargos": ["ProfesorTitular"] } },
+    { "id": "A02", "nombre": "Aula 02", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -919], "tamano": [33, 16, 20],
+      "evidencia": ["Placa 'AULA 02' (-27,8,-926)", "Workspace/Puerta_Infantil 'BIENVENIDOS' (-27,4,-926)", "9 School Chair/Seat (-29..-38, 2.3, -910..-921)", "Workspace/Model/Pizarra (-53,5,-919)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -919], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -919],
+      "spawn": { "punto": [-45, 3, -926], "estado": "provisional", "cargos": ["ProfesorTitular"] } },
+    { "id": "A01", "nombre": "Aula 01", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -941], "tamano": [33, 16, 20],
+      "evidencia": ["Placa 'AULA 01' (-27,8,-948)", "Workspace/Puerta_Arcoiris 'BIENVENIDOS' (-27,4,-948)", "9 School Chair/Seat (-29..-38, 2.3, -933..-944)", "Workspace/Model/Pizarra (-53,5,-942)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -942], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -942],
+      "spawn": { "punto": [-45, 3, -948], "estado": "provisional", "cargos": ["ProfesorTitular"] } },
+    { "id": "A06", "nombre": "Aula 06 (sin placa)", "tipo": "aula", "piso": 0, "centro": [-40.5, 6, -963], "tamano": [33, 16, 22],
+      "evidencia": ["9 Workspace/School Chair (18 Seat duplicados) (-29..-38, 2.4, -955..-966)", "Workspace/Model/Pizarra (-53,5,-964)"],
+      "asientos": 9, "tablero": { "centro": [-53, 5, -964], "normal": [1, 0, 0] }, "puestoDocente": [-48, 3, -964],
+      "spawn": { "punto": [-45, 3, -970], "estado": "provisional", "cargos": ["ProfesorTitular"] } },
+    {
+      "id": "JUEGOS", "nombre": "Zona de juegos (cubierta y cercada)", "tipo": "recreo", "piso": 0,
+      "centro": [-38, 6, -1025], "tamano": [26, 16, 104],
+      "evidencia": ["Workspace/Model (737 parts) con 03_Techo_acanalado_y_cerchas y 04_Cerca_de_malla_ciclonica (-27,3,-1024)", "Casita_de_juego_5.8 (-39,3,-1034) y Casita_de_juego_-21", "Mural pintado (Copa_pintada, Colina_verdosa_del_mural)", "Foto 05 anotada 'zona de juegos'"],
+      "spawn": null, "notas": "Uso en DESCANSO; sin lógica propia más allá de presencia."
+    },
+    {
+      "id": "AUDITORIO", "nombre": "Auditorio (escenario, banderas y sillas)", "tipo": "auditorio", "piso": 0,
+      "centro": [-44.5, 6, -1144], "tamano": [37, 16, 124],
+      "evidencia": ["Workspace/Grupo_Tres_Banderas (-38,5,-1151)", "Telón, molduras doradas, paneles de mármol y altavoz (Workspace/Model/Altavoz_Derecho) alrededor de (-39,3,-1140)", "18 sillas Workspace/Model/School Chair (36 Seat duplicados) (-29..-55, 2.1, -1156..-1200)", "10 Red Plastic Chair (-47.4, 1.6, -1099..-1125)", "SpawnLocation original (-38.9,-0.4,-1140)", "Foto 05 anotada 'Auditorio'"],
+      "asientos": 28, "escenario": [-39, 3, -1146],
+      "spawn": { "punto": [-39, 3, -1130], "estado": "confirmado", "cargos": [] },
+      "notas": "El SpawnLocation original queda dentro de esta zona; se conserva (Neutral) como respaldo."
+    },
+    {
+      "id": "INFORMATICA", "nombre": "Sala de informática (Computer Science / Library)", "tipo": "aula_pc", "piso": 0,
+      "centro": [-50, 6, -1227], "tamano": [32, 16, 46],
+      "evidencia": ["18 Workspace/Model/Computer (monitor, teclado, torre) en (-64..-38, 5, -1210..-1240)", "18 Seat (36 duplicados) Workspace/Model/Model/Seat (-60..-41, 2.4, -1213..-1237)", "Workspace/Model/Letreros/Letrero_Computer Science y Letrero_Library 'JEAN PIAGET' (-30,11,-1225)", "Workspace/Model/Model/Pizarra (-65,7,-1234)", "Workspace/Model/Model/LogoYLema (-35,6,-1211)", "Foto 07 anotada 'Sala informática'"],
+      "asientos": 18, "tablero": { "centro": [-65, 7, -1234], "normal": [1, 0, 0] }, "puestoDocente": [-60, 3, -1234],
+      "pcs": [[-52,5,-1240],[-40,5,-1240],[-46,5,-1240],[-57,5,-1240],[-48,5,-1230],[-53,5,-1230],[-59,5,-1230],[-58,5,-1228],[-52,5,-1228],[-47,5,-1228],[-64,5,-1222],[-38,5,-1220],[-64,5,-1216],[-38,5,-1215],[-53,5,-1210],[-60,5,-1210],[-42,5,-1210],[-46,5,-1210]],
+      "spawn": { "punto": [-60, 3, -1234], "estado": "provisional", "cargos": ["ProfesorTitular"] },
+      "notas": "Las pantallas 'Computer Monitor 1' reciben una SurfaceGui de escritorio escolar. Cada PC se empareja con el Seat más cercano."
+    },
+    {
+      "id": "PATIO_CENTRAL", "nombre": "Patio central (eje de circulación)", "tipo": "patio", "piso": 0,
+      "centro": [4, 6, -1166], "tamano": [60, 16, 170],
+      "evidencia": ["Workspace/Piso_Patio_A, baldosas y zócalos alrededor de (10,2,-1100)", "Muro oriental con 'Pinturas deportivas' y letras (Workspace/Model 341 parts) (62,7,-1143)", "Foto 09 anotada 'Pasillo central y salones'"],
+      "spawn": { "punto": [0, 3, -1100], "estado": "confirmado", "cargos": ["Estudiante"] },
+      "notas": "Spawn por defecto de estudiantes ('patio escolar'). ENTRADA queda a ~290 studs del centro; cambiable en Config."
+    },
+    {
+      "id": "COMEDOR", "nombre": "Comedor (Dining Room, mesas de 4)", "tipo": "comedor", "piso": 0,
+      "centro": [48.5, 6, -1280], "tamano": [27, 16, 60],
+      "evidencia": ["5 mesas Workspace/Model/Pluta_Table con 20 Red Plastic Chair/Seat (37..60, 1.3, -1255..-1305)", "Ventiladores de techo (49,20,-1271/-1293)", "Mural 'DINING ROOM' / 'COMEDOR' Workspace/Mural_rosa_DINING_ROOM (49,11,-1342)", "Foto 08 anotada 'Comedor'"],
+      "asientos": 20,
+      "spawn": { "punto": [40, 3, -1300], "estado": "confirmado", "cargos": [] },
+      "notas": "Zona de consumo del comedor gratuito; la preparación y entrega ocurre en COCINA."
+    },
+    {
+      "id": "AULA_ADAPTADA", "nombre": "Aula adaptada (Interior_Adaptado)", "tipo": "aula", "piso": 0,
+      "centro": [-40.5, 6, -1311.5], "tamano": [33, 16, 27],
+      "evidencia": ["Workspace/Model/Interior_Adaptado/Pupitres/Pupitre_Madera x15 con Asiento (-32..-47, 1.8, -1300..-1321)", "Workspace/Model/Interior_Adaptado/Docente/Silla_Docente_Negra/Asiento (-54.4,1.8,-1302.3)", "Tablero_Acrilico 'Bienvenidos' (-56,6,-1312) y Letrero_Grado (-56,9,-1321)", "Puerta roja 'WELCOME' Workspace/Model/Model/Hoja_Roja (-25,4,-1321)"],
+      "asientos": 15, "tablero": { "centro": [-56, 6, -1312], "normal": [1, 0, 0] }, "puestoDocente": [-52, 3, -1302],
+      "spawn": { "punto": [-50, 3, -1310], "estado": "provisional", "cargos": ["ProfesorApoyo", "Tutor"] }
+    },
+    {
+      "id": "OFICINA_ADMIN", "nombre": "Oficina administrativa (Secretaría, Administración y Orientación)", "tipo": "oficina", "piso": 0,
+      "centro": [-40.5, 6, -1338], "tamano": [33, 16, 24],
+      "evidencia": ["Rótulo pequeño 'COORDINACIÓN' Workspace/Rotulo_pequeno_COORDINACION (-26,10,-1339)", "Aviso 'INFORMACIÓN' (-27,4,-1326)", "Puerta roja 'WELCOME' Workspace/03_Puerta_Roja_WELCOME_BRILLA (-27,4,-1351)", "PC de escritorio Workspace/ExterTech Asus ROG Predator D65 (-37,5,-1338) y Workspace/Modern Office Chair/Seat (-41,2.5,-1338.4)"],
+      "asientos": 1, "puestoDocente": [-41, 3, -1338],
+      "spawn": { "punto": [-46, 3, -1340], "estado": "confirmado", "cargos": ["Secretario", "AdministradorFinanciero", "Orientador"] },
+      "notas": "El mapa no tiene secretaría, administración ni orientación propias: se asignan a esta oficina (rotulada 'COORDINACIÓN' en pequeño). Orientación funciona con agenda RP, sin tratamiento clínico."
+    },
+    {
+      "id": "AULA_P1", "nombre": "Aula P1 (planta baja oeste, sin placa)", "tipo": "aula", "piso": 0,
+      "centro": [-40.5, 6, -1386.5], "tamano": [33, 16, 43],
+      "evidencia": ["Workspace/Pupitre_02..19_azul / _tapizado / _gris (sin Seat) (-33..-49, 2, -1375..-1396)", "Workspace/Pizarra_pared_derecha_+X/Pizarra_blanca (-37,6,-1409) 20x6", "Workspace/Mesa_Profesor (-49,1,-1405)", "Avisos 'NORMAS DEL AULA' (-55,8,-1405) y 'PROHIBIDO FUMAR' (-55,8,-1380)"],
+      "asientos": 0, "tablero": { "centro": [-37, 6, -1408], "normal": [0, 0, 1] }, "puestoDocente": [-49, 3, -1403],
+      "spawn": { "punto": [-42, 3, -1390], "estado": "confirmado", "cargos": ["ProfesorTitular"] },
+      "notas": "Pupitres sin objeto Seat: asistencia por presencia en zona (de pie)."
+    },
+    {
+      "id": "6B", "nombre": "Aula 6B", "tipo": "aula", "piso": 0,
+      "centro": [-40.5, 6, -1430], "tamano": [33, 16, 40],
+      "evidencia": ["Workspace/Puerta_6B (-23,3,-1445) con Hoja_transitable", "12 Workspace/Pupitre (sin Seat) (-46..-31, 2, -1427..-1440)", "Workspace/Model/Pizarra_blanca (-39,7,-1449) 13x6 + Marco_pizarra", "Workspace/Mesa_profesor (-40,2,-1445) y Silla_profesor (-40,2,-1447)", "Workspace/Luces_y_ventiladores (-38,12,-1434)", "Rótulo 'RUTA DE EVACUACIÓN' (-22,12,-1444)"],
+      "asientos": 0, "tablero": { "centro": [-39, 7, -1449], "normal": [0, 0, 1] }, "puestoDocente": [-40, 3, -1443],
+      "puertas": ["Puerta_6B"],
+      "spawn": { "punto": [-42, 3, -1430], "estado": "confirmado", "cargos": ["ProfesorTitular"] },
+      "notas": "Pupitres sin Seat. Sugerencia manual: duplicar 'Workspace/Pupitres/Pupitre_Azul' (con Asiento) del aula 6C si se desea ocupación por asiento."
+    },
+    {
+      "id": "7B", "nombre": "Aula 7B", "tipo": "aula", "piso": 0,
+      "centro": [-40.5, 6, -1472], "tamano": [33, 16, 40],
+      "evidencia": ["Workspace/Puerta_7B (-22,5,-1453) con Hoja_transitable y rótulo '7B'", "15 Workspace/Model/Pupitre (sin Seat) (-40..-25, 2, -1459..-1476)", "Workspace/Model/Pizarra_blanca (-36,6,-1479) 13x6", "Workspace/Mesa_profesor (-35,2,-1456) y Silla_profesor (-35,2,-1452)", "Workspace/Luces_y_ventiladores (-38,12,-1464)", "Workspace/Puerta_metal_oscura_abierta (-22,5,-1491)"],
+      "asientos": 0, "tablero": { "centro": [-36, 6, -1479], "normal": [0, 0, 1] }, "puestoDocente": [-35, 3, -1458],
+      "puertas": ["Puerta_7B"],
+      "spawn": { "punto": [-50, 3, -1470], "estado": "confirmado", "cargos": ["ProfesorTitular"] },
+      "notas": "El tablero (Z=-1479) y el escritorio (Z=-1456) están en extremos opuestos; los pupitres miran al tablero."
+    },
+    {
+      "id": "BANOS_2", "nombre": "Baños bloque de dos plantas (GIRLS)", "tipo": "banos", "piso": 0,
+      "centro": [-30, 6, -1505.5], "tamano": [22, 16, 23],
+      "evidencia": ["Workspace/Bathroom Toilet x6 (-36..-27, 3, -1497) y (-33/-24, 3, -1514)", "Workspace/04_Lavamanos_y_accesorios (-31,3,-1501) + Workspace/Lavamanos_delantero (-22,3,-1498)", "Workspace/Espejo (-31,7,-1500)", "Workspace/03_Puertas_de_madera/Puerta_GIRLS_secundaria (-34,4,-1509) y Puerta_GIRLS_abierta (-23,5,-1507)", "Rótulos 'SALIDA' (-41,10,-1504) e 'INFORMACION' (-41,8,-1505)", "Foto 10 anotada 'baños'"],
+      "objetos": { "inodoros": [[-36,3,-1497],[-33,3,-1497],[-30,3,-1497],[-27,3,-1497],[-33,3,-1514],[-24,3,-1514]], "lavamanos": [[-28,3,-1501],[-33,3,-1501],[-22,3,-1498]] },
+      "puertas": ["Puerta_GIRLS_secundaria", "Puerta_GIRLS_abierta"],
+      "spawn": { "punto": [-30, 3, -1505], "estado": "confirmado", "cargos": ["Limpieza"] },
+      "notas": "No existe cuarto de mantenimiento: el personal de limpieza aparece aquí (provisional) y sus misiones se reparten por zonas."
+    },
+    {
+      "id": "6C", "nombre": "Aula 6C", "tipo": "aula", "piso": 0,
+      "centro": [48.5, 6, -1407], "tamano": [23, 16, 34],
+      "evidencia": ["Workspace/Pupitres (520 parts) con 20 Pupitre_Azul/Asiento (40..54, 2.1, -1395..-1413)", "Letrero_Grado '6C' Workspace/Tablero_y_Carteleras/Letrero_Grado/Placa (54,9,-1423)", "Tablero_Acrilico 'Bienvenidos' (47,6,-1423)", "Workspace/Docente (Mesa_Docente_Madera + Silla_Docente_Azul/Asiento) (52,3,-1420)", "Reloj_Pared (54,11,-1423), Botellon_Agua (38,3,-1420)"],
+      "asientos": 20, "tablero": { "centro": [47, 6, -1423], "normal": [0, 0, 1] }, "puestoDocente": [52, 3, -1419],
+      "spawn": { "punto": [45, 3, -1418], "estado": "provisional", "cargos": ["ProfesorTitular"] },
+      "notas": "Las puertas de la fachada (X≈36..39) no llevan el rótulo 6C; la Puerta_Blanca_6C está frente al aula de Grado 5° (discrepancia de rotulación a revisar)."
+    },
+    {
+      "id": "AULA_P2", "nombre": "Aula P2 (planta baja este, pupitres de madera)", "tipo": "aula", "piso": 0,
+      "centro": [48.5, 6, -1437.5], "tamano": [23, 16, 23],
+      "evidencia": ["Workspace/Pupitres (390 parts) con 15 Pupitre_Madera/Asiento (41..50, 2.1, -1429..-1447)", "Tablero_Acrilico 'Bienvenidos' en muro este (57,6,-1437)", "Workspace/Docente (Mesa_Docente_Metal + Silla_Docente_Negra/Asiento) (55,2,-1445)", "Workspace/Puerta_Morada 'grado 5°' (37,5,-1446)"],
+      "asientos": 15, "tablero": { "centro": [57, 6, -1437], "normal": [-1, 0, 0] }, "puestoDocente": [54, 3, -1442],
+      "puertas": ["Puerta_Morada"],
+      "spawn": { "punto": [45, 3, -1437], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "5", "nombre": "Aula Grado 5°", "tipo": "aula", "piso": 0,
+      "centro": [48.5, 6, -1468.5], "tamano": [23, 16, 35],
+      "evidencia": ["Workspace/Pupitres (520 parts) con 20 Pupitre_Azul/Asiento (42..56, 2.1, -1460..-1479)", "Letrero_Grado 'GRADO 5°' (55,9,-1450)", "Tablero_Acrilico 'Bienvenidos' (47,6,-1450)", "Workspace/Docente (Mesa_Docente_Madera + Silla_Docente_Azul/Asiento) (53,3,-1454)", "Workspace/Puerta_Blanca_6C '6C' (39,5,-1469)", "Workspace/Tablero_y_Carteleras (49,7,-1468)"],
+      "asientos": 20, "tablero": { "centro": [47, 6, -1450], "normal": [0, 0, -1] }, "puestoDocente": [53, 3, -1457],
+      "puertas": ["Puerta_Blanca_6C"],
+      "spawn": { "punto": [45, 3, -1456], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "ALTO_O1", "nombre": "Aula planta alta oeste 1", "tipo": "aula", "piso": 1,
+      "centro": [-40.5, 21, -1378], "tamano": [33, 14, 44],
+      "evidencia": ["Workspace/Chair_01..21_* (sin Seat) (-27..-57, 15, -1359..-1396)", "Workspace/Pizarra_DERECHA x2 (-46/-39, 19..20, -1398..-1400) y Pared_DERECHA_pizarra (-41,20,-1399)", "Workspace/Mesa_Profesor (-49,15,-1394)", "Workspace/02_Piso_desgastado (-41,14,-1378)", "Workspace/04_Cielo_raso (-42,26,-1378) con luminarias"],
+      "asientos": 0, "tablero": { "centro": [-41, 20, -1399], "normal": [0, 0, 1] }, "puestoDocente": [-49, 17, -1393],
+      "spawn": { "punto": [-42, 17, -1378], "estado": "confirmado", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "ALTO_O2", "nombre": "Aula planta alta oeste 2", "tipo": "aula", "piso": 1,
+      "centro": [-40.5, 21, -1421], "tamano": [33, 14, 38],
+      "evidencia": ["Workspace/Chair_13/14/15_Fondo (sin Seat) (-30..-57, 15, -1413..-1432)", "Workspace/Mesa_Profesor (-43,15,-1407)"],
+      "asientos": 0, "puestoDocente": [-43, 17, -1409],
+      "spawn": { "punto": [-42, 17, -1421], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "ALTO_O3", "nombre": "Aula planta alta oeste 3 (con proyector)", "tipo": "aula", "piso": 1,
+      "centro": [-40.5, 21, -1467], "tamano": [33, 14, 50],
+      "evidencia": ["Workspace/Chair_13/14/15_Fondo (sin Seat) (-29..-49, 15, -1469..-1487)", "Workspace/Mesa_Profesor (-38,15,-1464)", "Workspace/Projector (-39,23,-1471)", "Workspace/Pizarra_DERECHA (-40,19,-1457)"],
+      "asientos": 0, "tablero": { "centro": [-40, 19, -1457], "normal": [0, 0, -1] }, "puestoDocente": [-38, 17, -1462],
+      "spawn": { "punto": [-42, 17, -1467], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "7A", "nombre": "Aula 7A (planta alta este)", "tipo": "aula", "piso": 1,
+      "centro": [55.5, 21, -1392], "tamano": [37, 14, 40],
+      "evidencia": ["Workspace/07_Puerta_Grade_7A con rótulo '7A' (35,18,-1400)", "19 Workspace/Pupitre_01..19/Functional_seat (38..71, 16, -1378..-1409)", "Workspace/06_Equipamiento/MesaDocenteMetalCrema con monitor (38,16,-1380) y SillaDocenteAzul/Functional_seat (38.3,16,-1383.2)", "Workspace/02_CieloRaso (54,24,-1396), 05_Detalles, 03_Ventanas_Izquierda (73,21,-1395)"],
+      "asientos": 19, "puestoDocente": [38, 17, -1383],
+      "puertas": ["07_Puerta_Grade_7A"],
+      "spawn": { "punto": [55, 17, -1392], "estado": "confirmado", "cargos": ["ProfesorTitular"] },
+      "notas": "Pupitres en L (fila norte y fila este). Sin tablero identificado: usar pantalla del puesto docente."
+    },
+    {
+      "id": "8B", "nombre": "Aula 8B (planta alta este)", "tipo": "aula", "piso": 1,
+      "centro": [55.5, 21, -1431], "tamano": [37, 14, 34],
+      "evidencia": ["Aviso 'CUIDA TU SALON 8B' Workspace/Carteleras_Fondo/Aviso_Pequeno (68,21,-1417)", "Workspace/Tablero_y_Decoracion x2 (48/52, 20, -1414..-1416)", "Workspace/Pupitre_02/04/06 (sin Seat) (38/66, 16, -1432..-1438)", "Workspace/Mesa_Profesor (59,15,-1421) y Silla_Profesor (59,16,-1418)", "Workspace/Puerta_Blanca_Abierta 'Bienvenidos' (38,18,-1419)"],
+      "asientos": 0, "tablero": { "centro": [50, 20, -1415], "normal": [0, 0, -1] }, "puestoDocente": [59, 17, -1423],
+      "puertas": ["Puerta_Blanca_Abierta"],
+      "spawn": { "punto": [50, 17, -1430], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "ALTO_E3", "nombre": "Aula planta alta este 3", "tipo": "aula", "piso": 1,
+      "centro": [55.5, 21, -1471], "tamano": [37, 14, 42],
+      "evidencia": ["Workspace/Pupitre_01..19 (85 parts, sin Seat) (39..62, 16, -1466..-1489)", "Workspace/MesaDocente (58,16,-1464) y Silla_Profesor (57,16,-1461)", "Workspace/Model/SuperficiePizarra (49,19,-1459) y ParedPizarra_Frente (59,19,-1459)", "Workspace/TechoPanelado (59,25,-1466)"],
+      "asientos": 0, "tablero": { "centro": [49, 19, -1459], "normal": [0, 0, -1] }, "puestoDocente": [58, 17, -1466],
+      "spawn": { "punto": [50, 17, -1475], "estado": "provisional", "cargos": ["ProfesorTitular"] }
+    },
+    {
+      "id": "PASARELA", "nombre": "Pasarela elevada entre bloques", "tipo": "circulacion", "piso": 1,
+      "centro": [7, 19, -1398], "tamano": [50, 10, 12],
+      "evidencia": ["Workspace/PasarelaBarandaRoja (7,15,-1398) 44x4x9", "Workspace/Model (87 parts) techo (5,34,-1351) 128x15x24"],
+      "spawn": { "punto": [7, 17, -1398], "estado": "confirmado", "cargos": [] }
+    },
+    {
+      "id": "CANCHA", "nombre": "Cancha cubierta", "tipo": "cancha", "piso": 0,
+      "centro": [-2, 6, -1570], "tamano": [96, 16, 58],
+      "evidencia": ["Workspace/Lineas (65 parts) (-2,0,-1570) 92x0x54", "Workspace/Arcos (22 parts) (-2,4,-1570) 98x7x12", "Cubierta de láminas Workspace/Lamina (109 de ancho) (-1..-2, 23..31, -1568..-1603)", "Reja de acceso Workspace/03_Hoja_izquierda_abierta / 04_Hoja_derecha_abierta (17,4,-1522) y Workspace/02_Postes_y_marcos_de_apoyo", "Foto 11 anotada 'Cancha'"],
+      "futbol": {
+        "balon": [-2, 4, -1570],
+        "arcoA": { "centro": [-47, 3, -1570], "tamano": [3, 7, 12] },
+        "arcoB": { "centro": [43, 3, -1570], "tamano": [3, 7, 12] },
+        "limites": { "min": [-56, -6, -1606], "max": [52, 45, -1534] }
+      },
+      "spawn": { "punto": [-2, 3, -1545], "estado": "confirmado", "cargos": [] },
+      "notas": "Cancha de baloncesto/fútbol de salón según líneas; los volúmenes de arco se dibujan en los extremos del modelo Arcos."
+    },
+    {
+      "id": "COCINA", "nombre": "Cocina (preparación y entrega)", "tipo": "cocina", "piso": 0,
+      "centro": [-13, 6, -1640], "tamano": [42, 16, 27],
+      "evidencia": ["Workspace/Model/Piso_naranja_rombos (-1,0,-1639) 14x1x25 y Piso_beige_servicio (-20,0,-1639) 25x1x25", "Workspace/Model/Bano_maria_acero_con_vitrina (-15,3,-1636)", "Workspace/Model/Ventana_servicio_a_cocina x4 (-20..-10, 6, -1627)", "Workspace/Model/Mueble_lavaplatos_madera_oscura (-21,3,-1617), Freidora_de_mesada (-21,4,-1614), Licuadora (-21,5,-1616), Nevera_portatil_roja (-18,1,-1617)", "Workspace/Model/Congelador_horizontal_1..3 (8,2..5,-1646..-1649), Cilindro_azul_de_gas_1/2 (8,2,-1620..-1622)", "Foto 12 anotada 'hacer comida' / 'dar comida'"],
+      "estaciones": {
+        "Preparacion": [-21, 3, -1621], "Coccion": [-18, 3, -1612], "Emplatado": [-8, 3, -1636], "Entrega": [-15, 3, -1632], "Reposicion": [5, 3, -1645]
+      },
+      "mostrador": { "centro": [-15, 3, -1636], "frente": [0, 0, 1] },
+      "filaEstudiantes": { "centro": [-13, 6, -1620], "tamano": [26, 12, 14] },
+      "spawn": { "punto": [-12, 3, -1640], "estado": "provisional", "cargos": ["Cocinero"] },
+      "notas": "El mostrador (baño maría con vitrina) se atiende desde dentro; los estudiantes reclaman desde las ventanas de servicio (Z≈-1624)."
+    },
+    {
+      "id": "COMEDOR_COCINA", "nombre": "Salón de mesas plegables junto a la cocina", "tipo": "comedor", "piso": 0,
+      "centro": [-13, 6, -1664], "tamano": [42, 16, 26],
+      "evidencia": ["Workspace/Model/Piso_beige_salon (-13,0,-1664) 39x1x26", "Workspace/Model/Mesa_plegable_fondo_* x5 (-24..0, 2, -1656..-1668)", "Plafon_LED, Ventilador_oscilante, Ventana_lateral_salon"],
+      "asientos": 0,
+      "spawn": { "punto": [-13, 3, -1664], "estado": "confirmado", "cargos": [] }
+    },
+    {
+      "id": "PATIO_COCINA", "nombre": "Patio de la cocina y columpio", "tipo": "patio", "piso": 0,
+      "centro": [32, 6, -1644], "tamano": [54, 16, 82],
+      "evidencia": ["Workspace/Model/Patio_de_concreto_agrietado (32,0,-1644) 53x1x81", "Workspace/Model/Columpio_doble_de_tubo_negro (41,5,-1625)", "Workspace/Model/Techo_pabellon_* y Piso_pabellon (53,0,-1658)"],
+      "spawn": null
+    }
+  ],
+  "puertas": [
+    { "id": "Puerta_6B", "ruta": "Workspace/Puerta_6B", "hoja": "Hoja_transitable", "centro": [-23, 3, -1445], "zona": "6B", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_7B", "ruta": "Workspace/Puerta_7B", "hoja": "Hoja_transitable", "centro": [-22, 5, -1453], "zona": "7B", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Morada", "ruta": "Workspace/Puerta_Morada", "hoja": "Hoja_Morada", "centro": [37, 5, -1446], "zona": "AULA_P2", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Blanca_6C", "ruta": "Workspace/Puerta_Blanca_6C", "hoja": "Hoja_Blanca", "centro": [39, 5, -1469], "zona": "5", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_7A", "ruta": "Workspace/07_Puerta_Grade_7A", "hoja": null, "centro": [35, 18, -1400], "zona": "7A", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_8B", "ruta": "Workspace/Puerta_Blanca_Abierta", "hoja": null, "centro": [38, 18, -1419], "zona": "8B", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Banos2_A", "ruta": "Workspace/03_Puertas_de_madera/Puerta_GIRLS_secundaria", "hoja": null, "centro": [-34, 4, -1509], "zona": "BANOS_2", "modo": "privacidad", "cargosBloqueo": [] },
+    { "id": "Puerta_Banos2_B", "ruta": "Workspace/03_Puertas_de_madera/Puerta_GIRLS_abierta", "hoja": null, "centro": [-23, 5, -1507], "zona": "BANOS_2", "modo": "privacidad", "cargosBloqueo": [] },
+    { "id": "Porton_Principal", "ruta": "Workspace/Porton_Blanco", "hoja": null, "centro": [-1, 7, -794], "zona": "ENTRADA", "modo": "estado", "cargosBloqueo": ["Seguridad", "Recepcionista", "Director", "Subdirector"] },
+    { "id": "Puerta_Aula_05", "ruta": "Workspace/Puerta_Aula_05_Abierta", "hoja": null, "centro": [-28, 4, -860], "zona": "A05", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Aula_04", "ruta": "Workspace/Puerta_Aula_04", "hoja": null, "centro": [-27, 4, -882], "zona": "A04", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Aula_03", "ruta": "Workspace/Puerta_Aula_Abierta", "hoja": null, "centro": [-28, 4, -905], "zona": "A03", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Aula_02", "ruta": "Workspace/Puerta_Infantil", "hoja": null, "centro": [-27, 4, -926], "zona": "A02", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Aula_01", "ruta": "Workspace/Puerta_Arcoiris", "hoja": null, "centro": [-27, 4, -948], "zona": "A01", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] },
+    { "id": "Puerta_Laboratorio", "ruta": "Workspace/Model/Puerta_Panel_Rojo_Laboratorio", "hoja": null, "centro": [41, 5, -887], "zona": "LABORATORIO", "modo": "estado", "cargosBloqueo": ["ProfesorTitular", "CoordinadorAcademico", "Director", "Subdirector"] }
+  ],
+  "scriptsExistentes": [
+    { "ruta": "Workspace/Adonis_Loader", "descripcion": "Sistema de administración Adonis (Epix Incorporated) con Loader y configuración (Ranks, General, AntiExploit…). Se conserva intacto; el sistema RP lo detecta opcionalmente por _G.Adonis para reconocer administradores.", "accion": "conservar" },
+    { "ruta": "Workspace/(1992-1998) 42\" Six's Fan CO. Bradenton Ceiling Fan (x2)", "descripcion": "Ventiladores de techo del comedor con scripts de giro (BodyAngularVelocity), pull chain y reverse. Usan wait() en bucle.", "accion": "conservar (candidato a optimizar en modo bajos recursos: desactivar giro visual a distancia)" },
+    { "ruta": "Workspace/Model/Model/Fan/.../Spin Script V 1.3.1 (x4)", "descripcion": "Ventiladores de escritorio que rotan su CFrame cada frame con wait(0.00): coste de CPU y replicación constante.", "accion": "conservar; el modo bajos recursos los oculta localmente. Recomendación: migrar a animación local." },
+    { "ruta": "Workspace/IndoorUnit1/Script (x2)", "descripcion": "Aires acondicionados Luxiar con louvers (HingeConstraint) y sonidos.", "accion": "conservar" },
+    { "ruta": "Workspace/Curtains/ClickDetectorScript (x4)", "descripcion": "Cortinas con ClickDetector (abrir/cerrar).", "accion": "conservar" },
+    { "ruta": "Workspace/Bathroom Toilet/Handle/Script (x10)", "descripcion": "Inodoros con ClickDetector que reproducen sonido de cisterna.", "accion": "conservar; BathroomService añade ProximityPrompt y cooldown sin tocar el script" },
+    { "ruta": "Workspace/Project Mirror (Script + LocalScript CameraController + ViewportHandler)", "descripcion": "Espejo por ViewportFrame; el Script mueve 'SurfaceGui' a StarterGui y 'Mirror' a Workspace al iniciar.", "accion": "conservar; el modo bajos recursos desactiva el espejo localmente" },
+    { "ruta": "Workspace/Luxiar Air Conditioner ASC-003/CONFIGURATION MANUAL", "descripcion": "Script de documentación (solo comentarios).", "accion": "conservar" }
+  ],
+  "serviciosVacios": ["ReplicatedFirst", "ReplicatedStorage", "ServerScriptService", "ServerStorage", "StarterGui", "StarterPack", "StarterPlayer/StarterPlayerScripts", "StarterPlayer/StarterCharacterScripts", "Teams", "SoundService"],
+  "spawnOriginal": { "ruta": "Workspace/SpawnLocation", "posicion": [-38.9, -0.4, -1140.0], "neutral": true },
+  "ajustesLugar": { "Players.MaxPlayers": 60, "Players.RespawnTime": 3, "StarterPlayer.CharacterWalkSpeed": 16, "Lighting.Technology": "ver auditoría", "TextChatService.ChatVersion": "TextChatService" }
+}

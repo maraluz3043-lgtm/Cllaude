@@ -1,0 +1,8 @@
+{
+  "name": "colegio-rp-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Herramientas de verificación y empaquetado del proyecto Colegio RP (no forman parte del juego).",
+  "scripts": { "check": "node check_lua.js ../src" },
+  "dependencies": { "luaparse": "0.3.1" }
+}
