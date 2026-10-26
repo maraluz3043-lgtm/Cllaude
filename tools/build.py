@@ -335,6 +335,8 @@ def write_rbxmx(insts, path):
         inst = insts[i]
         out.append(f'<Item class="{inst["cls"]}" referent="RBX{i}"><Properties>')
         for pn, (tid, val) in sorted(inst['props'].items()):
+            if pn in ('AttributesSerialize', 'SerializedOverrides', 'Tags', 'MaterialVariantSerialized', 'Capabilities', 'DefinesCapabilities', 'SourceAssetId', 'UniqueId', 'HistoryId'):
+                continue   # binary/opaque properties: omitted in the XML export
             _xml_value(tid, pn, val, out)
         out.append('</Properties>')
         for c in kids.get(i, []):
