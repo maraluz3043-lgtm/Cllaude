@@ -1,6 +1,6 @@
 # API de construcción (build.py / preview.py)
 
-Directorio de trabajo: `/tmp/claude-0/-home-user-Cllaude/89bfe5c6-d7de-5dd7-bcc5-21526445fdb5/scratchpad/tools`
+Directorio de trabajo: `tools/` del repositorio (durante la generación original fue el scratchpad de la sesión)
 Ejecutar SIEMPRE desde ese directorio con `python3 -s <script>.py` (numpy, PIL y lz4 están instalados).
 Referencias (texto + PNG con vistas frente/lado/planta) y fotos del usuario en `../ref/`.
 

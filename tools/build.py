@@ -80,7 +80,8 @@ class Ctx:
         self.insts.append({'cls': cls, 'props': props, 'parent': parent})
         return len(self.insts) - 1
     def model(self, name, parent=-1):
-        return self._add('Model', {'Name': (0x01, name.encode())}, parent)
+        return self._add('Model', {'Name': (0x01, name.encode()), 'ScaleFactor': (0x04, 1.0), 'LevelOfDetail': (0x12, 0),
+                                   'ModelStreamingMode': (0x12, 0), 'NeedsPivotMigration': (0x02, False)}, parent)
     def folder(self, name, parent=-1):
         return self._add('Folder', {'Name': (0x01, name.encode())}, parent)
     def part(self, name, center, size, color=(200,200,200), material='SmoothPlastic', parent=-1,
@@ -92,6 +93,8 @@ class Ctx:
             'Name': (0x01, name.encode()),
             'Anchored': (0x02, bool(anchored)),
             'CanCollide': (0x02, bool(cancollide)),
+            'CanQuery': (0x02, True), 'CanTouch': (0x02, True), 'CollisionGroup': (0x01, b'Default'),
+            'Locked': (0x02, False), 'Massless': (0x02, False),
             'CastShadow': (0x02, bool(castshadow)),
             'CFrame': (0x10, cframe(u, y, v, yaw, pitch, roll)),
             'size': (0x0E, (float(w), float(h), float(d))),
@@ -157,7 +160,8 @@ class Ctx:
                  'BorderSizePixel': (0x03, 0), 'TextScaled': (0x02, bool(scaled)), 'TextSize': (0x04, float(text_size)),
                  'FontFace': (0x20, font), 'TextWrapped': (0x02, True), 'Rotation': (0x04, float(rotation)),
                  'TextXAlignment': (0x12, int(xalign)), 'TextYAlignment': (0x12, int(yalign)), 'ZIndex': (0x03, 2),
-                 'Visible': (0x02, True), 'RichText': (0x02, False)}
+                 'Visible': (0x02, True), 'RichText': (0x02, False), 'MaxVisibleGraphemes': (0x03, -1),
+                 'LineHeight': (0x04, 1.0), 'TextTransparency': (0x04, 0.0), 'Interactable': (0x02, True)}
         if stroke is not None:
             props['TextStrokeColor3'] = (0x0C, (stroke[0]/255.0, stroke[1]/255.0, stroke[2]/255.0))
             props['TextStrokeTransparency'] = (0x04, 0.0)
@@ -320,6 +324,10 @@ def _xml_value(tid, name, val, out):
     elif tid == 0x20:
         fam, w, s, cached = val
         out.append(f'<Font name="{name}"><Family><url>{escape(fam)}</url></Family><Weight>{int(w)}</Weight><Style>{"Normal" if s==0 else "Italic"}</Style></Font>')
+    elif tid == 0x1E and val is not None:
+        (x,y,z), r = val
+        out.append(f'<OptionalCoordinateFrame name="{name}"><CFrame><X>{x:.6f}</X><Y>{y:.6f}</Y><Z>{z:.6f}</Z>' +
+                   ''.join(f'<R{i//3}{i%3}>{r[i]:.7f}</R{i//3}{i%3}>' for i in range(9)) + '</CFrame></OptionalCoordinateFrame>')
     elif tid == 0x13:
         pass  # referents skipped in XML export (not needed for our content)
     else:
@@ -335,7 +343,7 @@ def write_rbxmx(insts, path):
         inst = insts[i]
         out.append(f'<Item class="{inst["cls"]}" referent="RBX{i}"><Properties>')
         for pn, (tid, val) in sorted(inst['props'].items()):
-            if pn in ('AttributesSerialize', 'SerializedOverrides', 'Tags', 'MaterialVariantSerialized', 'Capabilities', 'DefinesCapabilities', 'SourceAssetId', 'UniqueId', 'HistoryId'):
+            if pn in ('AttributesSerialize', 'SerializedOverrides', 'Tags', 'MaterialVariantSerialized', 'Capabilities', 'DefinesCapabilities', 'SourceAssetId', 'UniqueId', 'HistoryId', 'CustomPhysicalProperties'):
                 continue   # binary/opaque properties: omitted in the XML export
             _xml_value(tid, pn, val, out)
         out.append('</Properties>')

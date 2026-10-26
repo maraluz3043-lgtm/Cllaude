@@ -134,13 +134,16 @@ def read_values(r, tid, n):
         a = r.interleaved_f32(n); b = r.interleaved_f32(n); c = r.interleaved_f32(n); d = r.interleaved_f32(n)
         return list(zip(a, b, c, d))
     if tid == 0x19:
+        # PhysicalProperties: flag byte per instance: 0 = default (old), 2 = default (new files), 1 = custom + 5 floats
         out = []
         for _ in range(n):
             f = r.u8()
-            if f:
+            if f == 1:
                 out.append(tuple(r.f32() for _ in range(5)))
-            else:
+            elif f == 0:
                 out.append(None)
+            else:
+                out.append(('flag', f))
         return out
     if tid == 0x1A:
         a = r.bytes(n); b = r.bytes(n); c = r.bytes(n)
@@ -325,6 +328,7 @@ def write_values(w, tid, vals):
     elif tid == 0x19:
         for v in vals:
             if v is None: w.u8(0)
+            elif isinstance(v, tuple) and len(v) == 2 and v[0] == 'flag': w.u8(v[1])
             else:
                 w.u8(1)
                 for x in v: w.f32(x)
@@ -406,11 +410,21 @@ def write_rbxm(insts, path, sstr=None, meta=None):
                     ok = False; break
                 vals.append(pv[1])
             if not ok:
-                # fill with defaults for missing
+                # fill missing values: Roblox default by property name, else the modal value among the
+                # instances that do carry the property, else a default by type
+                present = [insts[r_]['props'][pn][1] for r_ in refs if pn in insts[r_]['props']]
+                if pn in NAME_DEFAULTS:
+                    fill = NAME_DEFAULTS[pn]
+                else:
+                    from collections import Counter
+                    try:
+                        fill = Counter(present).most_common(1)[0][0]
+                    except TypeError:   # unhashable (lists) -> first present value
+                        fill = present[0]
                 vals = []
                 for r_ in refs:
                     pv = insts[r_]['props'].get(pn)
-                    vals.append(pv[1] if pv is not None else default_for(tid))
+                    vals.append(pv[1] if pv is not None else fill)
             w = W(); w.u32(cid); w.string(pn); w.u8(tid)
             write_values(w, tid, vals)
             out += chunk(b'PROP', w.b)
@@ -420,6 +434,35 @@ def write_rbxm(insts, path, sstr=None, meta=None):
     out += chunk(b'END\0', b'</roblox>', compress=False)
     open(path, 'wb').write(out)
     return len(out)
+
+NAME_DEFAULTS = {
+    # BasePart
+    'CanQuery': True, 'CanTouch': True, 'AudioCanCollide': True, 'EnableFluidForces': True, 'CollisionGroup': b'Default',
+    'CollisionGroupId': 0, 'Locked': False, 'Massless': False, 'RootPriority': 0, 'CastShadow': True, 'Anchored': True,
+    'Velocity': (0.0, 0.0, 0.0), 'RotVelocity': (0.0, 0.0, 0.0), 'Reflectance': 0.0, 'Transparency': 0.0,
+    'PivotOffset': ((0.0, 0.0, 0.0), (1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0)), 'MaterialVariantSerialized': b'',
+    'CustomPhysicalProperties': ('flag', 2), 'formFactorRaw': 0,
+    'TopParamA': -0.5, 'TopParamB': 0.5, 'BottomParamA': -0.5, 'BottomParamB': 0.5, 'FrontParamA': -0.5, 'FrontParamB': 0.5,
+    'BackParamA': -0.5, 'BackParamB': 0.5, 'LeftParamA': -0.5, 'LeftParamB': 0.5, 'RightParamA': -0.5, 'RightParamB': 0.5,
+    'Disabled': False,
+    # Model
+    'ScaleFactor': 1.0, 'LevelOfDetail': 0, 'ModelStreamingMode': 0, 'NeedsPivotMigration': False, 'PrimaryPart': -1,
+    # GUI
+    'MaxVisibleGraphemes': -1, 'LineHeight': 1.0, 'Interactable': True, 'AutoLocalize': True, 'Visible': True,
+    'Active': False, 'Selectable': False, 'TextTransparency': 0.0, 'TextStrokeTransparency': 1.0, 'ZIndex': 1,
+    'LayoutOrder': 0, 'Rotation': 0.0, 'AnchorPoint': (0.0, 0.0), 'ClipsDescendants': False, 'BorderSizePixel': 0,
+    'BorderMode': 0, 'SizeConstraint': 0, 'AutomaticSize': 0, 'RichText': False, 'TextWrapped': False, 'TextScaled': False,
+    'TextDirection': 0, 'TextTruncate': 0, 'Draggable': False, 'Enabled': True, 'ResetOnSpawn': True, 'Brightness': 1.0,
+    'LightInfluence': 1.0, 'MaxDistance': 1000.0, 'ZOffset': 0.0, 'AlwaysOnTop': False, 'ToolPunchThroughDistance': 0.0,
+    'Adornee': -1, 'RootLocalizationTable': -1, 'SelectionImageObject': -1, 'SelectionOrder': 0, 'SelectionGroup': False,
+    'NextSelectionDown': -1, 'NextSelectionLeft': -1, 'NextSelectionRight': -1, 'NextSelectionUp': -1,
+    'SelectionBehaviorDown': 0, 'SelectionBehaviorLeft': 0, 'SelectionBehaviorRight': 0, 'SelectionBehaviorUp': 0,
+    'Sink': 0, 'OpenTypeFeatures': b'', 'LocalizationMatchIdentifier': b'', 'LocalizationMatchedSourceText': b'',
+    # common
+    'AttributesSerialize': b'', 'SerializedOverrides': b'', 'SourceAssetId': -1, 'Capabilities': 0, 'DefinesCapabilities': False,
+    # lights
+    'Shadows': False, 'Range': 16.0, 'Angle': 90.0,
+}
 
 def default_for(tid):
     return {0x01: b'', 0x02: False, 0x03: 0, 0x04: 0.0, 0x05: 0.0, 0x0C: (0.0,0.0,0.0), 0x0E: (0.0,0.0,0.0),
