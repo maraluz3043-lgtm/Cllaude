@@ -98,6 +98,28 @@ local function posicionDe(player)
 	return nil
 end
 
+-- Posición mundial de una instancia (BasePart, Attachment o Model) o nil.
+local function posicionInstancia(instancia)
+	if typeof(instancia) ~= "Instance" or instancia.Parent == nil then
+		return nil
+	end
+	if instancia:IsA("BasePart") then
+		return instancia.Position
+	end
+	if instancia:IsA("Attachment") then
+		return instancia.WorldPosition
+	end
+	if instancia:IsA("Model") then
+		local ok, pivote = pcall(function()
+			return instancia:GetPivot()
+		end)
+		if ok then
+			return pivote.Position
+		end
+	end
+	return nil
+end
+
 local function ahoraServidor()
 	local ok, t = pcall(function()
 		return workspace:GetServerTimeNow()
@@ -676,8 +698,9 @@ end
 ---------------------------------------------------------------------------------------------------
 function FoodService:_PosicionEstacion(nombre)
 	local punto = self.Puntos.Estaciones[nombre]
-	if punto and punto.Parte and punto.Parte.Parent ~= nil then
-		return punto.Parte.Position
+	local enMapa = punto and posicionInstancia(punto.Parte)
+	if enMapa then
+		return enMapa
 	end
 	local zona = MapaLogico.Zonas[self.ZonaCocina]
 	if zona and typeof(zona.Estaciones) == "table" and typeof(zona.Estaciones[nombre]) == "Vector3" then
@@ -708,8 +731,9 @@ end
 
 function FoodService:_PosicionReclamo()
 	local reclamo = self.Puntos.Reclamo
-	if reclamo and reclamo.Parte and reclamo.Parte.Parent ~= nil then
-		return reclamo.Parte.Position
+	local enMapa = reclamo and posicionInstancia(reclamo.Parte)
+	if enMapa then
+		return enMapa
 	end
 	local zona = MapaLogico.Zonas[self.ZonaCocina]
 	if zona then

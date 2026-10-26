@@ -98,6 +98,28 @@ local function posicionDe(player)
 	return nil
 end
 
+-- Posición mundial de una instancia (BasePart, Attachment o Model) o nil.
+local function posicionInstancia(instancia)
+	if typeof(instancia) ~= "Instance" or instancia.Parent == nil then
+		return nil
+	end
+	if instancia:IsA("BasePart") then
+		return instancia.Position
+	end
+	if instancia:IsA("Attachment") then
+		return instancia.WorldPosition
+	end
+	if instancia:IsA("Model") then
+		local ok, pivote = pcall(function()
+			return instancia:GetPivot()
+		end)
+		if ok then
+			return pivote.Position
+		end
+	end
+	return nil
+end
+
 local function fallo(codigo, ...)
 	local plantilla = MENSAJES[codigo] or MENSAJES.error_interno
 	local ok, mensaje = pcall(string.format, plantilla, ...)
@@ -543,8 +565,9 @@ end
 -- Mostrador y prompt
 ---------------------------------------------------------------------------------------------------
 function CafeteriaService:PosicionMostrador()
-	if self.Puesto and self.Puesto.Parte and self.Puesto.Parte.Parent ~= nil then
-		return self.Puesto.Parte.Position
+	local enMapa = self.Puesto and posicionInstancia(self.Puesto.Parte)
+	if enMapa then
+		return enMapa
 	end
 	local zona = MapaLogico.Zonas[self.ZonaTienda]
 	if zona and typeof(zona.Mostrador) == "table" and typeof(zona.Mostrador.Centro) == "Vector3" then
@@ -789,7 +812,7 @@ function CafeteriaService:_Comprar(player, productoId, cantidad)
 	end
 	if distancia > self.DistanciaCompra + self.Tolerancia then
 		self.Estadisticas.Rechazos = self.Estadisticas.Rechazos + 1
-		self:_Auditar(player, "CompraRechazada", string.format("distancia %.1f > %d", distancia, self.DistanciaCompra))
+		self:_Auditar(player, "CompraRechazada", string.format("distancia %.1f > %.0f", distancia, self.DistanciaCompra))
 		return fallo("lejos")
 	end
 	local estado = self:Estado()
@@ -1016,7 +1039,7 @@ function CafeteriaService:Gestionar(player, datos)
 end
 
 function CafeteriaService:ManejarGestion(player, datos)
-	local ok, a, b, c = self:Gestionar(player, datos)
+	local ok, a, b = self:Gestionar(player, datos)
 	if ok then
 		return self:_RespuestaGestion(player, a, b)
 	end

@@ -2367,10 +2367,10 @@ function StaffService:AccionIncidencia(player, datos)
 	end
 	self:EnviarAPermiso("seguridad.acceso", "Personal", { Sub = "Incidencia", Incidencia = copiar(incidencia) }, player)
 	-- Persistencia como reporte de soporte si ReportService lo permite (sin bloquear si falla).
-	local okReporte = self:Llamar("ReportService", "Crear", player, "Abuso", Format.Truncar(ubicacion, 60),
+	local okReporte, creado = self:Llamar("ReportService", "Crear", player, "Abuso", Format.Truncar(ubicacion, 60),
 		Format.Truncar("[Seguridad] " .. descripcion .. (incidencia.Implicado and (" · Implicado: " .. incidencia.Implicado) or ""), 300))
 	self:Auditar("Moderacion", player, "Incidencia", ubicacion .. ": " .. descripcion .. (incidencia.Implicado and (" · " .. incidencia.Implicado) or ""))
-	return exito({ Incidencia = incidencia, Avisados = avisados, Reporte = okReporte == true })
+	return exito({ Incidencia = incidencia, Avisados = avisados, Reporte = okReporte and creado ~= false })
 end
 
 function StaffService:AccionPorton(player, datos)
