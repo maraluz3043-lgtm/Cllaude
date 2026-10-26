@@ -1,0 +1,59 @@
+# Modelo de referencia 'AireAcondicionado' (ref 11576) — 53 parts. Extensión (u,y,v) = [0.9, 1.77, 11.86]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'AireAcondicionado']
+  Part | IndicatorLight | (0.83,0.55,0.69) | (0.04,0.02,0.02) | (118, 187, 131) | Neon | 0.00 | Block | -90,0,180
+  Part | TopIntakeSlot | (0.40,1.29,4.76) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | TopIntakeSlot | (0.40,1.29,0.98) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,2.46) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,4.68) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | TopIntakeSlot | (0.40,1.29,3.14) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,1.83) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,1.20) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | TopIntakeSlot | (0.40,1.29,2.06) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | TopIntakeSlot | (0.40,1.29,3.68) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,0.57) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,4.83) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,3.57) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,3.89) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,2.94) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | Aire_Carcasa | (0.39,0.64,2.86) | (5.30,0.93,0.70) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | Canaleta_Aire | (0.06,1.68,8.01) | (0.12,0.18,7.70) | (189, 188, 176) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | VentLouver | (0.81,0.19,0.73) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,2.15) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | UpperRoundedFacet | (0.41,1.17,2.86) | (5.14,0.22,0.66) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -90,-9,180
+  Part | VentLouver | (0.81,0.19,4.20) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | BrandLabel | (0.81,0.61,2.46) | (0.53,0.10,0.01) | (224, 221, 210) | SmoothPlastic | 0.00 | Block | -90,0,180 +SurfaceGui text='COOL AIR'
+  Part | Conexion_Aire | (0.06,1.38,4.19) | (0.12,0.64,0.16) | (189, 188, 176) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | VentShadow | (0.75,0.19,2.86) | (4.78,0.21,0.12) | (47, 44, 39) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelSeam | (0.81,0.43,2.86) | (5.13,0.02,0.01) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | TopIntakeSlot | (0.40,1.29,2.60) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,2.62) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | TopIntakeSlot | (0.40,1.29,1.52) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,0.88) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,4.52) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,1.04) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,2.78) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,3.41) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,1.99) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | LowerRoundedFacet | (0.45,0.16,2.86) | (5.15,0.21,0.56) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -90,12,180
+  Part | HorizontalAirFlap | (0.78,0.10,2.86) | (4.76,0.06,0.23) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -90,-22,180
+  Part | VentLouver | (0.81,0.19,1.67) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | EfficiencyLabel | (0.81,0.83,4.95) | (0.30,0.40,0.01) | (235, 202, 69) | SmoothPlastic | 0.00 | Block | -90,0,180 +SurfaceGui text='ENERGÍA
+A
+220 V'
+  Part | VentLouver | (0.81,0.19,4.99) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | TopIntakeSlot | (0.40,1.29,4.22) | (0.48,0.01,0.02) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | RightEndFacet | (0.37,0.67,0.15) | (0.17,1.04,0.63) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -78,0,0
+  Part | FrontCover | (0.77,0.73,2.86) | (5.26,0.65,0.05) | (224, 221, 210) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,4.36) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,3.73) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | LeftEndFacet | (0.37,0.67,5.57) | (0.17,1.04,0.63) | (208, 203, 189) | SmoothPlastic | 0.00 | Block | -102,0,180
+  Part | VentLouver | (0.81,0.19,3.25) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,5.15) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,3.10) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | DisplayWindow | (0.81,0.63,0.80) | (0.36,0.22,0.02) | (47, 44, 39) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | VentLouver | (0.81,0.19,1.52) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,4.04) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,2.31) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0
+  Part | VentLouver | (0.81,0.19,1.36) | (0.03,0.17,0.10) | (130, 132, 130) | SmoothPlastic | 0.00 | Block | -77,0,0

@@ -1,0 +1,53 @@
+# Modelo de referencia 'Puerta_Blanca_Abierta' (ref 19797) — 49 parts. Extensión (u,y,v) = [5.04, 8.48, 5.08]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Puerta_Blanca_Abierta']
+  Part | Moldura_Panel | (4.66,7.93,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Relieve_Interior | (4.52,4.12,3.88) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Panel_Hundido | (4.54,4.12,3.88) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.43,6.77,4.77) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Borde_Rojo_Exterior | (0.04,4.10,0.01) | (0.05,8.20,0.03) | (121, 46, 35) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Panel_Hundido | (4.54,1.47,3.88) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.43,1.47,4.77) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,0.31,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Bisagra | (4.86,1.02,0.48) | (0.40,0.10,0.10) | (152, 151, 142) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | Moldura_Panel | (4.43,4.12,4.77) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.66,2.63,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Ojo_Cerradura | (4.40,3.47,4.66) | (0.06,0.16,0.02) | (47, 44, 39) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.59,6.77,2.48) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Panel_Hundido | (4.54,6.77,3.88) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.66,5.28,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Marco_Vertical | (4.95,4.20,0.31) | (0.18,8.40,0.55) | (231, 227, 216) | Wood | 0.00 | Block | 180,0,180
+  Part | Moldura_Panel | (4.59,4.12,2.48) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,2.63,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Manija | (4.35,3.87,4.44) | (0.43,0.09,0.09) | (47, 44, 39) | Metal | 0.00 | Cylinder | -86,0,0
+  Part | Moldura_Panel | (4.72,1.47,0.70) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Relieve_Interior | (4.52,6.77,3.88) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,5.61,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Panel_Hundido | (4.70,1.47,1.59) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Relieve_Interior | (4.68,1.47,1.59) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,2.96,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.72,4.12,0.70) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Marco_Superior | (2.52,8.39,0.31) | (5.02,0.18,0.55) | (224, 221, 210) | Wood | 0.00 | Block | 180,0,180
+  Part | Cerradura | (4.44,3.70,4.66) | (0.24,0.70,0.05) | (96, 85, 61) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Bisagra | (4.86,4.12,0.48) | (0.40,0.10,0.10) | (152, 151, 142) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | Marco_Vertical | (0.09,4.20,0.31) | (0.18,8.40,0.55) | (231, 227, 216) | Wood | 0.00 | Block | 180,0,180
+  Part | Moldura_Panel | (4.59,1.47,2.48) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Decoracion_Bienvenida | (4.55,5.32,2.73) | (3.30,1.50,0.01) | (218, 216, 210) | SmoothPlastic | 0.00 | Block | 94,0,180 +SurfaceGui text='8B' text='Bienvenidos'
+  Part | Relieve_Interior | (4.52,1.47,3.88) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.56,4.12,2.99) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.66,5.61,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,7.93,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Borde_Rojo_Exterior | (4.90,4.10,0.01) | (0.05,8.20,0.03) | (121, 46, 35) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Relieve_Interior | (4.68,6.77,1.59) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Bisagra | (4.86,7.22,0.48) | (0.40,0.10,0.10) | (152, 151, 142) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | Hoja | (4.72,4.12,2.74) | (4.68,8.12,0.15) | (229, 227, 218) | Wood | 0.00 | Block | 94,0,180
+  Part | Relieve_Interior | (4.68,4.12,1.59) | (1.20,1.64,0.07) | (224, 222, 212) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Panel_Hundido | (4.70,6.77,1.59) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.66,2.96,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.72,6.77,0.70) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.56,1.47,2.99) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.56,6.77,2.99) | (0.10,2.32,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.66,0.31,1.59) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Moldura_Panel | (4.50,5.28,3.88) | (1.85,0.10,0.07) | (235, 232, 222) | SmoothPlastic | 0.00 | Block | 94,0,180
+  Part | Panel_Hundido | (4.70,4.12,1.59) | (1.64,2.13,0.04) | (215, 213, 203) | SmoothPlastic | 0.00 | Block | 94,0,180

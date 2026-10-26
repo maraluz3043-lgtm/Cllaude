@@ -1,0 +1,47 @@
+# Modelo de referencia 'Pupitre_06' (ref 969) — 43 parts. Extensión (u,y,v) = [2.7, 4.13, 2.81]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Pupitre_06']
+  Part | Contoured_seat_4 | (2.27,1.97,1.11) | (1.88,0.17,0.53) | (65, 42, 30) | Wood | 0.00 | Block | 90,5,0
+  Part | Backrest_rivet | (2.31,2.94,0.33) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | Rounded_back_shoulder | (2.59,3.96,1.90) | (0.30,0.31,0.18) | (65, 42, 30) | Wood | 0.00 | Ball | 90,10,0
+  Part | Writing_arm_rear_support | (1.99,2.30,2.16) | (0.98,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | 115,0,108
+  Part | Splayed_steel_leg | (0.63,1.01,0.14) | (1.85,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | -180,30,-98
+  Part | Underseat_side_rail | (1.54,1.84,2.02) | (1.78,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Splayed_steel_leg | (0.63,1.01,2.09) | (1.85,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | 180,-30,-98
+  Part | Curved_backrest_4 | (2.58,3.92,1.11) | (1.74,0.34,0.17) | (65, 42, 30) | Wood | 0.00 | Block | 90,10,0 +SurfaceGui
+  Part | Writing_arm_front_brace | (0.62,2.31,2.22) | (0.99,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | 111,0,109
+  Part | Writing_paddle_mount_screw | (0.53,2.92,2.30) | (0.02,0.06,0.06) | (99, 93, 83) | Metal | 0.00 | Cylinder | 90,0,90
+  Part | Curved_backrest_2 | (2.47,3.29,1.11) | (1.99,0.34,0.17) | (65, 42, 30) | Wood | 0.00 | Block | 90,10,0
+  Part | Rounded_writing_paddle_3 | (1.63,2.84,2.25) | (1.02,0.14,0.65) | (87, 57, 37) | Wood | 0.00 | Block | 90,0,0 +SurfaceGui
+  Part | Curved_backrest_1 | (2.41,2.97,1.11) | (1.74,0.34,0.17) | (65, 42, 30) | Wood | 0.00 | Block | 90,10,0 +SurfaceGui
+  Part | Contoured_seat_3 | (1.76,1.94,1.11) | (2.06,0.17,0.53) | (65, 42, 30) | Wood | 0.00 | Block | 90,0,0 +SurfaceGui
+  Part | Contoured_seat_2 | (1.26,1.94,1.11) | (2.06,0.17,0.53) | (65, 42, 30) | Wood | 0.00 | Block | 90,0,0
+  Part | Rounded_writing_paddle_2 | (1.02,2.84,2.25) | (1.12,0.14,0.65) | (87, 57, 37) | Wood | 0.00 | Block | 90,0,0 +SurfaceGui
+  Part | Curved_backrest_3 | (2.52,3.60,1.11) | (2.01,0.34,0.17) | (65, 42, 30) | Wood | 0.00 | Block | 90,10,0
+  Part | Splayed_steel_leg | (2.43,1.01,0.14) | (1.85,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,149,-82
+  Part | Back_support_crossbar | (2.44,2.86,1.11) | (1.56,0.08,0.08) | (53, 43, 36) | Metal | 0.00 | Cylinder | 90,0,0
+  Part | Low_side_stretcher | (1.52,0.81,2.09) | (1.78,0.08,0.08) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Splayed_steel_leg | (2.43,1.01,2.09) | (1.85,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,-149,-82
+  Part | Rubber_foot | (0.50,0.09,2.16) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Writing_arm_horizontal_rail | (1.00,2.75,2.29) | (1.71,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | Rubber_foot | (2.55,0.09,0.07) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Rubber_foot | (2.55,0.09,2.16) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Backrest_tubular_upright | (2.45,2.88,1.90) | (2.19,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,82
+  Seat | Functional_seat | (1.54,1.92,1.11) | (1.82,0.24,1.62) | (163, 162, 165) | Plastic | 1.00 | Block | 90,0,0
+  Part | Backrest_rivet | (2.46,3.79,0.33) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | Rubber_foot | (0.50,0.09,0.07) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Backrest_rivet | (2.46,3.79,1.90) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | Rounded_back_shoulder | (2.59,3.96,0.33) | (0.30,0.31,0.18) | (65, 42, 30) | Wood | 0.00 | Ball | 90,10,0
+  Part | Front_seat_crossbar | (0.75,1.82,1.11) | (1.80,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | 90,0,0
+  Part | Underseat_side_rail | (1.54,1.84,0.21) | (1.78,0.10,0.10) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Writing_paddle_mount_screw | (1.51,2.92,2.30) | (0.02,0.06,0.06) | (99, 93, 83) | Metal | 0.00 | Cylinder | 90,0,90
+  Part | Low_side_stretcher | (1.52,0.81,0.14) | (1.78,0.08,0.08) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Contoured_seat_1 | (0.75,1.99,1.11) | (1.84,0.17,0.53) | (65, 42, 30) | Wood | 0.00 | Block | 90,-5,0 +SurfaceGui
+  Part | Rounded_writing_paddle_1 | (0.40,2.84,2.25) | (1.02,0.14,0.65) | (87, 57, 37) | Wood | 0.00 | Block | 90,0,0 +SurfaceGui
+  Part | Backrest_rivet | (2.31,2.94,1.90) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | Backrest_tubular_upright | (2.45,2.88,0.33) | (2.19,0.09,0.09) | (53, 43, 36) | Metal | 0.00 | Cylinder | 0,0,82
+  Part | Rounded_writing_paddle_front_lip | (0.07,2.84,2.25) | (0.93,0.14,0.14) | (87, 57, 37) | Wood | 0.00 | Cylinder | 90,0,0
+  Part | Rounded_back_side_rim | (2.49,3.38,2.04) | (0.83,0.13,0.13) | (93, 60, 41) | Wood | 0.00 | Cylinder | 0,0,80
+  Part | Paddle_edge_chip | (0.12,2.92,1.91) | (0.15,0.02,0.05) | (181, 139, 88) | Wood | 0.00 | Block | 108,0,180
+  Part | Rounded_back_side_rim | (2.49,3.38,0.19) | (0.83,0.13,0.13) | (93, 60, 41) | Wood | 0.00 | Cylinder | 0,0,80

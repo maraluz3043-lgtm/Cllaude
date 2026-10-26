@@ -1,0 +1,133 @@
+# Modelo de referencia 'TechoPanelado' (ref 12820) — 129 parts. Extensión (u,y,v) = [49.31, 0.9, 44.9]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'TechoPanelado']
+  Part | PanelPVC | (20.78,0.18,36.02) | (3.39,0.07,8.14) | (176, 181, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | AroEmpotrado | (37.08,0.05,36.02) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | AroEmpotrado | (37.08,0.05,8.88) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | PanelPVC | (20.78,0.18,32.63) | (3.39,0.07,8.14) | (173, 179, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,2.10) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaTransversal | (8.55,0.13,22.45) | (44.10,0.01,0.02) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,22.45) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,8.88) | (3.39,0.07,8.14) | (175, 180, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,8.88) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (12.63,0.03,22.45) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +PointLight
+  Part | PanelPVC | (4.48,0.18,22.45) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,29.24) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,15.67) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.54) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | AroEmpotrado | (12.63,0.05,36.02) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | PanelPVC | (12.63,0.18,32.63) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (37.08,0.03,22.45) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +PointLight
+  Part | PanelPVC | (45.23,0.18,29.24) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | AroEmpotrado | (37.08,0.05,22.45) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | JuntaTransversal | (33.01,0.13,22.45) | (44.10,0.01,0.02) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | AroEmpotrado | (12.63,0.05,22.45) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | AroEmpotrado | (12.63,0.05,8.88) | (0.05,1.45,1.45) | (226, 229, 222) | SmoothPlastic | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | EstriaPanel | (27.08,0.12,16.00) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,39.41) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,32.63) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.76) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,42.81) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,12.28) | (3.39,0.07,8.14) | (174, 182, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.85,0.14,3.80) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,19.06) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (16.71,0.14,34.33) | (0.03,0.01,32.61) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.78) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.86,0.14,30.93) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.86,0.14,27.54) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,15.67) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.86,0.14,17.36) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,19.06) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,12.28) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,5.49) | (3.39,0.07,8.14) | (176, 182, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,36.02) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,5.49) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.62) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,42.81) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,5.49) | (3.39,0.07,8.14) | (173, 179, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (18.66,0.14,37.72) | (0.03,0.01,36.50) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.85,0.14,13.97) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.85,0.14,10.58) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.85,0.14,20.76) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,19.06) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.92) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,2.10) | (3.39,0.07,8.14) | (174, 181, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.69) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.47) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,29.24) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,36.02) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,22.45) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.61) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,2.10) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,25.85) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,15.67) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.31) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (12.63,0.03,8.88) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | PanelPVC | (28.93,0.18,29.24) | (3.39,0.07,8.14) | (173, 180, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.07) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,22.45) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,29.24) | (3.39,0.07,8.14) | (174, 181, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,42.81) | (3.39,0.07,8.14) | (173, 180, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,42.81) | (3.39,0.07,8.14) | (174, 181, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (12.63,0.03,36.02) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | PanelPVC | (20.78,0.18,15.67) | (3.39,0.07,8.14) | (174, 181, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,25.85) | (3.39,0.07,8.14) | (174, 182, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,22.45) | (3.39,0.07,8.14) | (175, 180, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,8.88) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,39.41) | (3.39,0.07,8.14) | (175, 179, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,25.85) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaTransversal | (24.85,0.13,22.45) | (44.10,0.01,0.02) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,8.88) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (19.16,0.14,41.11) | (0.03,0.01,37.50) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,25.85) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,19.06) | (3.39,0.07,8.14) | (176, 182, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.86,0.14,7.19) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,42.81) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaTransversal | (16.70,0.13,22.45) | (44.10,0.01,0.02) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,25.85) | (3.39,0.07,8.14) | (175, 179, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,8.88) | (3.39,0.07,8.14) | (174, 179, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,32.63) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.14) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,5.49) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,8.88) | (3.39,0.07,8.14) | (176, 181, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,39.41) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,17.09) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,12.28) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (37.08,0.03,36.02) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | PanelPVC | (37.08,0.18,29.24) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.30) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelGrisReparado | (27.08,0.13,15.63) | (3.34,0.02,4.38) | (147, 155, 156) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,5.49) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.38) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.16) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,16.93) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,5.49) | (3.39,0.07,8.14) | (174, 180, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (4.48,0.18,39.41) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,19.06) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,39.41) | (3.39,0.07,8.14) | (174, 182, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaTransversal | (41.16,0.13,22.45) | (44.10,0.01,0.02) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,25.85) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,32.63) | (3.39,0.07,8.14) | (175, 181, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,12.28) | (3.39,0.07,8.14) | (175, 179, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,14.45) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CubiertaOpaca | (19.80,0.55,22.45) | (44.90,0.70,39.60) | (174, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.85) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,2.10) | (3.39,0.07,8.14) | (173, 180, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,12.28) | (3.39,0.07,8.14) | (173, 181, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,36.02) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,36.02) | (3.39,0.07,8.14) | (173, 182, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,42.81) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,36.02) | (3.39,0.07,8.14) | (175, 180, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,39.41) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | JuntaLongitudinal | (24.85,0.14,24.15) | (0.03,0.01,48.90) | (137, 145, 146) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (37.08,0.18,2.10) | (3.39,0.07,8.14) | (176, 179, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,2.10) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (45.23,0.18,12.28) | (3.39,0.07,8.14) | (176, 180, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,32.63) | (3.39,0.07,8.14) | (176, 182, 181) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (20.78,0.18,22.45) | (3.39,0.07,8.14) | (176, 181, 183) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | DifusorCircular | (37.08,0.03,8.88) | (0.06,1.31,1.31) | (207, 215, 211) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | PanelPVC | (20.78,0.18,19.06) | (3.39,0.07,8.14) | (173, 179, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (12.63,0.18,15.67) | (3.39,0.07,8.14) | (175, 182, 180) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PanelPVC | (28.93,0.18,15.67) | (3.39,0.07,8.14) | (173, 180, 182) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstriaPanel | (27.08,0.12,15.23) | (0.01,0.01,4.33) | (150, 157, 158) | SmoothPlastic | 0.00 | Block | -90,0,180

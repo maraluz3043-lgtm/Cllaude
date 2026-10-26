@@ -1,0 +1,12 @@
+# Modelo de referencia 'Aula_1' (ref 11634) — 8 parts. Extensión (u,y,v) = [8.3, 10.35, 0.3]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Aula_1']
+  Part | Vidrio | (4.15,7.50,0.25) | (7.40,4.80,0.10) | (233, 235, 237) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | MarcoDer | (0.23,7.50,0.15) | (0.45,4.80,0.30) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Parteluz | (2.92,7.50,0.17) | (0.35,4.80,0.22) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | MarcoIzq | (8.08,7.50,0.15) | (0.45,4.80,0.30) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Parteluz | (5.38,7.50,0.17) | (0.35,4.80,0.22) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | MarcoInf | (4.15,4.88,0.15) | (8.30,0.45,0.30) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Rejilla | (4.15,2.10,0.24) | (6.00,4.20,0.12) | (206, 206, 208) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui
+  Part | MarcoSup | (4.15,10.13,0.15) | (8.30,0.45,0.30) | (201, 112, 60) | SmoothPlastic | 0.00 | Block | 180,0,180

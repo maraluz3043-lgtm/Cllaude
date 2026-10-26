@@ -1,0 +1,37 @@
+# Modelo de referencia 'SillaDocenteAzul' (ref 3397) — 33 parts. Extensión (u,y,v) = [2.23, 4.13, 2.27]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'SillaDocenteAzul']
+  Part | Backrest_rivet | (0.34,3.79,0.24) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | 90,0,0
+  Part | Splayed_steel_leg | (2.09,1.01,0.27) | (1.85,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | 0,120,-85
+  Part | Backrest_tubular_upright | (0.34,2.88,0.25) | (2.19,0.09,0.09) | (29, 31, 31) | Metal | 0.00 | Cylinder | 141,90,90
+  Part | Curved_backrest_3 | (1.12,3.60,0.18) | (2.01,0.34,0.17) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,10,0
+  Part | Low_side_stretcher | (0.14,0.81,1.18) | (1.78,0.08,0.08) | (29, 31, 31) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | Backrest_rivet | (1.90,2.94,0.39) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | 90,0,0
+  Part | Rounded_back_shoulder | (1.91,3.96,0.11) | (0.30,0.31,0.18) | (20, 64, 155) | SmoothPlastic | 0.00 | Ball | 0,10,0
+  Part | Rubber_foot | (2.16,0.09,0.15) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Splayed_steel_leg | (2.09,1.01,2.07) | (1.85,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | 0,-120,-85
+  Part | Splayed_steel_leg | (0.14,1.01,0.27) | (1.85,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | -180,60,-95
+  Part | Underseat_side_rail | (0.22,1.84,1.16) | (1.78,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | Contoured_seat_1 | (1.12,1.99,1.95) | (1.84,0.17,0.53) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,-5,0
+  Part | Rounded_back_side_rim | (0.20,3.38,0.21) | (0.83,0.13,0.13) | (23, 57, 135) | SmoothPlastic | 0.00 | Cylinder | 116,90,90
+  Part | Rubber_foot | (2.16,0.09,2.19) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Front_seat_crossbar | (1.12,1.82,1.95) | (1.80,0.09,0.09) | (29, 31, 31) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Contoured_seat_3 | (1.12,1.94,0.94) | (2.06,0.17,0.53) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Contoured_seat_2 | (1.12,1.94,1.44) | (2.06,0.17,0.53) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Curved_backrest_2 | (1.12,3.29,0.23) | (1.99,0.34,0.17) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,10,0
+  Part | Rounded_back_side_rim | (2.04,3.38,0.21) | (0.83,0.13,0.13) | (23, 57, 135) | SmoothPlastic | 0.00 | Cylinder | 116,90,90
+  Part | Contoured_seat_4 | (1.12,1.97,0.43) | (1.88,0.17,0.53) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,5,0
+  Part | Back_support_crossbar | (1.12,2.86,0.26) | (1.56,0.08,0.08) | (29, 31, 31) | Metal | 0.00 | Cylinder | 0,0,0
+  Part | Backrest_tubular_upright | (1.90,2.88,0.25) | (2.19,0.09,0.09) | (29, 31, 31) | Metal | 0.00 | Cylinder | 141,90,90
+  Part | Rubber_foot | (0.07,0.09,0.15) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Rubber_foot | (0.07,0.09,2.19) | (0.14,0.19,0.14) | (25, 27, 27) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Splayed_steel_leg | (0.14,1.01,2.07) | (1.85,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | -180,-60,-95
+  Part | Underseat_side_rail | (2.02,1.84,1.16) | (1.78,0.10,0.10) | (29, 31, 31) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | Backrest_rivet | (1.90,3.79,0.24) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | 90,0,0
+  Part | Curved_backrest_1 | (1.12,2.97,0.29) | (1.74,0.34,0.17) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,10,0
+  Part | Backrest_rivet | (0.34,2.94,0.39) | (0.02,0.06,0.06) | (115, 111, 103) | Metal | 0.00 | Cylinder | 90,0,0
+  Seat | Functional_seat | (1.12,1.92,1.16) | (1.82,0.24,1.62) | (163, 162, 165) | Plastic | 1.00 | Block | 0,0,0
+  Part | Curved_backrest_4 | (1.12,3.92,0.12) | (1.74,0.34,0.17) | (20, 64, 155) | SmoothPlastic | 0.00 | Block | 0,10,0
+  Part | Low_side_stretcher | (2.09,0.81,1.18) | (1.78,0.08,0.08) | (29, 31, 31) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | Rounded_back_shoulder | (0.33,3.96,0.11) | (0.30,0.31,0.18) | (20, 64, 155) | SmoothPlastic | 0.00 | Ball | 0,10,0

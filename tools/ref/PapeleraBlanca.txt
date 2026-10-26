@@ -1,0 +1,54 @@
+# Modelo de referencia 'PapeleraBlanca' (ref 3481) — 50 parts. Extensión (u,y,v) = [1.31, 1.49, 1.31]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'PapeleraBlanca']
+  Part | Lateral | (0.08,0.73,0.80) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 165,0,180
+  Part | Borde | (1.26,1.45,0.57) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -98,0,180
+  Part | Lateral | (0.14,0.73,0.36) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -150,0,180
+  Part | Borde | (1.22,1.45,0.42) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -112,0,180
+  Part | Lateral | (1.07,0.73,1.07) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 45,0,0
+  Part | InteriorOscuro | (0.66,0.51,0.65) | (0.03,0.88,0.88) | (125, 121, 104) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | Borde | (0.09,1.45,0.42) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 113,0,180
+  Part | Lateral | (1.23,0.73,0.50) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -15,0,0
+  Part | Borde | (1.22,1.45,0.89) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -67,0,0
+  Part | Borde | (1.03,1.45,0.16) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -142,0,180
+  Part | Lateral | (0.50,0.73,1.22) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 105,0,180
+  Part | Lateral | (1.25,0.73,0.65) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Lateral | (1.17,0.73,0.95) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 30,0,0
+  Part | Borde | (0.09,1.45,0.89) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 68,0,0
+  Part | Borde | (0.89,1.45,1.22) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -22,0,0
+  Part | Lateral | (0.66,0.73,1.24) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Borde | (0.58,1.45,0.04) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 173,0,180
+  Part | Borde | (0.42,1.45,0.08) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 158,0,180
+  Part | Borde | (0.74,1.45,0.04) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -173,0,180
+  Part | Borde | (1.26,1.45,0.73) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -83,0,0
+  Part | Lateral | (0.24,0.73,1.07) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 135,0,180
+  Part | Borde | (0.58,1.45,1.26) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 7,0,0
+  Part | Lateral | (1.17,0.73,0.36) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -30,0,0
+  Part | Lateral | (0.08,0.73,0.50) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -165,0,180
+  Part | Lateral | (0.81,0.73,1.22) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 75,0,0
+  Part | Borde | (0.89,1.45,0.08) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -157,0,180
+  Part | Borde | (0.17,1.45,0.28) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 128,0,180
+  Part | Borde | (1.14,1.45,0.28) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -128,0,180
+  Part | Borde | (0.28,1.45,1.14) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 38,0,0
+  Part | Lateral | (0.24,0.73,0.23) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -135,0,180
+  Part | Lateral | (0.14,0.73,0.95) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 150,0,180
+  Part | Lateral | (0.36,0.73,1.16) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 120,0,180
+  Part | Borde | (0.28,1.45,0.16) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 142,0,180
+  Part | Borde | (0.42,1.45,1.22) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 23,0,0
+  Part | Borde | (1.03,1.45,1.14) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -38,0,0
+  Part | Borde | (0.74,1.45,1.26) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -7,0,0
+  Part | Lateral | (0.95,0.73,0.14) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -60,0,0
+  Part | Lateral | (1.23,0.73,0.80) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 15,0,0
+  Part | Borde | (0.05,1.45,0.73) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 82,0,0
+  Part | Borde | (1.14,1.45,1.03) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | -52,0,0
+  Part | Lateral | (1.07,0.73,0.23) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -45,0,0
+  Part | Lateral | (0.95,0.73,1.16) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 60,0,0
+  Part | Borde | (0.17,1.45,1.03) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 52,0,0
+  Part | Lateral | (0.66,0.73,0.06) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | Lateral | (0.50,0.73,0.08) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -105,0,180
+  Part | Lateral | (0.81,0.73,0.08) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -75,0,0
+  Part | Lateral | (0.06,0.73,0.65) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -180,0,180
+  Part | Lateral | (0.36,0.73,0.14) | (0.08,1.45,0.19) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -120,0,180
+  Part | Borde | (0.05,1.45,0.57) | (0.16,0.07,0.07) | (230, 229, 217) | Metal | 0.00 | Cylinder | 97,0,180
+  Part | Fondo | (0.66,0.03,0.65) | (0.05,1.08,1.08) | (211, 202, 177) | SmoothPlastic | 0.00 | Cylinder | -90,0,90

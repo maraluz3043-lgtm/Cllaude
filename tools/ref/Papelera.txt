@@ -1,0 +1,46 @@
+# Modelo de referencia 'Papelera' (ref 19120) — 42 parts. Extensión (u,y,v) = [1.59, 1.53, 1.59]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Papelera']
+  Part | Aro_Papelera | (0.91,1.50,0.05) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -171,0,180
+  Part | Aro_Papelera | (0.46,1.50,1.46) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 27,0,0
+  Part | Pared_Cubo | (1.02,0.76,1.47) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 72,0,0
+  Part | Pared_Cubo | (0.09,0.76,0.79) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Aro_Papelera | (1.54,1.50,0.91) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -81,0,0
+  Part | Pared_Cubo | (0.12,0.76,0.57) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -162,0,180
+  Part | Aro_Papelera | (0.05,1.50,0.68) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 99,0,180
+  Part | Aro_Papelera | (0.05,1.50,0.91) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 81,0,0
+  Part | Fondo_Papelera | (0.80,0.04,0.79) | (0.08,1.45,1.45) | (211, 211, 195) | SmoothPlastic | 0.00 | Cylinder | 88,0,90
+  Part | Aro_Papelera | (0.13,1.50,0.45) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 117,0,180
+  Part | Aro_Papelera | (0.27,1.50,0.26) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 135,0,180
+  Part | Pared_Cubo | (1.37,0.76,1.21) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 36,0,0
+  Part | Pared_Cubo | (0.38,0.76,0.22) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -126,0,180
+  Part | Aro_Papelera | (0.91,1.50,1.54) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -9,0,0
+  Part | Aro_Papelera | (1.54,1.50,0.68) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -99,0,180
+  Part | Aro_Papelera | (1.47,1.50,0.45) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -117,0,180
+  Part | Pared_Cubo | (1.47,0.76,0.57) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -18,0,0
+  Part | Etiqueta_Papelera | (0.80,0.96,0.03) | (0.67,0.36,0.01) | (48, 124, 83) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='LIMPIO'
+  Part | Pared_Cubo | (0.58,0.76,0.12) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -108,0,180
+  Part | Pared_Cubo | (0.38,0.76,1.37) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 126,0,180
+  Part | Pared_Cubo | (0.22,0.76,1.21) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 144,0,180
+  Part | Pared_Cubo | (0.80,0.76,0.08) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | Pared_Cubo | (1.47,0.76,1.01) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 18,0,0
+  Part | Pared_Cubo | (1.37,0.76,0.38) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -36,0,0
+  Part | Pared_Cubo | (0.12,0.76,1.01) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 162,0,180
+  Part | Pared_Cubo | (1.21,0.76,1.37) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 54,0,0
+  Part | Aro_Papelera | (1.33,1.50,1.32) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -45,0,0
+  Part | Pared_Cubo | (0.58,0.76,1.47) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 108,0,180
+  Part | Aro_Papelera | (1.14,1.50,1.46) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -27,0,0
+  Part | Aro_Papelera | (1.14,1.50,0.13) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -153,0,180
+  Part | Aro_Papelera | (0.68,1.50,1.54) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 9,0,0
+  Part | Aro_Papelera | (0.46,1.50,0.13) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 153,0,180
+  Part | Pared_Cubo | (0.80,0.76,1.50) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Pared_Cubo | (1.02,0.76,0.12) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -72,0,0
+  Part | Pared_Cubo | (0.22,0.76,0.38) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -144,0,180
+  Part | Aro_Papelera | (0.13,1.50,1.13) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 63,0,0
+  Part | Pared_Cubo | (1.51,0.76,0.79) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | Aro_Papelera | (0.68,1.50,0.05) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 171,0,180
+  Part | Pared_Cubo | (1.21,0.76,0.22) | (0.06,1.42,0.23) | (222, 220, 204) | SmoothPlastic | 0.00 | Block | -54,0,0
+  Part | Aro_Papelera | (1.33,1.50,0.26) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -135,0,180
+  Part | Aro_Papelera | (0.27,1.50,1.32) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | 45,0,0
+  Part | Aro_Papelera | (1.47,1.50,1.13) | (0.24,0.07,0.07) | (213, 212, 199) | Metal | 0.00 | Cylinder | -63,0,0

@@ -1,0 +1,29 @@
+# Modelo de referencia 'Split_Derecha' (ref 3364) — 25 parts. Extensión (u,y,v) = [5.12, 1.01, 0.96]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Split_Derecha']
+  Part | AletaVertical | (0.81,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (1.89,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | SalidaOscura | (2.56,0.20,0.82) | (4.58,0.23,0.12) | (24, 27, 24) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | CarcasaSplit | (2.56,0.50,0.40) | (5.12,1.01,0.79) | (225, 225, 209) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (3.50,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (4.31,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (3.23,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (2.15,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (3.77,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | LamaSalida | (2.56,0.20,0.88) | (4.58,0.03,0.16) | (143, 147, 135) | SmoothPlastic | 0.00 | Block | 0,-10,0
+  Part | LamaSalida | (2.56,0.25,0.88) | (4.58,0.03,0.16) | (143, 147, 135) | SmoothPlastic | 0.00 | Block | 0,-10,0
+  Part | AletaVertical | (2.96,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (2.42,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | LamaSalida | (2.56,0.15,0.88) | (4.58,0.03,0.16) | (143, 147, 135) | SmoothPlastic | 0.00 | Block | 0,-10,0
+  Part | AletaVertical | (1.08,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (1.35,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (2.69,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | LedEstado | (4.44,0.30,0.89) | (0.05,0.03,0.01) | (125, 183, 103) | Neon | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (0.54,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | PanelFrontal | (2.56,0.64,0.82) | (4.91,0.61,0.09) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (4.04,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | AletaVertical | (1.62,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0
+  Part | EtiquetaEnergia | (4.57,0.64,0.87) | (0.28,0.36,0.02) | (215, 195, 43) | SmoothPlastic | 0.00 | Block | 0,0,0 +SurfaceGui
+  Part | LamaSalida | (2.56,0.29,0.88) | (4.58,0.03,0.16) | (143, 147, 135) | SmoothPlastic | 0.00 | Block | 0,-10,0
+  Part | AletaVertical | (4.58,0.20,0.91) | (0.03,0.16,0.05) | (60, 69, 59) | SmoothPlastic | 0.00 | Block | 0,0,0

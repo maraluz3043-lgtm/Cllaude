@@ -1,0 +1,21 @@
+# Modelo de referencia 'MesaDocente' (ref 19011) — 17 parts. Extensión (u,y,v) = [2.52, 3.85, 6.92]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'MesaDocente']
+  Part | TapaBotella | (1.49,3.82,0.96) | (0.06,0.14,0.14) | (70, 78, 63) | SmoothPlastic | 0.00 | Cylinder | -90,0,90
+  Part | PataVertical | (1.29,1.35,0.83) | (0.16,2.63,0.16) | (26, 29, 28) | Metal | 0.00 | Block | -90,0,180
+  Part | PieEnT | (1.29,0.12,0.83) | (0.25,0.13,2.43) | (26, 29, 28) | Metal | 0.00 | Block | -90,0,180
+  Part | PapelSobreCuaderno | (1.27,3.00,2.31) | (1.03,0.01,0.72) | (220, 216, 202) | SmoothPlastic | 0.00 | Block | -85,0,0
+  Part | RegatonPie | (0.15,0.06,6.09) | (0.25,0.12,0.19) | (19, 21, 20) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | RegatonPie | (2.43,0.06,0.83) | (0.25,0.12,0.19) | (19, 21, 20) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CuadernoDocente | (1.27,2.96,2.31) | (1.17,0.07,0.84) | (53, 80, 97) | SmoothPlastic | 0.00 | Block | -85,0,0
+  Part | PataVertical | (1.29,1.35,6.09) | (0.16,2.63,0.16) | (26, 29, 28) | Metal | 0.00 | Block | -90,0,180
+  Part | TableroMadera | (1.29,2.84,3.46) | (6.90,0.16,2.46) | (158, 120, 77) | Wood | 0.00 | Block | -90,0,180 +SurfaceGui
+  Part | PieEnT | (1.29,0.12,6.09) | (0.25,0.13,2.43) | (26, 29, 28) | Metal | 0.00 | Block | -90,0,180
+  Part | BotellaVidrio | (1.49,3.19,0.96) | (0.60,0.29,0.29) | (223, 223, 222) | Fabric | 0.24 | Cylinder | -90,0,90
+  Part | RegatonPie | (0.15,0.06,0.83) | (0.25,0.12,0.19) | (19, 21, 20) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CantoClaro | (0.03,2.77,3.46) | (6.92,0.09,0.06) | (187, 161, 119) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | Boligrafo | (0.73,3.02,2.47) | (0.77,0.04,0.04) | (25, 44, 66) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | RegatonPie | (2.43,0.06,6.09) | (0.25,0.12,0.19) | (19, 21, 20) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CuelloBotella | (1.49,3.64,0.96) | (0.30,0.12,0.12) | (90, 126, 66) | Glass | 0.26 | Cylinder | -90,0,90
+  Part | TravesanoMesa | (1.29,2.51,3.46) | (5.35,0.13,0.13) | (26, 29, 28) | Metal | 0.00 | Block | -90,0,180

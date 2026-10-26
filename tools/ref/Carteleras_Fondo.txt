@@ -1,0 +1,21 @@
+# Modelo de referencia 'Carteleras_Fondo' (ref 14929) — 13 parts. Extensión (u,y,v) = [26.13, 4.26, 0.1]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Carteleras_Fondo']
+  Part | Cartelera_Actividades | (9.09,1.60,0.07) | (4.60,3.15,0.06) | (14, 16, 15) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='8B - APRENDEMOS'
+  Part | Cinta_Amarilla | (11.33,3.11,0.01) | (0.07,0.26,0.01) | (183, 169, 84) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Borde_Cartelera | (6.83,1.60,0.02) | (0.04,3.15,0.04) | (125, 114, 86) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Cinta_Amarilla | (6.85,0.13,0.01) | (0.07,0.26,0.01) | (183, 169, 84) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Aviso_Pequeno | (22.94,1.61,0.09) | (1.45,1.50,0.03) | (159, 120, 75) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='CUIDA
+TU SALON
+8B'
+  Part | Borde_Cartelera | (15.08,2.01,0.02) | (0.04,3.80,0.04) | (125, 114, 86) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Cinta_Amarilla | (15.15,0.20,0.01) | (0.07,0.26,0.01) | (183, 169, 84) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Cinta_Amarilla | (21.04,3.82,0.01) | (0.07,0.26,0.01) | (183, 169, 84) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Borde_Cartelera | (11.36,1.60,0.02) | (0.04,3.15,0.04) | (125, 114, 86) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Cartel_Convivencia | (1.35,2.66,0.09) | (2.70,3.20,0.03) | (201, 211, 201) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='JUNTOS
+CREAMOS
+EL CAMBIO'
+  Part | Borde_Cartelera | (21.11,2.01,0.02) | (0.04,3.80,0.04) | (125, 114, 86) | SmoothPlastic | 0.00 | Block | 180,0,180
+  Part | Nota_Lateral | (25.41,1.53,0.09) | (1.45,0.72,0.02) | (221, 214, 191) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='NUESTRO ESPACIO'
+  Part | Horario | (18.09,2.01,0.07) | (6.10,3.80,0.06) | (14, 16, 15) | SmoothPlastic | 0.00 | Block | 180,0,180 +SurfaceGui text='H' text='O' text='R' text='A' text='R' text='I' text='O'

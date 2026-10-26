@@ -1,0 +1,62 @@
+# Modelo de referencia '07_Puerta_Grade_7A' (ref 17274) — 58 parts. Extensión (u,y,v) = [4.42, 8.88, 3.67]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model '07_Puerta_Grade_7A']
+  Part | CentroHundido | (0.83,3.89,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,5.92,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,6.94,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,1.86,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,1.86,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,3.89,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,1.86,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,0.84,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,2.87,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,2.87,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,5.92,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,3.89,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,7.96,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | Bisagra | (0.30,7.39,0.07) | (0.15,0.30,0.15) | (106, 108, 99) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | RotuloGrade7A | (0.83,6.32,1.92) | (0.02,2.40,2.63) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -22,0,0 +SurfaceGui text='Grade' text='7A'
+  Part | CentroHundido | (0.83,4.91,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | MarcoDintel | (2.21,8.79,0.34) | (0.40,0.18,4.42) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CentroHundido | (1.28,1.86,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,2.87,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,2.87,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,7.96,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,4.91,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,1.86,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,3.89,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,6.94,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,0.84,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,6.94,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,6.94,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,0.84,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (1.33,7.96,2.96) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,2.87,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,7.96,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | PomoOscuro | (1.30,3.94,3.50) | (0.20,0.16,0.16) | (45, 44, 36) | Metal | 0.00 | Ball | -22,0,0
+  Part | RelieveCuadrado | (0.45,6.94,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | Bisagra | (0.30,1.57,0.07) | (0.15,0.30,0.15) | (106, 108, 99) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | MarcoJamba | (4.26,4.41,0.34) | (0.40,8.83,0.16) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | CentroHundido | (0.39,2.87,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,4.91,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,0.84,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,7.96,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,4.91,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,4.91,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,5.92,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,5.92,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,4.91,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.83,0.84,1.89) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,6.94,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.89,1.86,1.87) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,5.92,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | MarcoJamba | (0.16,4.41,0.34) | (0.40,8.83,0.16) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PlacaCerradura | (1.43,3.94,3.44) | (0.04,0.46,0.23) | (91, 87, 76) | Metal | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,5.92,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | Bisagra | (0.30,4.41,0.07) | (0.15,0.30,0.15) | (106, 108, 99) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | RelieveCuadrado | (0.45,7.96,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (0.39,3.89,0.80) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | CentroHundido | (1.28,0.84,2.98) | (0.02,0.69,0.87) | (226, 224, 215) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | HojaBlanca | (1.01,4.41,1.85) | (0.18,8.54,3.86) | (230, 229, 217) | SmoothPlastic | 0.00 | Block | -22,0,0
+  Part | RelieveCuadrado | (0.45,3.89,0.78) | (0.10,0.91,1.08) | (243, 241, 230) | SmoothPlastic | 0.00 | Block | -22,0,0

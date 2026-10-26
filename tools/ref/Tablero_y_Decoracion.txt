@@ -1,0 +1,40 @@
+# Modelo de referencia 'Tablero_y_Decoracion' (ref 10693) — 36 parts. Extensión (u,y,v) = [0.32, 5.69, 9.6]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Tablero_y_Decoracion']
+  Part | Canal_Marcadores | (0.14,0.03,4.80) | (8.90,0.07,0.27) | (152, 151, 142) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Borde_Circulos | (0.17,1.06,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,0.66,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,1.65,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,5.21,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,4.03,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,4.62,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,5.61,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,1.25,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,3.43,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,3.23,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,3.83,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,4.42,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,4.22,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Marco_Aluminio | (0.23,2.86,9.55) | (0.08,5.64,0.15) | (152, 151, 142) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Marco_Aluminio | (0.23,0.08,4.80) | (9.60,0.08,0.15) | (152, 151, 142) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Borde_Circulos | (0.17,3.63,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Marco_Aluminio | (0.23,2.86,0.05) | (0.08,5.64,0.15) | (152, 151, 142) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Marcador | (0.09,0.10,8.06) | (0.48,0.05,0.05) | (121, 39, 36) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Marcador | (0.09,0.10,8.64) | (0.48,0.05,0.05) | (25, 27, 26) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Marcador | (0.09,0.10,7.48) | (0.48,0.05,0.05) | (35, 57, 105) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Tablero | (0.27,2.86,4.80) | (9.40,5.50,0.10) | (194, 196, 191) | SmoothPlastic | 0.00 | Block | 90,0,0 +SurfaceGui
+  Part | Borde_Circulos | (0.17,5.41,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,1.45,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Marco_Aluminio | (0.23,5.65,4.80) | (9.60,0.08,0.15) | (152, 151, 142) | SmoothPlastic | 0.00 | Block | 90,0,0
+  Part | Borde_Circulos | (0.17,1.85,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,2.44,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,2.24,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,5.02,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,2.84,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,2.64,0.23) | (0.03,0.15,0.15) | (53, 139, 177) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,4.82,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,2.05,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,3.04,0.23) | (0.03,0.15,0.15) | (215, 159, 28) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,0.86,0.23) | (0.03,0.15,0.15) | (108, 154, 92) | SmoothPlastic | 0.00 | Cylinder | -180,0,180
+  Part | Borde_Circulos | (0.17,0.46,0.23) | (0.03,0.15,0.15) | (210, 50, 108) | SmoothPlastic | 0.00 | Cylinder | -180,0,180

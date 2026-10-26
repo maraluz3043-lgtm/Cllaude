@@ -1,0 +1,20 @@
+# Modelo de referencia 'MesaDocenteMetalCrema' (ref 3431) — 16 parts. Extensión (u,y,v) = [2.15, 3.95, 4.44]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'MesaDocenteMetalCrema']
+  Part | MonitorPequenoOscuro | (1.55,3.53,3.36) | (1.21,0.83,0.11) | (34, 35, 33) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | TableroMelamina | (1.08,2.93,2.22) | (4.44,0.13,2.15) | (205, 195, 169) | Wood | 0.00 | Block | -90,0,180
+  Part | LibrosEstante | (1.08,0.94,2.76) | (1.08,0.10,1.55) | (206, 185, 155) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PataMetal | (1.98,1.45,0.20) | (0.10,2.89,0.10) | (187, 181, 155) | Metal | 0.00 | Block | -90,0,180
+  Part | LibrosEstante | (1.08,0.82,2.76) | (1.08,0.10,1.55) | (198, 179, 149) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | LibrosEstante | (1.08,0.60,2.76) | (1.08,0.10,1.55) | (182, 167, 137) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | LibrosEstante | (1.08,0.71,2.76) | (1.08,0.10,1.55) | (190, 173, 143) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstanteMesa | (1.08,0.25,2.22) | (4.11,0.08,1.88) | (187, 180, 152) | Wood | 0.00 | Block | -90,0,180
+  Part | Libreta | (0.94,3.08,1.41) | (0.88,0.09,1.21) | (217, 208, 178) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | PeanaMonitor | (1.54,3.06,3.36) | (0.57,0.04,0.30) | (52, 49, 44) | Metal | 0.00 | Block | -90,0,180
+  Part | PataMetal | (0.18,1.45,0.20) | (0.10,2.89,0.10) | (187, 181, 155) | Metal | 0.00 | Block | -90,0,180
+  Part | PataMetal | (0.18,1.45,4.24) | (0.10,2.89,0.10) | (187, 181, 155) | Metal | 0.00 | Block | -90,0,180
+  Part | PataMetal | (1.98,1.45,4.24) | (0.10,2.89,0.10) | (187, 181, 155) | Metal | 0.00 | Block | -90,0,180
+  Part | PantallaMonitor | (1.62,3.55,3.36) | (1.05,0.63,0.02) | (16, 20, 19) | Glass | 0.00 | Block | -90,0,180
+  Part | LibrosEstante | (1.08,0.48,2.76) | (1.08,0.10,1.55) | (174, 161, 131) | SmoothPlastic | 0.00 | Block | -90,0,180
+  Part | EstanteMesa | (1.08,1.45,2.22) | (4.11,0.08,1.88) | (187, 180, 152) | Wood | 0.00 | Block | -90,0,180

@@ -1,0 +1,13 @@
+# Modelo de referencia 'Model' (ref 13943) — 9 parts. Extensión (u,y,v) = [0.3, 5.3, 8.0]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Model']
+  Part | MarcoSup | (0.15,5.17,4.00) | (8.00,0.25,0.30) | (151, 0, 0) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoInf | (0.15,2.85,7.50) | (0.40,4.40,0.30) | (211, 190, 150) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoInf | (0.15,0.45,3.95) | (7.50,0.40,0.30) | (211, 190, 150) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoInf | (0.15,4.85,3.75) | (7.10,0.40,0.30) | (211, 190, 150) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoInf | (0.15,0.13,4.00) | (8.00,0.25,0.30) | (151, 0, 0) | Wood | 0.00 | Block | 90,0,180
+  Part | Vidrio | (0.25,2.65,3.95) | (7.40,4.80,0.10) | (223, 223, 222) | Fabric | 0.00 | Block | 90,0,180
+  Part | MarcoInf | (0.15,2.65,0.40) | (0.40,4.00,0.30) | (211, 190, 150) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoDer | (0.15,2.65,7.83) | (0.35,4.80,0.30) | (151, 0, 0) | Wood | 0.00 | Block | 90,0,180
+  Part | MarcoIzq | (0.15,2.60,0.13) | (0.25,4.90,0.30) | (151, 0, 0) | Wood | 0.00 | Block | 90,0,180

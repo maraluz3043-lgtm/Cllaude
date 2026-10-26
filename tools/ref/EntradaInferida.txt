@@ -1,0 +1,10 @@
+# Modelo de referencia 'EntradaInferida' (ref 13641) — 6 parts. Extensión (u,y,v) = [4.12, 8.14, 0.52]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'EntradaInferida']
+  Part | JambaBlanca | (4.04,4.05,0.33) | (0.34,8.10,0.16) | (226, 229, 222) | Rubber | 0.00 | Block | -90,0,180
+  Part | DintelBlanco | (2.06,8.05,0.33) | (0.34,0.18,4.12) | (226, 229, 222) | Rubber | 0.00 | Block | -90,0,180
+  Part | Manija | (3.50,3.30,0.46) | (0.37,0.12,0.12) | (171, 175, 169) | Metal | 0.00 | Cylinder | -180,0,180
+  Part | PlacaCerradura | (3.66,3.27,0.26) | (0.05,0.35,0.16) | (171, 175, 169) | Metal | 0.00 | Block | -90,0,180
+  Part | JambaBlanca | (0.09,4.05,0.33) | (0.34,8.10,0.16) | (226, 229, 222) | Rubber | 0.00 | Block | -90,0,180
+  Part | PuertaAzulPalido | (2.06,3.81,0.10) | (0.19,7.60,3.65) | (154, 191, 181) | Wood | 0.00 | Block | -90,0,180

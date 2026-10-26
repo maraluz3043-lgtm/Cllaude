@@ -1,0 +1,94 @@
+# Modelo de referencia '02_CieloRaso' (ref 14458) — 90 parts. Extensión (u,y,v) = [37.75, 0.2, 37.75]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model '02_CieloRaso']
+  Part | PerfilTransversal | (37.73,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,35.37) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,16.52) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,7.09) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,30.65) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,35.37) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,2.38) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,11.80) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | AroFocoEmpotrado | (28.30,0.08,9.45) | (0.05,1.08,1.08) | (193, 194, 185) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | PerfilTransversal | (14.16,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,7.09) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,2.38) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,21.23) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,7.09) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,7.09) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,16.52) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,21.23) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | AroFocoEmpotrado | (28.30,0.08,28.30) | (0.05,1.08,1.08) | (193, 194, 185) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | PerfilTransversal | (33.01,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,30.65) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,25.94) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,11.80) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,30.65) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,25.94) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,30.65) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,30.65) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,11.80) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilTransversal | (23.59,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,2.38) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | AroFocoEmpotrado | (9.45,0.08,28.30) | (0.05,1.08,1.08) | (193, 194, 185) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | PerfilTransversal | (18.88,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,21.23) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,16.52) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,25.94) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,2.38) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,16.52) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,16.52) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,25.94) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilTransversal | (28.30,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,16.52) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,9.45) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PerfilTransversal | (9.45,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,11.80) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,0.02) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,7.09) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,30.65) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,7.09) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,21.23) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,4.74) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,16.52) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,14.16) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,11.80) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,11.80) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,16.52) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,25.94) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,35.37) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilTransversal | (4.74,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,7.09) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,25.94) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | AroFocoEmpotrado | (9.45,0.08,9.45) | (0.05,1.08,1.08) | (193, 194, 185) | Metal | 0.00 | Cylinder | -90,0,90
+  Part | PlacaAcustica | (21.23,0.16,2.38) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,35.37) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,35.37) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,35.37) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,21.23) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,2.38) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | DifusorFoco | (9.45,0.03,28.30) | (0.06,0.90,0.90) | (247, 247, 232) | Neon | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | DifusorFoco | (28.30,0.03,28.30) | (0.06,0.90,0.90) | (247, 247, 232) | Neon | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | PerfilLongitudinal | (18.88,0.10,33.01) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (21.23,0.16,11.80) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,37.72) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PerfilTransversal | (0.03,0.10,18.87) | (37.70,0.05,0.05) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | DifusorFoco | (28.30,0.03,9.45) | (0.06,0.90,0.90) | (247, 247, 232) | Neon | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | PlacaAcustica | (30.66,0.16,25.94) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,30.65) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,7.09) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | DifusorFoco | (9.45,0.03,9.45) | (0.06,0.90,0.90) | (247, 247, 232) | Neon | 0.00 | Cylinder | -90,0,90 +SurfaceLight
+  Part | PerfilLongitudinal | (18.88,0.10,28.30) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,30.65) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,2.38) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (7.09,0.16,21.23) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,23.59) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (35.37,0.16,21.23) | (4.69,0.08,4.69) | (226, 226, 215) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (30.66,0.16,11.80) | (4.69,0.08,4.69) | (228, 228, 217) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (16.52,0.16,35.37) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,35.37) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PerfilLongitudinal | (18.88,0.10,18.87) | (0.05,0.05,37.70) | (162, 165, 160) | Metal | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (2.38,0.16,25.94) | (4.69,0.08,4.69) | (230, 230, 219) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (11.81,0.16,2.38) | (4.69,0.08,4.69) | (229, 229, 218) | Rubber | 0.00 | Block | -90,0,180
+  Part | PlacaAcustica | (25.94,0.16,21.23) | (4.69,0.08,4.69) | (227, 227, 216) | Rubber | 0.00 | Block | -90,0,180

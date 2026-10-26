@@ -1,0 +1,6 @@
+# Modelo de referencia 'Posters' (ref 15629) — 2 parts. Extensión (u,y,v) = [29.95, 3.7, 0.05]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Posters']
+  Part | PosterCascos_Foto1 | (2.75,1.85,0.03) | (5.50,3.70,0.05) | (11, 13, 13) | SmoothPlastic | 0.00 | Block | -180,0,180 +SurfaceGui
+  Part | PosterManos_Foto2 | (27.20,1.85,0.03) | (5.50,3.70,0.05) | (11, 13, 13) | SmoothPlastic | 0.00 | Block | -180,0,180 +SurfaceGui

@@ -1,0 +1,35 @@
+# Modelo de referencia 'Mesa_Profesor' (ref 14895) — 30 parts. Extensión (u,y,v) = [3.2, 2.99, 7.4]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Mesa_Profesor']
+  [Model 'Model']
+    Part | Desgaste_Mesa | (2.78,2.98,1.80) | (0.31,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -77,0,0
+    Part | Desgaste_Mesa | (2.75,2.98,5.07) | (0.23,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 58,0,0
+    Part | Desgaste_Mesa | (0.66,2.98,3.67) | (0.23,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 51,0,0
+    Part | Desgaste_Mesa | (1.61,2.98,1.23) | (0.32,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 43,0,0
+    Part | Desgaste_Mesa | (2.63,2.98,3.34) | (0.19,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 33,0,0
+    Part | Desgaste_Mesa | (0.66,2.98,3.89) | (0.22,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 63,0,0
+    Part | Desgaste_Mesa | (2.59,2.98,2.42) | (0.19,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 3,0,0
+    Part | Desgaste_Mesa | (2.10,2.98,4.68) | (0.23,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -16,0,0
+    Part | Desgaste_Mesa | (2.46,2.98,0.96) | (0.12,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 25,0,0
+    Part | Desgaste_Mesa | (0.68,2.98,4.91) | (0.24,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -50,0,0
+    Part | Desgaste_Mesa | (0.72,2.98,1.52) | (0.18,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -41,0,0
+    Part | Desgaste_Mesa | (0.90,2.98,0.56) | (0.13,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -89,0,0
+    Part | Desgaste_Mesa | (2.30,2.98,4.08) | (0.14,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 26,0,0
+    Part | Desgaste_Mesa | (1.65,2.98,2.43) | (0.30,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 50,0,0
+    Part | Desgaste_Mesa | (0.74,2.98,2.04) | (0.06,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 35,0,0
+    Part | Desgaste_Mesa | (2.39,2.98,1.42) | (0.12,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -14,0,0
+    Part | Desgaste_Mesa | (2.89,2.98,3.38) | (0.21,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 86,0,0
+    Part | Desgaste_Mesa | (1.27,2.98,2.92) | (0.06,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -47,0,0
+    Part | Desgaste_Mesa | (2.28,2.98,3.47) | (0.07,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -35,0,0
+    Part | Desgaste_Mesa | (0.76,2.98,3.93) | (0.24,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -10,0,0
+    Part | Desgaste_Mesa | (0.98,2.98,4.42) | (0.26,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -49,0,0
+    Part | Desgaste_Mesa | (2.45,2.98,1.85) | (0.12,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 43,0,0
+    Part | Desgaste_Mesa | (1.88,2.98,2.69) | (0.26,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | 26,0,0
+    Part | Desgaste_Mesa | (0.98,2.98,0.63) | (0.28,0.01,0.02) | (92, 74, 47) | SmoothPlastic | 0.00 | Block | -72,0,0
+  Part | Travesano_Mesa | (1.75,1.35,3.50) | (5.90,0.12,0.12) | (29, 31, 30) | Metal | 0.00 | Cylinder | -90,0,180
+  Part | Pie_T | (1.75,0.08,6.45) | (2.70,0.15,0.15) | (29, 31, 30) | Metal | 0.00 | Cylinder | 180,0,180
+  Part | Pie_T | (1.75,0.08,0.55) | (2.70,0.15,0.15) | (29, 31, 30) | Metal | 0.00 | Cylinder | 180,0,180
+  Part | Tablero_Madera_Mesa | (1.60,2.87,3.70) | (7.40,0.20,3.20) | (187, 125, 54) | Wood | 0.00 | Block | -90,0,180
+  Part | Columna_Mesa | (1.75,1.43,6.45) | (2.69,0.14,0.14) | (29, 31, 30) | Metal | 0.00 | Cylinder | 90,0,90
+  Part | Columna_Mesa | (1.75,1.43,0.55) | (2.69,0.14,0.14) | (29, 31, 30) | Metal | 0.00 | Cylinder | 90,0,90

@@ -1,0 +1,79 @@
+# Modelo de referencia 'Palma_y_maceta' (ref 12297) — 75 parts. Extensión (u,y,v) = [4.81, 5.54, 4.89]
+# Coordenadas: centro relativo a la esquina mínima del bbox del modelo (u,y,v). size=(w,h,d) en ejes del part. yaw/pitch/roll en grados.
+# cls | name | center(u,y,v) | size(w,h,d) | color RGB | material | transparency | shape | yaw,pitch,roll
+[Model 'Palma_y_maceta']
+  Part | Foliolo_palma_fisico | (1.43,4.60,2.95) | (0.89,0.11,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -12,0,13 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (0.58,4.90,2.37) | (0.67,0.09,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -24,0,36 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.53,4.26,0.75) | (0.67,0.09,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -24,0,24 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.11,4.60,3.25) | (0.89,0.11,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 168,0,168 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.96,4.56,1.99) | (0.66,0.12,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -13,0,13 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (2.33,0.92,2.89) | (0.66,1.85,0.10) | (240, 241, 232) | Concrete | 0.00 | Block | 30,-9,0 +SurfaceGui
+  Part | Foliolo_palma_fisico | (2.04,4.26,0.57) | (0.67,0.09,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 156,0,147 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.74,4.50,3.84) | (0.90,0.10,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 165,0,151 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.69,4.60,1.64) | (0.89,0.11,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -12,0,12 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.69,4.99,3.11) | (0.90,0.10,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 165,0,122 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (2.33,0.92,2.01) | (0.66,1.85,0.10) | (235, 236, 227) | Concrete | 0.00 | Block | 150,-9,180 +SurfaceGui
+  Part | Foliolo_palma_fisico | (3.84,4.99,2.31) | (0.90,0.10,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 165,0,153 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.89,4.73,2.07) | (0.66,0.12,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -13,0,32 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.77,4.26,4.33) | (0.67,0.09,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -24,0,33 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Punta_delgada_fronda | (3.96,3.98,0.65) | (0.67,0.08,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 169,0,164 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_arqueado | (2.93,4.57,3.98) | (1.65,0.03,0.03) | (65, 101, 43) | SmoothPlastic | 0.00 | Cylinder | 140,0,111
+  Part | Nervio_fronda_arqueado | (1.30,4.57,3.72) | (1.75,0.03,0.03) | (39, 70, 31) | SmoothPlastic | 0.00 | Cylinder | -37,0,49
+  Part | Foliolo_palma_fisico | (3.07,4.50,1.06) | (0.90,0.10,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -15,0,29 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Punta_delgada_fronda | (3.14,3.98,4.57) | (0.67,0.08,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 169,0,150 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.34,4.56,3.08) | (0.66,0.12,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -13,0,20 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.91,4.73,2.82) | (0.66,0.12,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 167,0,148 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_ascendente | (2.08,4.77,2.82) | (1.19,0.04,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Cylinder | 34,0,-46
+  Part | Foliolo_palma_fisico | (2.46,4.60,1.38) | (0.89,0.11,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 168,0,164 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Punta_delgada_fronda | (0.85,3.98,4.25) | (0.67,0.08,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -11,0,16 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.28,4.93,3.03) | (0.89,0.11,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 168,0,131 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (2.07,0.92,2.45) | (0.66,1.85,0.10) | (230, 231, 222) | Concrete | 0.00 | Block | 90,-9,90 +SurfaceGui
+  Part | Foliolo_palma_fisico | (2.58,4.56,1.83) | (0.66,0.12,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -13,0,38 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (4.13,4.90,3.06) | (0.67,0.09,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 156,0,123 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (3.09,0.92,2.45) | (0.66,1.85,0.10) | (230, 231, 222) | Concrete | 0.00 | Block | -90,-9,90 +SurfaceGui
+  Part | Foliolo_palma_fisico | (2.05,4.60,3.48) | (0.89,0.11,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 168,0,155 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_arqueado | (3.51,4.57,1.18) | (1.75,0.03,0.03) | (39, 70, 31) | SmoothPlastic | 0.00 | Cylinder | 143,0,131
+  Part | Foliolo_palma_fisico | (3.26,4.50,3.67) | (0.90,0.10,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 165,0,165 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_ascendente | (2.57,4.77,2.91) | (1.19,0.04,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Cylinder | -146,0,-116
+  Part | Punta_delgada_fronda | (0.33,4.77,2.05) | (0.67,0.08,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -11,0,11 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.28,4.26,4.15) | (0.67,0.09,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 156,0,156 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (2.84,0.92,2.89) | (0.66,1.85,0.10) | (235, 236, 227) | Concrete | 0.00 | Block | -30,-9,0 +SurfaceGui
+  Part | Punta_delgada_fronda | (1.67,3.98,0.33) | (0.67,0.08,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -11,0,30 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.12,4.99,1.79) | (0.90,0.10,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -15,0,58 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.55,4.50,1.23) | (0.90,0.10,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -15,0,15 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_arqueado | (0.88,5.18,2.16) | (1.33,0.03,0.03) | (49, 82, 39) | SmoothPlastic | 0.00 | Cylinder | -32,0,32
+  Part | Nervio_fronda_ascendente | (2.73,4.77,2.08) | (1.19,0.04,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Cylinder | -146,0,-134
+  Part | Foliolo_palma_fisico | (1.13,4.50,3.30) | (0.90,0.10,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -15,0,16 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_ascendente | (2.24,4.77,1.98) | (1.19,0.04,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Cylinder | 34,0,-64
+  Part | Foliolo_palma_fisico | (2.32,4.50,0.96) | (0.90,0.10,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 165,0,161 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.49,4.50,3.94) | (0.90,0.10,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -15,0,19 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (0.97,4.99,2.59) | (0.90,0.10,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -15,0,27 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.37,4.93,2.67) | (0.89,0.11,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -12,0,22 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_ascendente | (2.89,4.98,2.54) | (1.47,0.04,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Cylinder | -132,0,-132
+  Part | Foliolo_palma_fisico | (3.44,4.93,2.23) | (0.89,0.11,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 168,0,158 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Tierra_maceta | (2.58,1.77,2.45) | (0.05,1.08,1.08) | (72, 60, 40) | Ground | 0.00 | Cylinder | 90,0,90
+  Part | Tronco_palma_inferior | (2.53,2.47,2.46) | (1.42,0.12,0.12) | (89, 88, 46) | Wood | 0.00 | Cylinder | 1,163,-86
+  Part | Foliolo_palma_fisico | (2.76,4.60,1.42) | (0.89,0.11,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -12,0,25 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.99,4.56,2.19) | (0.66,0.12,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 167,0,167 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.68,4.50,1.60) | (0.90,0.10,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 165,0,164 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (0.90,4.26,3.77) | (0.67,0.09,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -24,0,24 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.38,4.60,1.95) | (0.89,0.11,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 168,0,167 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Faceta_maceta_blanca | (2.83,0.92,2.01) | (0.66,1.85,0.10) | (240, 241, 232) | Concrete | 0.00 | Block | -150,-9,180 +SurfaceGui
+  Part | Foliolo_palma_fisico | (0.68,4.90,1.84) | (0.67,0.09,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -24,0,57 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.79,4.73,2.61) | (0.66,0.12,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -13,0,18 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.85,4.56,2.90) | (0.66,0.12,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 167,0,167 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.02,4.73,2.29) | (0.66,0.12,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 167,0,162 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.31,4.26,4.13) | (0.67,0.09,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 156,0,130 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.47,4.56,1.82) | (0.66,0.12,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | 167,0,160 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_arqueado | (3.93,5.18,2.74) | (1.33,0.03,0.03) | (49, 82, 39) | SmoothPlastic | 0.00 | Cylinder | 148,0,148
+  Part | Punta_delgada_fronda | (4.48,4.77,2.85) | (0.67,0.08,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 169,0,169 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (4.23,4.90,2.52) | (0.67,0.09,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | 156,0,144 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (2.23,4.56,3.07) | (0.66,0.12,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 167,0,142 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (1.53,4.93,1.87) | (0.89,0.11,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Block | -12,0,49 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.50,4.26,0.77) | (0.67,0.09,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -24,0,50 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Tronco_palma_superior | (2.44,3.81,2.46) | (1.26,0.09,0.09) | (104, 112, 47) | Wood | 0.00 | Cylinder | -1,-157,-87
+  Part | Nervio_fronda_arqueado | (1.87,4.57,0.92) | (1.65,0.03,0.03) | (65, 101, 43) | SmoothPlastic | 0.00 | Cylinder | -40,0,69
+  Part | Foliolo_palma_fisico | (2.35,4.60,3.52) | (0.89,0.11,0.04) | (65, 101, 43) | SmoothPlastic | 0.00 | Block | -12,0,16 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Nervio_fronda_ascendente | (1.92,4.98,2.36) | (1.47,0.04,0.04) | (49, 82, 39) | SmoothPlastic | 0.00 | Cylinder | 48,0,-48
+  Part | Foliolo_palma_fisico | (1.82,4.56,2.71) | (0.66,0.12,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | -13,0,13 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
+  Part | Foliolo_palma_fisico | (3.91,4.26,1.13) | (0.67,0.09,0.04) | (39, 70, 31) | SmoothPlastic | 0.00 | Block | 156,0,156 +SpecialMesh(MeshType=3,Scale=(1.0, 1.0, 1.0))
