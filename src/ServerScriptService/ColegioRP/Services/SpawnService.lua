@@ -150,14 +150,15 @@ function SpawnService:DesactivarSpawnOriginal()
 		return false
 	end
 	-- Se guardan los valores originales como atributos para que el desinstalador los restaure.
-	if original:GetAttribute("ColegioRP_EnabledOriginal") == nil then
-		original:SetAttribute("ColegioRP_EnabledOriginal", original.Enabled)
+	-- Contrato (§6): solo se quitan Neutral y AllowTeamChangeOnTouch; Enabled no se toca.
+	if original:GetAttribute("ColegioRP_NeutralOriginal") == nil then
+		original:SetAttribute("ColegioRP_NeutralOriginal", original.Neutral)
 		original:SetAttribute("ColegioRP_TeamChangeOriginal", original.AllowTeamChangeOnTouch)
 	end
-	original.Enabled = false
+	original.Neutral = false
 	original.AllowTeamChangeOnTouch = false
 	if self.AuditLog then
-		self.AuditLog:Registrar("Sistema", nil, "SpawnOriginal", "SpawnLocation original desactivado: " .. original:GetFullName())
+		self.AuditLog:Registrar("Sistema", nil, "SpawnOriginal", "SpawnLocation original sin Neutral ni AllowTeamChangeOnTouch: " .. original:GetFullName())
 	end
 	return true
 end

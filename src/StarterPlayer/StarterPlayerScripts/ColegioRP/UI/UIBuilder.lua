@@ -38,7 +38,11 @@ UIBuilder.Prefijo = (Config.Nombres and Config.Nombres.PrefijoPantallas) or "Col
 UIBuilder.AnchoEstrechoPx = 760
 
 local Colores = UITheme.Colores
-local escalasRegistradas = setmetatable({}, { __mode = "k" })
+-- Registros fuertes (no débiles: el envoltorio Lua de una Instance puede recolectarse aunque siga viva);
+-- se depuran quitando las entradas cuyo Parent es nil.
+local escalasRegistradas = {}
+local restriccionesTactiles = {}
+local registradasTactiles = 0
 local sonidos = {}
 local pantallaModal = nil
 local ultimaEscalaTotal = nil
@@ -195,6 +199,17 @@ function UIBuilder.AsegurarTactil(obj)
 		restriccion.Parent = obj
 	end
 	restriccion.MinSize = Vector2.new(minimo, minimo)
+	if not restriccionesTactiles[restriccion] then
+		restriccionesTactiles[restriccion] = true
+		registradasTactiles = registradasTactiles + 1
+		if registradasTactiles % 200 == 0 then
+			for r in pairs(restriccionesTactiles) do
+				if r.Parent == nil then
+					restriccionesTactiles[r] = nil
+				end
+			end
+		end
+	end
 	return restriccion
 end
 
@@ -269,6 +284,16 @@ function UIBuilder.RefrescarEscalas()
 			escala.Scale = total * factor
 		else
 			escalasRegistradas[escala] = nil
+		end
+	end
+	-- Con otra escala cambia el lado mínimo en unidades de UI para seguir midiendo 44 px.
+	local minimo = UIBuilder.MinimoTactil()
+	local tactil = UIBuilder.EsTactil()
+	for restriccion in pairs(restriccionesTactiles) do
+		if restriccion.Parent == nil then
+			restriccionesTactiles[restriccion] = nil
+		elseif tactil then
+			restriccion.MinSize = Vector2.new(minimo, minimo)
 		end
 	end
 	ultimaEscalaTotal = total
@@ -1088,6 +1113,9 @@ function UIBuilder.Entrada(parent, placeholder, props)
 	local borde = UIBuilder.Borde(caja, Colores.Borde)
 	UIBuilder.Relleno(caja, 8, 8, 10, 10)
 
+	if UIBuilder.EsTactil() then
+		UIBuilder.AsegurarTactil(caja)
+	end
 	local max = tonumber(props.Max)
 	local recortando = false
 	caja:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1188,6 +1216,10 @@ local function filaControl(parent, texto, props)
 	end
 	UIBuilder.Esquinas(fila, UITheme.RadioPequeno)
 	UIBuilder.Relleno(fila, 0, 0, 10, 8)
+	if UIBuilder.EsTactil() then
+		-- La fila entera es zona táctil: nunca menos de 44 px aunque baje la escala de texto.
+		UIBuilder.AsegurarTactil(fila)
+	end
 	local anchoDerecha = tonumber(props.AnchoDerecha) or 80
 	local etiqueta = Instance.new("TextLabel")
 	etiqueta.Name = "Etiqueta"

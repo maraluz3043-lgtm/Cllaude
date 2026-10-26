@@ -59,8 +59,9 @@ local GRAFICOS = Config.Graficos or {}
 local DISTANCIA_DECORACION = tonumber(GRAFICOS.DistanciaDecoracionLejana) or 350
 local FPS_AVISO = tonumber(GRAFICOS.FPSAvisoBajos) or 25
 local FPS_AVISO_SEG = tonumber(GRAFICOS.FPSAvisoSeg) or 10
-local INTERVALO_METRICAS = math.max(30, tonumber(Config.Metricas and Config.Metricas.IntervaloClienteSeg) or 30)
 local INTERVALO_REVISION = 2 -- Revisión de decoración lejana y de valores restaurados por el servidor (no por frame).
+-- Envío de FPS (StaffAction "Metrica"); MetricsService acepta 1 cada 30 s por jugador.
+local INTERVALO_METRICAS = math.max(INTERVALO_REVISION, tonumber(Config.Metricas and Config.Metricas.IntervaloClienteSeg) or 30)
 local GRACIA_FPS_SEG = 15 -- Segundos iniciales sin evaluar el FPS (carga del mapa).
 local TAG_DECORACION = (Config.Tags and Config.Tags.Decoracion) or "ColegioRP_Decoracion"
 local PREFIJO = (Config.Nombres and Config.Nombres.PrefijoPantallas) or "ColegioRP_"

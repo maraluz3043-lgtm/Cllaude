@@ -128,6 +128,11 @@ local function obtenerControlador(nombre)
 	return nil
 end
 
+-- Pestañas horizontales en móvil o en pantallas estrechas; lista lateral en el resto.
+local function usarPestanas()
+	return UIBuilder.EsEstrecho() or UITheme.Dispositivo() == "Movil"
+end
+
 local function plataformaDetectada()
 	return CLAVE_CONTROLES[UITheme.Dispositivo()] or "PC"
 end
@@ -357,7 +362,7 @@ local function construirUI()
 	local gui = UIBuilder.Pantalla("Ayuda", ORDEN_PANTALLA)
 	ui.Gui = gui
 	ui.Botones = {}
-	ui.Estrecho = UIBuilder.EsEstrecho()
+	ui.Estrecho = usarPestanas()
 	local contenedor = UIBuilder.Contenedor(gui)
 	local panel, cuerpo = UIBuilder.Panel(contenedor, {
 		Nombre = "PanelAyuda",
@@ -402,7 +407,7 @@ local function construirUI()
 	local arriba = altoControl + espacio
 	local navegacion
 	if ui.Estrecho then
-		-- Pantallas estrechas (móvil): pestañas horizontales con desplazamiento.
+		-- Móvil o pantallas estrechas: pestañas horizontales con desplazamiento.
 		local altoPestanas = altoControl + 10
 		navegacion = UIBuilder.Lista(cuerpo, {
 			Nombre = "Pestanas", Horizontal = true, Espaciado = 6,
@@ -459,7 +464,7 @@ end
 local function asegurarUI()
 	local necesita = not ui.Gui or ui.Gui.Parent == nil or not ui.Panel or ui.Panel.Parent == nil
 	-- Si cambió el ancho de pantalla (rotación, ventana), se rehace con la disposición adecuada.
-	if not necesita and ui.Estrecho ~= UIBuilder.EsEstrecho() then
+	if not necesita and ui.Estrecho ~= usarPestanas() then
 		necesita = true
 	end
 	if necesita then

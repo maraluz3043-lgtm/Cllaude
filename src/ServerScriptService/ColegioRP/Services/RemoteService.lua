@@ -5,7 +5,8 @@
 	desde RemoteContracts, y para cada petición comprueba tabla, esquema (Validate), límite por jugador (ventana
 	deslizante), permiso del cargo y distancia opcional antes de llamar al handler registrado en pcall. Los
 	rechazos se auditan y alimentan el contador de sospecha. Canal servidor->cliente: Enviar / EnviarATodos /
-	EnviarAZona / EnviarAAula sobre el RemoteEvent EventoCliente.
+	EnviarAZona / EnviarAAula sobre el RemoteEvent EventoCliente. Publica además el handler por defecto de
+	StateSnapshot (los servicios aportan sus partes con AportarSnapshot).
 ]]
 
 local Players = game:GetService("Players")
@@ -32,6 +33,10 @@ local VENTANA_SOSPECHOSO = (Config.Red and Config.Red.VentanaSospechosoSeg) or 6
 RemoteService.ToleranciaDistancia = 2
 -- Motivos de rechazo que no se atribuyen al jugador (no cuentan para la sospecha).
 RemoteService.MotivosSinCulpa = { sin_servicio = true, error_interno = true }
+-- Segundos mínimos entre entradas de auditoría "limite" del mismo jugador y remoto (evita vaciar el buffer).
+RemoteService.IntervaloAuditoriaLimiteSeg = 5
+-- Espera máxima (s) del perfil al construir el StateSnapshot por defecto.
+RemoteService.EsperaPerfilSnapshotSeg = 5
 
 ---------------------------------------------------------------------------------------------------
 -- Utilidades
@@ -69,6 +74,9 @@ function RemoteService:Init(registro)
 	self.Conexiones = {}
 	self.Ventanas = {} -- userId -> nombre -> { os.clock ... }
 	self.Rechazos = {} -- userId -> { os.clock ... } (ventana de sospecha)
+	self.UltimoAvisoSospecha = {} -- userId -> os.clock() del último aviso de sospecha
+	self.UltimaAuditoriaLimite = {} -- userId -> nombre -> os.clock() de la última auditoría "limite"
+	self.PartesSnapshot = {} -- clave -> fn(player) -> valor (StateSnapshot por defecto)
 	self.Estadisticas = {
 		Peticiones = 0, Aceptadas = 0, Rechazos = 0, Errores = 0,
 		PorMotivo = {}, PorRemoto = {}, Tiempos = {}, Sospechosos = 0,
@@ -83,7 +91,16 @@ function RemoteService:Start()
 	table.insert(self.Conexiones, Players.PlayerRemoving:Connect(function(player)
 		self.Ventanas[player.UserId] = nil
 		self.Rechazos[player.UserId] = nil
+		self.UltimoAvisoSospecha[player.UserId] = nil
+		self.UltimaAuditoriaLimite[player.UserId] = nil
 	end))
+	-- StateSnapshot por defecto (un servicio puede sustituirlo registrando su propio handler).
+	if not self.Handlers.StateSnapshot then
+		self:Registrar("StateSnapshot", function(player)
+			return RemoteContracts.Ok(self:ConstruirSnapshot(player))
+		end)
+		self.Handlers.StateSnapshot.Defecto = true
+	end
 	if self.AuditLog then
 		self.AuditLog:Registrar("Sistema", nil, "Remotos", #RemoteContracts.Nombres .. " remotos publicados en ReplicatedStorage.ColegioRP." .. NOMBRE_CARPETA)
 	end
@@ -148,13 +165,14 @@ function RemoteService:CrearRemoto(nombre, def)
 	if def.Direccion ~= "C2S" then
 		return
 	end
+	-- Toda petición lleva un único argumento (tabla); los argumentos extra se cuentan para rechazarlos.
 	if clase == "RemoteFunction" then
-		instancia.OnServerInvoke = function(player, datos)
-			return self:Procesar(nombre, player, datos)
+		instancia.OnServerInvoke = function(player, datos, ...)
+			return self:Procesar(nombre, player, datos, select("#", ...))
 		end
 	else
-		table.insert(self.Conexiones, instancia.OnServerEvent:Connect(function(player, datos)
-			self:Procesar(nombre, player, datos)
+		table.insert(self.Conexiones, instancia.OnServerEvent:Connect(function(player, datos, ...)
+			self:Procesar(nombre, player, datos, select("#", ...))
 		end))
 	end
 end
@@ -185,7 +203,7 @@ function RemoteService:Registrar(nombre, handler, opciones)
 		warn(PREFIJO .. " Registrar: '" .. nombre .. "' es S2C y no admite handler.")
 		return false
 	end
-	if self.Handlers[nombre] then
+	if self.Handlers[nombre] and not self.Handlers[nombre].Defecto then
 		warn(PREFIJO .. " El handler de '" .. nombre .. "' ya estaba registrado; se reemplaza.")
 	end
 	local posicion = nil
@@ -251,6 +269,12 @@ function RemoteService:ContarSospecha(player)
 	end
 	local cantidad = #lista
 	table.clear(lista)
+	-- Un jugador ya avisado en esta ventana no repite auditoría ni avisos (no se inunda a moderación).
+	local ultimoAviso = self.UltimoAvisoSospecha[userId]
+	if ultimoAviso and ahora - ultimoAviso < VENTANA_SOSPECHOSO then
+		return
+	end
+	self.UltimoAvisoSospecha[userId] = ahora
 	self.Estadisticas.Sospechosos = self.Estadisticas.Sospechosos + 1
 	pcall(function()
 		player:SetAttribute("Sospechoso", true)
@@ -289,7 +313,24 @@ function RemoteService:Rechazar(player, nombre, motivo, detalle)
 	if detalle ~= nil and detalle ~= "" then
 		texto = motivo .. ": " .. tostring(detalle)
 	end
-	if self.AuditLog then
+	-- Los rechazos por límite de un mismo jugador y remoto se auditan como máximo uno cada
+	-- IntervaloAuditoriaLimiteSeg (una ráfaga no vacía el buffer circular de auditoría).
+	local auditar = true
+	if motivo == "limite" and esJugador(player) then
+		local porJugador = self.UltimaAuditoriaLimite[player.UserId]
+		if not porJugador then
+			porJugador = {}
+			self.UltimaAuditoriaLimite[player.UserId] = porJugador
+		end
+		local ahora = os.clock()
+		local ultimo = porJugador[nombre]
+		if ultimo and ahora - ultimo < self.IntervaloAuditoriaLimiteSeg then
+			auditar = false
+		else
+			porJugador[nombre] = ahora
+		end
+	end
+	if auditar and self.AuditLog then
 		self.AuditLog:Registrar("Remoto", player, nombre, texto)
 	end
 	-- Métricas de rechazos (MetricsService es opcional y arranca después).
@@ -309,7 +350,7 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Procesamiento de peticiones
 ---------------------------------------------------------------------------------------------------
-function RemoteService:Procesar(nombre, player, datos)
+function RemoteService:Procesar(nombre, player, datos, argumentosExtra)
 	self.Estadisticas.Peticiones = self.Estadisticas.Peticiones + 1
 	local porRemoto = self.Estadisticas.PorRemoto[nombre]
 	if porRemoto then
@@ -323,20 +364,24 @@ function RemoteService:Procesar(nombre, player, datos)
 		return self:Rechazar(player, nombre, "remoto_desconocido")
 	end
 
-	-- 1. Los datos deben ser una tabla (único argumento).
+	-- 1. Límite de frecuencia por jugador (ventana deslizante). Va primero para que una ráfaga de cargas
+	-- inválidas no esquive el límite ni cueste la validación completa.
+	if not self:DentroDelLimite(player, nombre) then
+		return self:Rechazar(player, nombre, "limite")
+	end
+
+	-- 2. Los datos deben ser una tabla y el único argumento.
 	if typeof(datos) ~= "table" then
 		return self:Rechazar(player, nombre, "datos_no_tabla", typeof(datos))
 	end
+	if typeof(argumentosExtra) == "number" and argumentosExtra > 0 then
+		return self:Rechazar(player, nombre, "argumentos_extra", argumentosExtra)
+	end
 
-	-- 2. Esquema declarado en RemoteContracts.
+	-- 3. Esquema declarado en RemoteContracts.
 	local okEsquema, errEsquema = RemoteContracts.Validar(nombre, datos)
 	if not okEsquema then
 		return self:Rechazar(player, nombre, "esquema", errEsquema)
-	end
-
-	-- 3. Límite de frecuencia por jugador (ventana deslizante).
-	if not self:DentroDelLimite(player, nombre) then
-		return self:Rechazar(player, nombre, "limite")
 	end
 
 	-- 4. Permiso del cargo (fijo o según la acción).
@@ -550,6 +595,92 @@ function RemoteService:EnviarAAula(roomId, tipo, datos)
 		end
 	end
 	return 0
+end
+
+---------------------------------------------------------------------------------------------------
+-- StateSnapshot por defecto: { Jornada, Rol, Economia, Ajustes, Aula, Anuncios, Version, HoraServidor }
+---------------------------------------------------------------------------------------------------
+
+-- Llama servicio:metodo(...) en pcall si existe; devuelve el primer resultado o nil.
+local function consultar(servicio, metodo, ...)
+	if typeof(servicio) ~= "table" or typeof(servicio[metodo]) ~= "function" then
+		return nil
+	end
+	local ok, resultado = pcall(servicio[metodo], servicio, ...)
+	if not ok then
+		warn(PREFIJO .. " " .. tostring(servicio.Nombre) .. ":" .. tostring(metodo) .. "() falló en StateSnapshot: " .. tostring(resultado))
+		return nil
+	end
+	return resultado
+end
+
+-- Un servicio aporta (o sustituye) un campo del snapshot: fn(player) -> valor serializable (sin Instances).
+-- Ejemplo: RemoteService:AportarSnapshot("Aula", function(player) return ClassroomService:SnapshotDe(player) end)
+function RemoteService:AportarSnapshot(clave, fn)
+	if typeof(clave) ~= "string" or typeof(fn) ~= "function" then
+		return false
+	end
+	self.PartesSnapshot[clave] = fn
+	return true
+end
+
+-- Construye el snapshot del jugador con lo que aporten los servicios presentes (tolerante a ausencias).
+function RemoteService:ConstruirSnapshot(player)
+	local get = self.registro.Get
+	local DataService = get("DataService")
+	local perfil = consultar(DataService, "Obtener", player)
+	if perfil == nil then
+		perfil = consultar(DataService, "EsperarPerfil", player, self.EsperaPerfilSnapshotSeg)
+	end
+
+	local snapshot = {
+		Version = tostring(Config.Version or ""),
+		HoraServidor = workspace:GetServerTimeNow(),
+	}
+	snapshot.Rol = consultar(get("RoleService"), "DatosRol", player)
+	snapshot.Jornada = consultar(get("SchoolDayService"), "Snapshot", player)
+	local EconomyService = get("EconomyService")
+	local economia = consultar(EconomyService, "Snapshot", player)
+	if typeof(economia) ~= "table" then
+		local saldo = consultar(EconomyService, "Saldo", player)
+		if typeof(saldo) == "number" then
+			economia = { Saldo = saldo }
+		elseif typeof(perfil) == "table" and typeof(perfil.Economia) == "table" then
+			economia = { Saldo = perfil.Economia.Saldo, GanadoHoy = perfil.Economia.GanadoHoy }
+		end
+	end
+	snapshot.Economia = economia
+	if typeof(perfil) == "table" and typeof(perfil.Ajustes) == "table" then
+		local ajustes = {}
+		for clave, valor in pairs(perfil.Ajustes) do
+			ajustes[clave] = valor
+		end
+		snapshot.Ajustes = ajustes
+	end
+
+	-- Sesión de clase del jugador (si aplica) y últimos anuncios.
+	snapshot.Aula = consultar(get("ClassroomService"), "Snapshot", player)
+	local AnnouncementService = get("AnnouncementService")
+	local anuncios = consultar(AnnouncementService, "Historial")
+	if typeof(anuncios) ~= "table" then
+		anuncios = consultar(AnnouncementService, "Snapshot", player)
+	end
+	if typeof(anuncios) == "table" then
+		snapshot.Anuncios = anuncios
+	end
+
+	-- Partes aportadas con AportarSnapshot; sobrescriben a las anteriores.
+	for clave, fn in pairs(self.PartesSnapshot) do
+		local ok, valor = pcall(fn, player)
+		if ok then
+			if valor ~= nil then
+				snapshot[clave] = valor
+			end
+		else
+			warn(PREFIJO .. " La parte '" .. clave .. "' del StateSnapshot falló: " .. tostring(valor))
+		end
+	end
+	return snapshot
 end
 
 ---------------------------------------------------------------------------------------------------

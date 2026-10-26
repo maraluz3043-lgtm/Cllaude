@@ -4,6 +4,7 @@
 	Persistencia de perfiles (docs/ARQUITECTURA.md §4): carga al entrar con reintentos y backoff 1/2/4 s,
 	presupuesto de peticiones, migraciones por Version, saneamiento, caché Perfiles[userId], autoguardado,
 	guardado en PlayerRemoving y BindToClose, modo memoria en Studio sin acceso a la API y guardado de reportes.
+	Atiende SettingsUpdate (Perfil.Ajustes saneados).
 ]]
 
 local DataStoreService = game:GetService("DataStoreService")
@@ -369,11 +370,26 @@ function DataService:Init(registro)
 		UltimoError = "",
 	}
 	self.Conexiones = {}
+	self.ClavesReporte = {} -- clave base R_<unix>_<userId> -> repeticiones en esta sesión
 end
 
 function DataService:Start()
 	self.AuditLog = self.registro.Get("AuditLogService")
 	self:ConectarAlmacenes()
+
+	-- SettingsUpdate (RemoteEvent): RemoteService ya validó tabla, esquema y límite.
+	local RemoteService = self.registro.Get("RemoteService")
+	if RemoteService and typeof(RemoteService.Registrar) == "function" then
+		RemoteService:Registrar("SettingsUpdate", function(player, datos)
+			local ok, resultado = self:ActualizarAjustes(player, datos.Ajustes)
+			if not ok then
+				return RemoteContracts.Error(resultado)
+			end
+			return RemoteContracts.Ok({ Cambios = resultado })
+		end)
+	else
+		warn(PREFIJO .. " RemoteService no disponible: SettingsUpdate no tendrá handler.")
+	end
 
 	table.insert(self.Conexiones, Players.PlayerAdded:Connect(function(player)
 		task.spawn(function()
@@ -598,6 +614,7 @@ function DataService:Cargar(player)
 					RemoteService:Enviar(player, "Notificacion", {
 						Titulo = "Progreso temporal",
 						Texto = "No se pudo cargar tu progreso guardado. Puedes jugar, pero los cambios de esta sesión no se guardarán.",
+						Nivel = "aviso",
 						Tipo = "aviso",
 						Duracion = 8,
 					})
@@ -628,6 +645,36 @@ function DataService:Marcar(player)
 		return true
 	end
 	return false
+end
+
+-- Aplica ajustes del cliente a Perfil.Ajustes: solo claves conocidas que pasan su descriptor de
+-- RemoteContracts.EsquemaAjustes. Devuelve true, cambios | false, motivo.
+function DataService:ActualizarAjustes(player, ajustes)
+	if typeof(ajustes) ~= "table" then
+		return false, "ajustes_invalidos"
+	end
+	local perfil = self:Obtener(player)
+	if not perfil then
+		return false, "sin_perfil"
+	end
+	if typeof(perfil.Ajustes) ~= "table" then
+		perfil.Ajustes = {}
+	end
+	local cambios = 0
+	for _, clave in ipairs(RemoteContracts.ClavesAjustes or {}) do
+		local valor = ajustes[clave]
+		local descriptor = camposAjustes[clave]
+		if valor ~= nil and descriptor and Validate.ComprobarValor(descriptor, valor, clave) then
+			if perfil.Ajustes[clave] ~= valor then
+				perfil.Ajustes[clave] = valor
+				cambios = cambios + 1
+			end
+		end
+	end
+	if cambios > 0 then
+		self:Marcar(player)
+	end
+	return true, cambios
 end
 
 -- Espera a que el perfil esté cargado (hasta timeout segundos). Devuelve perfil o nil.
@@ -698,6 +745,9 @@ function DataService:Guardar(player, motivo)
 		return false, "en_curso"
 	end
 	meta.Guardando = true
+	-- Se limpia antes de guardar: un cambio hecho mientras UpdateAsync cede vuelve a marcarlo y no se pierde.
+	local estabaSucio = meta.Sucio
+	meta.Sucio = false
 
 	local saneado = self:Sanear(perfil)
 	saneado.Meta.UltimaSalida = os.time()
@@ -720,11 +770,13 @@ function DataService:Guardar(player, motivo)
 
 	meta.Guardando = false
 	if ok then
-		meta.Sucio = false
 		meta.UltimoGuardado = os.clock()
 		self.Estadisticas.Guardados = self.Estadisticas.Guardados + 1
 		self.PerfilGuardado:Fire(userId, true, motivo)
 		return true
+	end
+	if estabaSucio then
+		meta.Sucio = true
 	end
 	self.Estadisticas.GuardadosFallidos = self.Estadisticas.GuardadosFallidos + 1
 	if self.AuditLog then
@@ -791,7 +843,18 @@ function DataService:AlSalir(player)
 	end
 end
 
--- BindToClose: guarda todos los perfiles en paralelo y espera (máx. TIEMPO_CIERRE_MAX s).
+-- ¿Queda algún guardado en curso (salida de jugador o guardado lanzado)?
+function DataService:HayGuardadosEnCurso()
+	for _, meta in pairs(self.Meta) do
+		if meta.Saliendo or meta.Guardando then
+			return true
+		end
+	end
+	return false
+end
+
+-- BindToClose: guarda todos los perfiles en paralelo y espera (máx. TIEMPO_CIERRE_MAX s), incluidos los
+-- guardados de PlayerRemoving que ya estaban en curso.
 function DataService:AlCerrar()
 	self.Activo = false
 	local pendientes = 0
@@ -810,11 +873,11 @@ function DataService:AlCerrar()
 		return
 	end
 	local inicio = os.clock()
-	while pendientes > 0 and os.clock() - inicio < TIEMPO_CIERRE_MAX do
+	while (pendientes > 0 or self:HayGuardadosEnCurso()) and os.clock() - inicio < TIEMPO_CIERRE_MAX do
 		task.wait(0.2)
 	end
-	if pendientes > 0 then
-		warn(PREFIJO .. " Cierre con " .. pendientes .. " guardados sin confirmar.")
+	if pendientes > 0 or self:HayGuardadosEnCurso() then
+		warn(PREFIJO .. " Cierre con guardados sin confirmar (" .. pendientes .. " de cierre en curso).")
 	end
 end
 
@@ -830,6 +893,12 @@ function DataService:GuardarReporte(reporte)
 	end
 	local userId = numero(reporte.UserId, 0, 0, nil, true)
 	local clave = string.format("R_%d_%d", os.time(), userId)
+	-- Dos reportes del mismo jugador en el mismo segundo no se sobrescriben: R_<unix>_<userId>_<n>.
+	local repeticiones = self.ClavesReporte[clave]
+	self.ClavesReporte[clave] = (repeticiones or 0) + 1
+	if repeticiones then
+		clave = clave .. "_" .. repeticiones
+	end
 	local copia = copiaProfunda(reporte)
 	copia.UserId = userId
 	copia.Guardado = os.time()
