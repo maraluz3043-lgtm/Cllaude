@@ -307,6 +307,7 @@ function BoardService:Init(registro)
 	self.Vistas = {} -- roomId -> vista del tablero físico
 	self.Enviado = {} -- userId -> { RoomId, Version } (última copia completa/sincronizada del cliente)
 	self.UltimaAccion = {} -- userId -> { accion -> os.clock() }
+	self.Filtrando = {} -- userId -> true mientras su texto se filtra (una escritura a la vez por jugador)
 	self.DocenteConocido = {} -- roomId -> userId | 0 (detección de apertura/cierre de sesión)
 	self.CacheRed = {} -- roomId -> { Version, Trazos }
 	self.FramesGlobal = 0
@@ -941,7 +942,15 @@ function BoardService:_Escribir(player, roomId, texto)
 	local limpio = sanearTexto(texto, self.MaxCaracteres, self.MaxLineas)
 	local final = ""
 	if limpio ~= "" then
+		-- Una escritura a la vez por jugador: el filtrado cede el hilo y dos peticiones solapadas podrían
+		-- aplicarse en orden inverso.
+		if self.Filtrando[player.UserId] then
+			self.Estadisticas.Rechazos = self.Estadisticas.Rechazos + 1
+			return { ok = false, error = "rechazado:cooldown", Motivo = "cooldown" }
+		end
+		self.Filtrando[player.UserId] = true
 		local ok, filtrado = self:Filtrar(limpio, player)
+		self.Filtrando[player.UserId] = nil
 		if not ok then
 			self.Estadisticas.FiltrosFallidos = self.Estadisticas.FiltrosFallidos + 1
 			return self:_Rechazo(player, "filtro", "No se pudo filtrar el texto; inténtalo de nuevo en unos segundos.", roomId)
@@ -1185,7 +1194,14 @@ function BoardService:RevocarTurno(roomId, motivo)
 	if self.Turnos[roomId] == nil then
 		return false
 	end
-	return self:_FinTurno(roomId, typeof(motivo) == "string" and motivo or "Revocado")
+	if typeof(motivo) ~= "string" or motivo == "" then
+		motivo = "Revocado"
+		-- ClassroomService revoca sin motivo al cerrar la sesión (ya marcada como Cerrada): se avisa como tal.
+		if self:RequiereSesion() and self:DocenteDe(roomId) == nil then
+			motivo = "SesionCerrada"
+		end
+	end
+	return self:_FinTurno(roomId, motivo)
 end
 
 function BoardService:_DatosTurno(roomId, motivo)
@@ -1353,6 +1369,7 @@ function BoardService:AlSalir(player)
 	self:_FinTurnosDe(userId, "Salida")
 	self.Enviado[userId] = nil
 	self.UltimaAccion[userId] = nil
+	self.Filtrando[userId] = nil
 end
 
 -- Adelanta el siguiente ciclo (agrupa varios avisos en uno).
@@ -1711,7 +1728,7 @@ function BoardService:_RenderTextos(vista, estado)
 	vista.Proyeccion.Visible = proyecta
 	vista.ProyeccionTexto.Text = proyecta and ("Proyección: " .. estado.Proyeccion) or ""
 	if estado.ImagenId > 0 then
-		vista.Imagen.Image = "rbxassetid://" .. string.format("%.0f", estado.ImagenId)
+		vista.Imagen.Image = string.format("rbxthumb://type=Asset&id=%.0f&w=420&h=420", estado.ImagenId)
 		vista.Imagen.Visible = true
 	else
 		vista.Imagen.Image = ""

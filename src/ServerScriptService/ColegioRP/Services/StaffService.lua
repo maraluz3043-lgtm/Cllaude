@@ -1171,10 +1171,39 @@ local function describirCambios(cambios)
 	return table.concat(partes, "; ")
 end
 
--- Aplica los cambios vía SchoolDayService:Configurar. Devuelve true | false, mensaje.
+-- Códigos de rechazo de SchoolDayService traducidos para el panel.
+local MENSAJES_JORNADA = {
+	sin_cambios = "No hay cambios que aplicar.",
+	clave_desconocida = "La jornada no admite uno de los cambios.",
+	duracion_invalida = "Una de las duraciones no es válida para la jornada.",
+	estado_invalido = "Periodo desconocido.",
+	clase_invalida = "Solo los periodos de clase tienen materia.",
+	materia_invalida = "Materia desconocida.",
+	aula_invalida = "El aula indicada no existe.",
+	aula_llena = "El aula está completa.",
+	aula_con_docente = "El aula ya tiene un docente asignado.",
+	cargo_sin_aula = "Ese cargo no tiene aula.",
+	sin_aulas = "No hay aulas disponibles ahora.",
+	jugador_invalido = "El jugador no es válido.",
+}
+local function mensajeJornada(codigo, porDefecto)
+	if typeof(codigo) ~= "string" then
+		return porDefecto
+	end
+	local base = string.match(codigo, "^([%a_]+)") or codigo
+	return MENSAJES_JORNADA[base] or (porDefecto .. " (" .. Format.Truncar(codigo, 40) .. ")")
+end
+
+-- Aplica los cambios vía SchoolDayService:Configurar(tabla, actor). Devuelve true | false, mensaje.
 function StaffService:AplicarHorario(cambios, player)
-	local configuracion = { Duraciones = copiar(cambios.Duraciones), Materias = copiar(cambios.Materias) }
-	local ok, r1, r2 = self:Llamar("SchoolDayService", "Configurar", configuracion)
+	local configuracion = {}
+	if next(cambios.Duraciones) ~= nil then
+		configuracion.Duraciones = copiar(cambios.Duraciones)
+	end
+	if next(cambios.Materias) ~= nil then
+		configuracion.Materias = copiar(cambios.Materias)
+	end
+	local ok, r1, r2 = self:Llamar("SchoolDayService", "Configurar", configuracion, player)
 	if not ok then
 		if r1 == "sin_servicio" or r1 == "sin_metodo" then
 			return false, "La jornada escolar no está disponible."
@@ -1182,7 +1211,7 @@ function StaffService:AplicarHorario(cambios, player)
 		return false, "No se pudo aplicar el horario."
 	end
 	if r1 == false then
-		return false, tostring(r2 or "La jornada rechazó los cambios.")
+		return false, mensajeJornada(r2, "La jornada rechazó los cambios")
 	end
 	if typeof(r1) == "table" and r1.ok == false then
 		return false, tostring(r1.error or "La jornada rechazó los cambios.")
@@ -1325,8 +1354,9 @@ function StaffService:AsignarAulaInterna(objetivo, roomId)
 			if esAula(candidato) then
 				aula = candidato
 			end
-		elseif r1 == false then
-			return nil, tostring(r2 or "La jornada no pudo asignar el aula.")
+		elseif r1 == false or (r1 == nil and typeof(r2) == "string") then
+			-- AsignarAula devuelve nil, codigo (aula_llena, aula_con_docente, cargo_sin_aula, sin_aulas...).
+			return nil, mensajeJornada(r2, "La jornada no pudo asignar el aula")
 		end
 		if aula == nil then
 			-- AsignarAula sin valor de retorno: se toma el atributo Salon que haya fijado la jornada.
@@ -2074,6 +2104,11 @@ function StaffService:AccionAsistencia(player, datos)
 	normal.RoomId = datos.RoomId
 	normal.AulaNombre = nombreZona(datos.RoomId)
 	normal.Estado = self:EstadoJornada()
+	if typeof(asistencia) == "table" then
+		normal.Clase = typeof(asistencia.NombreClase) == "string" and asistencia.NombreClase or nil
+		normal.Materia = typeof(asistencia.MateriaNombre) == "string" and asistencia.MateriaNombre or nil
+		normal.Activa = asistencia.Activa == true
+	end
 	return exito(normal)
 end
 
@@ -2389,11 +2424,15 @@ function StaffService:AccionPorton(player, datos)
 		end
 		return fallo("No se pudo cambiar el portón.")
 	end
-	if r1 == false then
-		return fallo(tostring(r2 or "No se pudo cambiar el portón."))
-	end
-	if typeof(r1) == "table" and r1.ok == false then
-		return fallo(tostring(r1.error or "No se pudo cambiar el portón."))
+	if r1 == false or (typeof(r1) == "table" and r1.ok == false) then
+		local mensaje = tostring((typeof(r1) == "table" and r1.error) or r2 or "No se pudo cambiar el portón.")
+		-- DoorService exige estar junto a la puerta cuando actúa un jugador (control físico del portón).
+		if string.find(mensaje, "Acércate", 1, true) then
+			local def = MapaLogico.Puertas and MapaLogico.Puertas[puerta]
+			local distancia = (Config.Distancias and Config.Distancias.Puerta) or 14
+			mensaje = "Acércate al portón principal (" .. nombreZona(def and def.Zona or "ENTRADA") .. ", máx. " .. distancia .. " studs) para operarlo."
+		end
+		return fallo(mensaje)
 	end
 	local okEstado, estado = self:Llamar("DoorService", "Estado", puerta)
 	local texto = datos.Bloquear and "bloqueado" or "desbloqueado"

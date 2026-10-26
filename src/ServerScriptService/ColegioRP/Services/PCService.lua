@@ -830,11 +830,11 @@ function PCService:CalcularReloj()
 			end
 			local progreso = 0
 			if snap.Pausada == true then
-				if self.ProgresoCongelado and self.ProgresoCongelado.Estado == snap.Estado then
+				progreso = numeroFinito(snap.Progreso)
+				if progreso == nil and self.ProgresoCongelado and self.ProgresoCongelado.Estado == snap.Estado then
 					progreso = self.ProgresoCongelado.Valor
-				else
-					progreso = numeroFinito(snap.Progreso) or 0
 				end
+				progreso = progreso or 0
 			else
 				local inicioServidor = numeroFinito(snap.InicioServidor)
 				if inicioServidor and duracion > 0 then
@@ -2069,10 +2069,10 @@ function PCService:SoltarControlDocente(player, motivo)
 	end
 end
 
--- Fin de jornada: nueva clave de entregas, salas desbloqueadas y proyecciones retiradas (estado temporal).
+-- Fin de jornada: salas desbloqueadas y proyecciones retiradas (estado temporal). Las entregas de cuestionarios
+-- se renuevan solas cuando cambia la clave de jornada (número de SchoolDayService o contador local).
 function PCService:AlTerminarJornada()
 	self.JornadaLocal = self.JornadaLocal + 1
-	self.Entregas = { Clave = "", PorJugador = {} }
 	for roomId, sala in pairs(self.Salas) do
 		if sala.Bloqueado then
 			pcall(self.BloquearSala, self, roomId, false, nil, "Fin de la jornada.")

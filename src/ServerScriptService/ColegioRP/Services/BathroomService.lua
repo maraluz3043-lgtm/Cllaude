@@ -133,6 +133,7 @@ function BathroomService:Init(registro)
 	self.UltimaAuditoria = {} -- userId -> { ["id|motivo"] = os.clock() }
 	self.Conexiones = {}
 	self.Advertencias = {}
+	self.SinPieza = {} -- ids sin BasePart real cercana (sin prompt; el remoto sigue disponible)
 	self.UsosTotales = 0
 	self.Activo = false
 	self.Usado = Signal.new() -- (player, objetoId, accion)
@@ -285,6 +286,9 @@ function BathroomService:ConstruirObjetos()
 	end
 	local params, carpeta = self:ParametrosConsulta()
 	local MapService = self:Servicio("MapService")
+	if #zonas == 0 then
+		self:Advertir("No hay zonas de tipo \"banos\" en MapaLogico.")
+	end
 	for _, zona in ipairs(zonas) do
 		local objetos = zona.Objetos
 		if typeof(objetos) == "table" then
@@ -303,6 +307,10 @@ function BathroomService:ConstruirObjetos()
 				end
 			end
 		end
+	end
+	if #self.SinPieza > 0 then
+		self:Advertir(string.format("%d objetos sin pieza real a <= %d studs (sin prompt; el remoto sigue disponible): %s",
+			#self.SinPieza, self.RadioBusqueda, table.concat(self.SinPieza, " ")))
 	end
 end
 
@@ -324,7 +332,7 @@ function BathroomService:CrearObjeto(id, zona, def, punto, params, carpeta, MapS
 	self.Objetos[id] = objeto
 	table.insert(self.Orden, id)
 	if not parte then
-		self:Advertir("Objeto " .. id .. ": no hay pieza real a <= " .. self.RadioBusqueda .. " studs de " .. tostring(punto) .. " (sin prompt; el remoto sigue disponible).")
+		table.insert(self.SinPieza, id)
 		return
 	end
 

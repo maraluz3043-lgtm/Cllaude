@@ -83,6 +83,12 @@ SchoolDayService.TextosError = {
 	duraciones_invalidas = "Las duraciones deben ser una tabla { ESTADO = segundos }.",
 	materias_invalidas = "Las materias deben ser una tabla { CLASE_n = código }.",
 	pausa_invalida = "PausarSinJugadores debe ser verdadero o falso.",
+	clave_desconocida = "La configuración contiene una opción desconocida.",
+	estado_invalido = "Las duraciones incluyen un periodo que no existe.",
+	duracion_invalida = "Cada duración debe estar entre 5 y 3600 segundos.",
+	clase_invalida = "Solo los periodos de clase tienen materia.",
+	materia_invalida = "La materia indicada no existe.",
+	aula_invalida = "Alguna de las aulas indicadas no existe.",
 	error_interno = "Error interno del servidor.",
 }
 
@@ -765,7 +771,9 @@ function SchoolDayService:_Timbre(estado)
 	if not texto then
 		texto = "🔔 Comienza: " .. TimetableDefinitions.Nombre(estado)
 	end
-	self:_NotificarTodos(texto, "timbre", 5, { Estado = estado })
+	-- SonidoServidor indica al cliente que el sonido ya suena desde SoundService (evita oírlo dos veces).
+	local sonidoServidor = self.SonidoTimbreEnServidor == true and self:_IdTimbre() > 0
+	self:_NotificarTodos(texto, "timbre", 5, { Estado = estado, SonidoServidor = sonidoServidor })
 	self:_SonarTimbre()
 end
 
@@ -881,11 +889,21 @@ function SchoolDayService:Iniciar(actor)
 	if self.EstadoActual ~= ESTADO_INICIAL then
 		return false, "ya_iniciada"
 	end
+	if self._Avanzando then
+		return false, "en_curso"
+	end
+	local enEsperaAntes, pausadaAntes, motivoAntes = self.EnEspera, self.Pausada, self.MotivoPausa
 	self.EnEspera = false
 	self.Pausada = false
 	self.MotivoPausa = nil
 	local ok, resultado = self:_Avanzar("iniciar", actor)
 	if not ok then
+		-- Si no se llegó a salir de ESPERA se restaura su estado (en Manual no debe empezar la cuenta atrás).
+		if self.EstadoActual == ESTADO_INICIAL then
+			self.EnEspera = enEsperaAntes
+			self.Pausada = pausadaAntes
+			self.MotivoPausa = motivoAntes
+		end
 		return false, resultado
 	end
 	self:_Auditar("Sistema", actor, "JornadaIniciar", "Jornada " .. tostring(self.NumeroJornada) .. " iniciada")
@@ -1122,6 +1140,12 @@ function SchoolDayService:_AplicarConfiguracion(c)
 				self.InicioServidor = ahora() - transcurrido
 			end
 		end
+		-- La clase en curso adapta su tolerancia y su límite de ausencia (si no, una clase acortada podría
+		-- terminar antes de pasar lista y descartarse entera).
+		local clase = self.ClaseActual
+		if clase and not clase.Cerrada and clase.Estado == self.EstadoActual then
+			clase.Tolerancia, clase.LimiteAusencia = self:_LimitesAsistencia(self.Duracion)
+		end
 	end
 
 	if c.Materias then
@@ -1283,7 +1307,8 @@ function SchoolDayService:_FinalizarJornada(motivo, actor)
 	-- reciben la señal primero; después se cierran las sesiones que queden (en otro hilo: no bloquea).
 	self.JornadaTerminada:Fire(resumen)
 	task.spawn(function()
-		self:_Llamar("ClassroomService", "CerrarTodas", "fin_jornada")
+		-- ClassroomService muestra el motivo a los alumnos (SesionCerrada.Motivo): texto en español, no un código.
+		self:_Llamar("ClassroomService", "CerrarTodas", "Fin de la jornada escolar.")
 	end)
 	return resumen
 end
@@ -1686,13 +1711,18 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Asistencia
 ---------------------------------------------------------------------------------------------------
-function SchoolDayService:_IniciarAsistencia(estado)
-	local duracion = self.Duracion
+-- Tolerancia (Presente) y límite (Ausente) en segundos reales para una clase de 'duracion' con la escala vigente.
+function SchoolDayService:_LimitesAsistencia(duracion)
 	local escala = self.EscalaTiempo
 	local tolerancia = (tonumber(TimetableDefinitions.ToleranciaTardanzaSeg) or 60) * escala
 	tolerancia = acotar(tolerancia, 3, math.max(3, duracion * 0.5))
 	local limite = (tonumber(TimetableDefinitions.MarcarAusenciaSeg) or 180) * escala
 	limite = acotar(limite, tolerancia + 1, math.max(tolerancia + 1, duracion * 0.9))
+	return tolerancia, limite
+end
+
+function SchoolDayService:_IniciarAsistencia(estado)
+	local tolerancia, limite = self:_LimitesAsistencia(self.Duracion)
 	local materia = self:MateriaDe(estado)
 	local clase = {
 		Estado = estado,
@@ -1994,6 +2024,40 @@ function SchoolDayService:_DatosAsistenciaAula(clase, roomId)
 	}
 end
 
+-- Ocupación del aula con nombres { Sentados = {{UserId, Nombre}}, DePie = {...}, Capacidad, Total } (mismo
+-- formato que ClassroomService envía en "Asistencia"): el panel docente sustituye su lista de sentados/de pie
+-- con cada evento "Asistencia", así que la asistencia oficial debe llevarla para no vaciarla.
+function SchoolDayService:_OcupacionAula(roomId, docenteId)
+	local ok, ocupacion = self:_Llamar("ClassroomService", "OcupacionConNombres", roomId, docenteId)
+	if ok and typeof(ocupacion) == "table" and typeof(ocupacion.Sentados) == "table" and typeof(ocupacion.DePie) == "table" then
+		return ocupacion
+	end
+	local resultado = { Sentados = {}, DePie = {}, Capacidad = self:_Asientos(roomId), Total = 0 }
+	local okRoom, datos = self:_Llamar("RoomService", "Ocupacion", roomId)
+	if okRoom and typeof(datos) == "table" then
+		for _, clave in ipairs({ "Sentados", "DePie" }) do
+			local ids = datos[clave]
+			if typeof(ids) == "table" then
+				for _, userId in ipairs(ids) do
+					if typeof(userId) == "number" and userId ~= docenteId then
+						local jugador = Players:GetPlayerByUserId(userId)
+						local nombre = "Usuario " .. tostring(userId)
+						if jugador then
+							nombre = nombreJugador(jugador)
+						end
+						table.insert(resultado[clave], { UserId = userId, Nombre = nombre })
+					end
+				end
+			end
+		end
+		if esFinito(datos.Capacidad) then
+			resultado.Capacidad = datos.Capacidad
+		end
+	end
+	resultado.Total = #resultado.Sentados + #resultado.DePie
+	return resultado
+end
+
 -- Envía la asistencia al docente de la sesión de cada aula (ClassroomService:SesionDe(roomId)).
 -- aulas = { [roomId] = true } o nil para todas las de la clase.
 function SchoolDayService:_EnviarAsistenciaDocentes(clase, aulas, final)
@@ -2008,11 +2072,16 @@ function SchoolDayService:_EnviarAsistenciaDocentes(clase, aulas, final)
 			end
 			if docente then
 				local datos = self:_DatosAsistenciaAula(clase, roomId)
+				local ocupacion = self:_OcupacionAula(roomId, docenteId)
+				datos.Sentados = ocupacion.Sentados
+				datos.DePie = ocupacion.DePie
+				datos.Capacidad = tonumber(ocupacion.Capacidad) or 0
+				datos.Total = tonumber(ocupacion.Total) or (#ocupacion.Sentados + #ocupacion.DePie)
 				datos.Sub = "Asistencia"
 				datos.Origen = "Jornada"
 				datos.Final = final == true
 				datos.SessionId = sesion.SessionId
-				self:_Enviar(docente, "Aula", datos)
+				self:_Enviar(docente, "Aula", copiaSegura(datos))
 			end
 		end
 	end
@@ -2242,7 +2311,7 @@ function SchoolDayService:_RegistrarRemotos()
 	RemoteService:Registrar("StateSnapshot", function(player, datos)
 		return self:_ManejarSnapshot(player, datos)
 	end)
-	-- DataService no registra SettingsUpdate: se atiende aquí salvo que alguien ya lo haya registrado.
+	-- SettingsUpdate lo registra DataService (arranca antes); este respaldo solo se activa si nadie lo registró.
 	local yaRegistrado = false
 	if typeof(RemoteService.TieneHandler) == "function" then
 		local ok, tiene = pcall(RemoteService.TieneHandler, RemoteService, "SettingsUpdate")
@@ -2258,9 +2327,12 @@ end
 function SchoolDayService:_RechazoControl(player, accion, motivo)
 	self:_Auditar("Remoto", player, "JornadaControl", "rechazo_logico: " .. tostring(accion) .. " · " .. tostring(motivo))
 	local respuesta = RemoteContracts.Error(motivo or "rechazado")
+	-- Los códigos con detalle ("duracion_invalida:ESPERA") usan el texto de su prefijo.
+	local codigo = tostring(motivo or "rechazado")
+	local base = string.match(codigo, "^([%w_]+):") or codigo
 	respuesta.datos = {
 		Accion = accion,
-		Mensaje = self.TextosError[motivo] or tostring(motivo),
+		Mensaje = self.TextosError[codigo] or self.TextosError[base] or codigo,
 		Jornada = self:Snapshot(),
 	}
 	return respuesta

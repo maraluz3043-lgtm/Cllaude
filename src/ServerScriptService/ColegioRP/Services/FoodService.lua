@@ -168,6 +168,7 @@ function FoodService:Init(registro)
 	self.UltimaNuevaJornada = -math.huge
 	self.InicioJornadaLocal = os.clock()
 	self.UltimoReclamo = {} -- userId -> os.clock() (se conserva aunque el jugador salga: evita reclamar al reconectar)
+	self._ultimaPoda = os.clock() -- última limpieza de reclamos ya vencidos (evita que la tabla crezca sin límite)
 	self.UltimoPrompt = {} -- userId -> os.clock()
 	self.UltimaReposicion = {} -- userId -> os.clock()
 	self.Bandejas = {} -- userId -> Model
@@ -441,6 +442,16 @@ end
 
 function FoodService:_Tick()
 	self:_RevisarPeriodo()
+	-- Poda periódica de cooldowns vencidos (jugadores que ya se fueron incluidos).
+	local ahora = os.clock()
+	if ahora - self._ultimaPoda >= 60 then
+		self._ultimaPoda = ahora
+		for userId, instante in pairs(self.UltimoReclamo) do
+			if ahora - instante >= self.CooldownReclamo then
+				self.UltimoReclamo[userId] = nil
+			end
+		end
+	end
 	local receta = self.Receta
 	if receta and not receta.PasoEnCurso and os.clock() - receta.UltimaActividad > self.InactividadRecetaSeg then
 		self:_CancelarReceta("Receta abandonada por inactividad")
@@ -492,7 +503,12 @@ end
 
 -- Añade un lote. origen: "Cocina" (lote ya reservado por la receta), "Reposicion", "NPC" o "Admin" (sin límite).
 function FoodService:_AgregarLote(cantidad, origen, menu, player)
-	cantidad = math.floor(tonumber(cantidad) or self.RacionesPorLote)
+	cantidad = tonumber(cantidad) or self.RacionesPorLote
+	-- NaN / infinito (llamadas de otros servicios) se rechazan: math.min(max, NaN) llenaría el comedor.
+	if cantidad ~= cantidad or cantidad == math.huge or cantidad == -math.huge then
+		return false, "cantidad_invalida"
+	end
+	cantidad = math.floor(cantidad)
 	if cantidad <= 0 then
 		return false, "cantidad_invalida"
 	end
@@ -512,7 +528,10 @@ function FoodService:_AgregarLote(cantidad, origen, menu, player)
 		end
 	end
 	self.Menu = menu
-	self.Raciones = math.min(self:_MaxRaciones(), self.Raciones + cantidad)
+	local anterior = self.Raciones
+	self.Raciones = math.min(self:_MaxRaciones(), anterior + cantidad)
+	-- Lo que realmente se añadió (el tope de la jornada recorta cantidades grandes).
+	cantidad = math.max(0, self.Raciones - anterior)
 	self.Estadisticas.RacionesProducidas = self.Estadisticas.RacionesProducidas + cantidad
 	if origen == "Cocina" then
 		self.Estadisticas.LotesCocina = self.Estadisticas.LotesCocina + 1

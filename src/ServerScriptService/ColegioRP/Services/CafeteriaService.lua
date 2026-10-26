@@ -230,6 +230,7 @@ function CafeteriaService:Start()
 	table.insert(self.Conexiones, Players.PlayerRemoving:Connect(function(player)
 		local userId = player.UserId
 		self.Comprando[userId] = nil
+		self.UltimaCompra[userId] = nil
 		self.UltimoPrompt[userId] = nil
 		self.Observadores[userId] = nil
 		self.UltimaGestion[userId] = nil
@@ -887,16 +888,24 @@ function CafeteriaService:_Comprar(player, productoId, cantidad)
 		Modo = estado.Modo,
 		Vendedor = estado.Vendedor,
 	}
-	self:_RegistrarVenta(recibo, player)
-	self:_Enviar(player, "Cafeteria", { Sub = "Recibo", Recibo = recibo })
-	self.Vendido:Fire(player, recibo)
-	self:_ProgramarInventario()
-	-- Aviso al vendedor que atiende (si no es el comprador).
-	if estado.Modo == "Vendedor" and self.VendedorUserId and self.VendedorUserId ~= userId then
-		local vendedor = Players:GetPlayerByUserId(self.VendedorUserId)
-		if vendedor then
-			self:_Notificar(vendedor, "Venta: " .. detalle .. " a " .. player.DisplayName .. " (" .. Format.Moneda(total) .. ").", "info", 3)
+	-- El cobro y el stock ya están aplicados: un fallo al registrar o avisar no convierte la venta en error
+	-- (el cliente creería que no pagó). Se audita y se devuelve el recibo igualmente.
+	local okRegistro, errRegistro = pcall(function()
+		self:_RegistrarVenta(recibo, player)
+		self:_Enviar(player, "Cafeteria", { Sub = "Recibo", Recibo = recibo })
+		self.Vendido:Fire(player, recibo)
+		self:_ProgramarInventario()
+		-- Aviso al vendedor que atiende (si no es el comprador).
+		if estado.Modo == "Vendedor" and self.VendedorUserId and self.VendedorUserId ~= userId then
+			local vendedor = Players:GetPlayerByUserId(self.VendedorUserId)
+			if vendedor then
+				self:_Notificar(vendedor, "Venta: " .. detalle .. " a " .. player.DisplayName .. " (" .. Format.Moneda(total) .. ").", "info", 3)
+			end
 		end
+	end)
+	if not okRegistro then
+		warn(PREFIJO .. " Venta cobrada pero con error al registrarla (" .. recibo.Id .. "): " .. tostring(errRegistro))
+		self:_Auditar(player, "CompraRegistroError", recibo.Id .. ": " .. tostring(errRegistro))
 	end
 	return true, recibo
 end

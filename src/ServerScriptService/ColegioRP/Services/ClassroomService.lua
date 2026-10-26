@@ -54,6 +54,7 @@ ClassroomService.DistanciaAperturaMax = 12 -- Studs fuera de la caja del aula pa
 ClassroomService.SoloEnPeriodoClase = true -- Abrir sesión, actividades, respuestas, manos y tablero solo en CLASE_n.
 ClassroomService.CerrarAlTerminarPeriodo = true -- Al pasar a un periodo que no es de clase se cierran las sesiones.
 ClassroomService.IntervaloEstadoDocenteSeg = 1 -- Agrupa las actualizaciones de ocupación enviadas al docente.
+ClassroomService.LimpiarTableroAlCerrar = true -- Al cerrar la sesión se limpia el tablero del aula (BoardService:Limpiar).
 
 -- Segundos mínimos entre dos acciones iguales y aceptadas del mismo jugador.
 ClassroomService.Cooldowns = {
@@ -305,6 +306,18 @@ function ClassroomService:Start()
 	if RoomService and RoomService.OcupacionCambiada then
 		local conexion = conectar(RoomService.OcupacionCambiada, function(roomId)
 			self:ProgramarEstadoDocente(roomId)
+		end)
+		if conexion then
+			self.maid:GiveTask(conexion)
+		end
+	end
+
+	-- BoardService puede terminar el turno por su cuenta (vence, limpieza, otra aula, sesión cerrada):
+	-- la sesión se sincroniza para no bloquear nuevas invitaciones con un turno que ya no existe.
+	local BoardService = self.registro.Get("BoardService")
+	if BoardService and BoardService.TurnoCambiado then
+		local conexion = conectar(BoardService.TurnoCambiado, function(roomId, turno, motivo)
+			self:AlCambiarTurnoTablero(roomId, turno, motivo)
 		end)
 		if conexion then
 			self.maid:GiveTask(conexion)
@@ -988,10 +1001,15 @@ function ClassroomService:CerrarSesionInterna(sesion, motivo, actor)
 	sesion.State = "Cerrada"
 	sesion.ClosedAt = os.time()
 	if sesion.InvitadoTablero then
-		self:Llamar("BoardService", "RevocarTurno", roomId)
 		sesion.InvitadoTablero = nil
+		sesion.TurnoHasta = nil
+		self:Llamar("BoardService", "RevocarTurno", roomId)
 	end
 	self.Invitaciones[roomId] = nil
+	-- La próxima clase empieza con el tablero limpio (BoardService también limpia al terminar la jornada).
+	if self.LimpiarTableroAlCerrar then
+		self:Llamar("BoardService", "Limpiar", roomId, "Fin de la sesión")
+	end
 
 	-- Presentes al cierre cuentan como asistentes; clase completada para los estudiantes conectados.
 	for _, player in ipairs(self:JugadoresEnAula(roomId)) do
@@ -1046,9 +1064,10 @@ function ClassroomService:QuitarAlumno(userId, motivo)
 			self:EnviarDocente(sesion, "Invitacion", { UserId = userId, Nombre = inv.Nombre, Caducada = true, Motivo = motivo })
 		end
 		if sesion.InvitadoTablero == userId then
-			self:Llamar("BoardService", "RevocarTurno", roomId)
 			sesion.InvitadoTablero = nil
+			sesion.TurnoHasta = nil
 			sesion.TurnoToken = (sesion.TurnoToken or 0) + 1
+			self:Llamar("BoardService", "RevocarTurno", roomId)
 			self:EnviarAula(sesion, "TurnoTablero", { Fin = true, UserId = userId, Motivo = motivo })
 		end
 	end
@@ -1089,6 +1108,19 @@ function ClassroomService:AlCambiarPeriodo(estado, snapshot)
 	if not TimetableDefinitions.EsClase(estado) and next(self.Sesiones) ~= nil then
 		self:CerrarTodas("Terminó el periodo de clase (" .. TimetableDefinitions.Nombre(estado) .. ").")
 	end
+end
+
+-- Fin de turno decidido por BoardService (turno = nil): limpia el invitado de la sesión y avisa a la sala.
+function ClassroomService:AlCambiarTurnoTablero(roomId, turno, motivo)
+	local sesion = typeof(roomId) == "string" and self.Sesiones[roomId] or nil
+	if not sesion or sesion.State ~= "Abierta" or turno ~= nil or not sesion.InvitadoTablero then
+		return
+	end
+	local userId = sesion.InvitadoTablero
+	sesion.InvitadoTablero = nil
+	sesion.TurnoHasta = nil
+	sesion.TurnoToken = (sesion.TurnoToken or 0) + 1
+	self:EnviarAula(sesion, "TurnoTablero", { Fin = true, UserId = userId, Motivo = "Terminó el turno." })
 end
 
 -- Agrupa los cambios de ocupación y envía al docente la lista actualizada (Sub "Estado", Parcial = true).
@@ -1504,6 +1536,9 @@ function ClassroomService:AccionInvitarTablero(player, roomId, d)
 	if not objetivo or objetivo == player then
 		return self:Rechazo(player, "InvitarTablero", "objetivo", "Elige a un estudiante conectado.")
 	end
+	if not self:Tiene(objetivo, "aula.estudiante") then
+		return self:Rechazo(player, "InvitarTablero", "objetivo", objetivo.DisplayName .. " no es estudiante; solo se invita a estudiantes.")
+	end
 	if not self:EstaEnAula(objetivo, roomId) then
 		return self:Rechazo(player, "InvitarTablero", "objetivo_ausente", objetivo.DisplayName .. " no está en el aula.", true)
 	end
@@ -1549,10 +1584,10 @@ function ClassroomService:AccionRevocarTablero(player, roomId, d)
 		return rechazo
 	end
 	local habia = sesion.InvitadoTablero
-	self:Llamar("BoardService", "RevocarTurno", roomId)
 	sesion.InvitadoTablero = nil
 	sesion.TurnoHasta = nil
 	sesion.TurnoToken = (sesion.TurnoToken or 0) + 1
+	self:Llamar("BoardService", "RevocarTurno", roomId)
 	local inv = self.Invitaciones[roomId]
 	self.Invitaciones[roomId] = nil
 	if inv then
@@ -1819,13 +1854,18 @@ function ClassroomService:AccionAceptarInvitacion(player, roomId, d)
 		return rechazo
 	end
 	local turnoSeg = self.TurnoTableroSeg
-	local ok, resultado = self:Llamar("BoardService", "ConcederTurno", roomId, player, turnoSeg)
+	local ok, resultado, expira = self:Llamar("BoardService", "ConcederTurno", roomId, player, turnoSeg)
 	if not ok or resultado == false then
 		return self:Rechazo(player, "AceptarInvitacion", "tablero", "El tablero no está disponible ahora mismo.")
 	end
 	self.Invitaciones[roomId] = nil
 	sesion.InvitadoTablero = player.UserId
 	sesion.TurnoHasta = ahora() + turnoSeg
+	if esFinito(expira) and expira > ahora() then
+		-- BoardService acota la duración del turno: se usa su caducidad real.
+		sesion.TurnoHasta = expira
+		turnoSeg = math.max(1, math.floor(expira - ahora() + 0.5))
+	end
 	sesion.TurnoToken = (sesion.TurnoToken or 0) + 1
 	local token = sesion.TurnoToken
 	self:EnviarAula(sesion, "TurnoTablero", {
@@ -1845,10 +1885,21 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Consulta (cualquier cargo): estado para quien entra a mitad de clase
 ---------------------------------------------------------------------------------------------------
+-- Estado del tablero del aula para quien entra a mitad de clase (BoardController lo lee de datos.Tablero).
+function ClassroomService:EstadoTablero(roomId)
+	local ok, estado = self:Llamar("BoardService", "Estado", roomId)
+	if ok and typeof(estado) == "table" then
+		return estado
+	end
+	return nil
+end
+
 function ClassroomService:AccionConsultarEstado(player, roomId, d)
 	local sesion = self.Sesiones[roomId]
 	if sesion and sesion.TeacherUserId == player.UserId then
-		return exito(self:SnapshotDocente(sesion))
+		local datos = self:SnapshotDocente(sesion)
+		datos.Tablero = self:EstadoTablero(roomId)
+		return exito(datos)
 	end
 	local puedeDirigir = self:PuedeDirigir(player, roomId)
 	local acceso = self:EstaEnAula(player, roomId) or self:SalonDe(player) == roomId or puedeDirigir
@@ -1859,11 +1910,12 @@ function ClassroomService:AccionConsultarEstado(player, roomId, d)
 		local enClase, periodo = self:EnClase()
 		return exito({
 			SesionAbierta = false, RoomId = roomId, NombreAula = nombreAula(roomId), PuedeAbrir = puedeDirigir,
-			EnClase = enClase, Periodo = periodo, HoraServidor = ahora(),
+			EnClase = enClase, Periodo = periodo, HoraServidor = ahora(), Tablero = self:EstadoTablero(roomId),
 		})
 	end
 	local datos = self:SnapshotEstudiante(sesion, player)
 	datos.PuedeAbrir = false
+	datos.Tablero = self:EstadoTablero(roomId)
 	return exito(datos)
 end
 

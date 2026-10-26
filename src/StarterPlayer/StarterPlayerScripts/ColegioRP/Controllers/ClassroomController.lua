@@ -477,6 +477,11 @@ function ClassroomController:_ConstruirPanel()
 		self:_ConstruirActividadAlumno(self.paginas.Actividad)
 		self:_ConstruirClase(self.paginas.Clase)
 	end
+	-- Al reconstruir (cambio de cargo) el TextBox nace vacío: se repinta la página ya cargada para que
+	-- la siguiente edición no sustituya el texto guardado por uno vacío.
+	if self.cuaderno and self.ui.EntradaCuaderno then
+		self:_MostrarPaginaCuaderno()
+	end
 
 	self:_Reubicar()
 	self:_AplicarLayout()
@@ -534,7 +539,7 @@ function ClassroomController:_MostrarPestana(id)
 		boton:SetAttribute("Estilo", clave == id and "Primario" or "Secundario")
 		UIBuilder.Habilitar(boton, true)
 	end
-	if id == "Cuaderno" and not self.cuaderno then
+	if id == "Cuaderno" and not self.cuaderno and self.abierto then
 		self:_CargarCuaderno()
 	end
 	self:_RefrescarTodo()
@@ -577,6 +582,10 @@ function ClassroomController:Abrir(opciones)
 		end)
 	end
 	self.panel.Visible = true
+	-- El cuaderno se carga al abrir el panel por primera vez (nunca durante Init).
+	if self.paginas.Cuaderno and not self.cuaderno then
+		self:_CargarCuaderno()
+	end
 	self:_ActualizarAccionHUD()
 end
 
@@ -731,8 +740,11 @@ function ClassroomController:_CambioDeAula(nueva)
 		end
 		if propia and self.modo ~= "Personal" and self.cerradoManual ~= nueva then
 			self:Abrir({ Automatico = true })
-		elseif self.sala == nueva then
-			self:_ConsultarEstado(true)
+		end
+		-- Fuera del aula no llegan sus eventos: al entrar se refresca el estado (SesionCerrada, actividades...).
+		-- Sin forzar: si _RecalcularSala acaba de consultar, no se repite.
+		if self.sala == nueva then
+			self:_ConsultarEstado(false)
 		end
 	elseif anterior and self.abierto and self.abiertoAuto and self.pestana ~= "Cuaderno" then
 		self:Cerrar(false)
@@ -811,6 +823,11 @@ function ClassroomController:_ConsultarEstado(forzar)
 		local ok, respuesta = Net.Invocar("RequestClassAction", { Accion = "ConsultarEstado", Salon = sala, Datos = {} })
 		self.consultando = false
 		if self.sala ~= sala then
+			-- La sala cambió durante la consulta (la petición de la sala nueva se descartó por estar esta en
+			-- curso): se consulta la sala actual para no quedarse en "Consultando…".
+			if self.sala then
+				self:_ConsultarEstado(true)
+			end
 			return
 		end
 		if ok and typeof(respuesta.datos) == "table" then
@@ -907,9 +924,12 @@ end
 function ClassroomController:_AlEventoAula(datos)
 	local sub = datos.Sub
 	if sub == "Cuaderno" then
-		if not self:_HayPendientes() then
-			self:_CargarCuaderno()
+		-- Entrada añadida desde un PC: se recarga (los borradores sin guardar se conservan en la fusión).
+		local numero = tonumber(datos.Pagina)
+		if numero and self.pendientes[numero] then
+			self:_Notificar("Tienes cambios sin guardar en la página " .. numero .. ": al guardarlos sustituirán lo añadido desde el PC.", "aviso", 6)
 		end
+		self:_CargarCuaderno()
 		return
 	end
 	local roomId = datos.RoomId
@@ -1164,11 +1184,17 @@ function ClassroomController:_AplicarEstado(datos)
 	if typeof(datos) ~= "table" then
 		return
 	end
+	local sesionPropia = datos.SesionAbierta == true and datos.DocenteUserId == player.UserId
 	if datos.RoomId ~= nil and self.sala ~= nil and datos.RoomId ~= self.sala then
 		-- El docente con sesión en otra aula cambia de sala.
-		if not (datos.SesionAbierta and datos.DocenteUserId == player.UserId) then
+		if not sesionPropia then
 			return
 		end
+	end
+	if sesionPropia and typeof(datos.RoomId) == "string" and datos.RoomId ~= self.sala then
+		-- Cambio de sala antes de aplicar: así _RecalcularSala no reinicia (borra) el estado recién recibido.
+		self.sala = datos.RoomId
+		self:_ReiniciarEstadoSala()
 	end
 	self.estado = datos
 	if datos.Rol == "Docente" then
@@ -2284,6 +2310,18 @@ function ClassroomController:_CargarCuaderno()
 				if local_ then
 					paginas[n] = local_
 				end
+			end
+		end
+		-- Sin huecos: un borrador más allá de las páginas del servidor deja intermedias vacías (como el servidor).
+		local ultima = 0
+		for n in pairs(paginas) do
+			if typeof(n) == "number" and n > ultima then
+				ultima = n
+			end
+		end
+		for n = 1, ultima do
+			if paginas[n] == nil then
+				paginas[n] = { Pagina = n, Materia = "MAT", Texto = "", Actualizado = 0, Compartida = false }
 			end
 		end
 		self.cuaderno = { Titulo = d.Titulo or "Mi cuaderno", Paginas = paginas }

@@ -539,8 +539,10 @@ function NotebookService:Ver(player, d)
 		local texto = pagina.TextoFiltrado
 		if typeof(texto) ~= "string" then
 			-- Tras recargar el perfil TextoFiltrado no se conserva: se filtra de nuevo (nunca se muestra sin filtrar).
-			texto = filtrar(pagina.Texto or "", objetivo.UserId, nil)
-			if texto then
+			local original = pagina.Texto or ""
+			texto = filtrar(original, objetivo.UserId, nil)
+			-- El filtrado cede: solo se guarda en caché si la página no cambió ni dejó de compartirse mientras tanto.
+			if texto and pagina.Texto == original and pagina.Compartida then
 				pagina.TextoFiltrado = texto
 				modificado = true
 			end

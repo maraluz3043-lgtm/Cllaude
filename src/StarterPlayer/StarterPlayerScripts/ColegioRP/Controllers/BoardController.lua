@@ -621,7 +621,7 @@ local function renderTextos(e)
 	ui.Proyeccion.Visible = proyecta
 	ui.ProyeccionTexto.Text = proyecta and ("Proyección: " .. e.Proyeccion) or ""
 	if e.ImagenId > 0 then
-		ui.Imagen.Image = "rbxassetid://" .. string.format("%.0f", e.ImagenId)
+		ui.Imagen.Image = string.format("rbxthumb://type=Asset&id=%.0f&w=420&h=420", e.ImagenId)
 		ui.Imagen.Visible = true
 	else
 		ui.Imagen.Image = ""
@@ -951,7 +951,7 @@ local function alRecibirTablero(datos)
 			end
 			aplicarAutorizacion(e, datos)
 		end
-		if mio and (not abierto or roomActual ~= roomId) then
+		if mio and datos.Motivo == "Concedido" and (not abierto or roomActual ~= roomId) then
 			BoardController.Abrir(roomId)
 			if estados[roomId] then
 				local turno = normalizarTurno(datos)
@@ -1779,6 +1779,10 @@ function BoardController.Abrir(a, b)
 				return
 			end
 			acumulado = 0
+			-- Reabrir justo después de cerrar: la animación de Desaparecer puede ocultar el panel al terminar.
+			if ui.Panel and ui.Panel.Parent ~= nil and not ui.Panel.Visible then
+				ui.Panel.Visible = true
+			end
 			local e = roomActual and estados[roomActual]
 			if e and e.Turno and e.Turno.Expira > 0 and e.Turno.Expira <= ahoraServidor() then
 				e.Turno = nil

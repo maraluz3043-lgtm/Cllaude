@@ -9,7 +9,8 @@
 	- Filtros locales: el prompt de bloqueo solo se habilita para cargos autorizados (RPCargos / RPPermiso) y el de
 	  privacidad solo dentro del baño (RPPunto / RPNormal / RPReferencia). El servidor vuelve a validarlo todo.
 	- EventoCliente: "Puerta" (toasts de bloqueo y mensajes), "PC" AbrirEscritorio -> PCController:Abrir,
-	  "Cafeteria" AbrirPanel -> CafeteriaController:Abrir, "Comida" Abrir* -> FoodController (delegación tolerante).
+	  "Cafeteria" AbrirPanel -> CafeteriaController:Abrir, "Comida" Abrir* -> FoodController solo si no atiende
+	  su propio evento (delegación tolerante, sin doble apertura).
 ]]
 
 local Players = game:GetService("Players")
@@ -46,6 +47,13 @@ local DELEGACIONES = {
 		AbrirReclamo = { "FoodController", "Abrir" },
 		AbrirCocina = { "FoodController", "AbrirCocina", "Abrir" },
 	},
+}
+
+-- Controladores que ya escuchan su propio evento de apertura (no se delega para no abrir el panel dos veces).
+-- FoodController atiende "Comida" { Sub = "AbrirPanel" } por sí mismo. Otro controlador puede declararlo con
+-- ManejaAperturaPropia = true en su tabla.
+local APERTURA_PROPIA = {
+	FoodController = true,
 }
 
 local NOMBRE_FUNCION = {
@@ -667,8 +675,8 @@ function InteractionController:_Delegar(tipo, datos)
 	end
 	local nombreControlador = def[1]
 	local controlador = self.registro and self.registro.Get(nombreControlador)
-	-- Un controlador que ya atiende su propio evento lo declara para no abrir el panel dos veces.
-	if controlador and controlador.ManejaAperturaPropia == true then
+	-- Un controlador que ya atiende su propio evento no recibe la delegación (evita la doble apertura).
+	if controlador and (controlador.ManejaAperturaPropia == true or (APERTURA_PROPIA[nombreControlador] and controlador.ManejaAperturaPropia ~= false)) then
 		return
 	end
 	local metodo = nil

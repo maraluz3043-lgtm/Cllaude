@@ -72,6 +72,7 @@ FootballService.AutoInicio = true -- Sin árbitro conectado y con deporte permit
 FootballService.AutoInicioSeg = 15 -- Cuenta atrás del inicio automático.
 FootballService.PausaTrasPartidoSeg = 20 -- Pausa tras un partido antes de una nueva cuenta atrás automática.
 FootballService.FraccionParticipacionMin = 0.5 -- Fracción mínima (del partido y de presencia) para la recompensa.
+FootballService.DuracionLibreMinSeg = 60 -- Duración mínima de un partido sin árbitro recortado al resto del periodo.
 FootballService.AuditoriaRepeticionSeg = 5 -- Un mismo rechazo (jugador+motivo) se audita como máximo cada N s.
 FootballService.AvisoRechazoSeg = 2 -- Aviso al jugador de una patada rechazada como máximo cada N s.
 FootballService.TamanoBalon = 2 -- Diámetro del balón (studs).
@@ -844,6 +845,10 @@ function FootballService:_ActualizarMarcador()
 	if p.Estado == "EnJuego" then
 		ui.Tiempo.Text = Format.Tiempo(self:_Restante())
 		ui.Estado.Text = "EN JUEGO"
+	elseif self.autoInicioClock then
+		-- La cuenta atrás del inicio automático tiene prioridad sobre el resultado del partido anterior.
+		ui.Tiempo.Text = Format.Tiempo(self.DuracionPartidoSeg)
+		ui.Estado.Text = string.format("INICIO EN %d s", math.max(0, math.ceil(self.autoInicioClock - os.clock())))
 	elseif p.Estado == "Terminado" then
 		ui.Tiempo.Text = "FINAL"
 		local resultado = self.ultimoResultado
@@ -939,6 +944,8 @@ function FootballService:_RecolocarBalon(_motivo)
 		return
 	end
 	self.posAnterior = nil
+	-- Tras recolocar, un gol posterior no se atribuye a quien pateó antes del saque.
+	self.ultimoPateador = nil
 	local destino = CFrame.new(self.inicio or balon.Position)
 	pcall(function()
 		balon.Anchored = not self.activo
@@ -1377,12 +1384,35 @@ function FootballService:Iniciar(player)
 	return { ok = true, datos = self:Snapshot(player) }
 end
 
+-- Duración del partido. Uno sin árbitro ("Libre"/"Automatico") termina al acabar el periodo con deporte, así
+-- que se recorta a lo que queda del periodo (si la jornada corre): así puede terminar por tiempo y repartir la
+-- recompensa (con 300 s fijos, un partido del DESCANSO de 150 s nunca llegaba al 50 % exigido).
+function FootballService:_DuracionPartido(origen)
+	local duracion = self.DuracionPartidoSeg
+	if origen == "Arbitro" then
+		return duracion
+	end
+	local SchoolDay = self:_Servicio("SchoolDayService")
+	if not SchoolDay or typeof(SchoolDay.Snapshot) ~= "function" then
+		return duracion
+	end
+	local ok, snap = pcall(SchoolDay.Snapshot, SchoolDay)
+	if not ok or typeof(snap) ~= "table" or snap.Pausada == true then
+		return duracion
+	end
+	local restante = tonumber(snap.Restante)
+	if not esFinito(restante) or restante <= 0 then
+		return duracion
+	end
+	return math.max(self.DuracionLibreMinSeg, math.min(duracion, math.floor(restante - 1)))
+end
+
 function FootballService:_IniciarPartido(origen, player)
 	self.contadorPartidos = self.contadorPartidos + 1
 	local ahora = os.clock()
 	self.partido = {
 		Id = self.contadorPartidos, Estado = "EnJuego", Goles = { A = 0, B = 0 },
-		InicioClock = ahora, InicioServidor = servidorAhora(), Duracion = self.DuracionPartidoSeg,
+		InicioClock = ahora, InicioServidor = servidorAhora(), Duracion = self:_DuracionPartido(origen),
 		Origen = origen, IniciadoPor = player and player.UserId or nil,
 		IniciadoPorNombre = player and player.DisplayName or nil,
 		Libre = origen ~= "Arbitro", Participacion = {}, UltimoTick = ahora,
@@ -1539,13 +1569,19 @@ function FootballService:_Acreditar(premiados, monto, resultado)
 	local detalle = string.format("Partido de fútbol A %d - %d B", resultado.Goles.A, resultado.Goles.B)
 	for _, jugador in ipairs(premiados) do
 		task.spawn(function()
-			local ok, exito, saldo = pcall(Economy.Acreditar, Economy, jugador, monto, "Partido", detalle)
+			-- Acreditar devuelve ok, saldoOError, acreditado (puede ser parcial por el límite diario).
+			local ok, exito, saldo, acreditado = pcall(Economy.Acreditar, Economy, jugador, monto, "Partido", detalle)
 			if not ok then
 				self:_AvisarError("acreditar", exito)
 			elseif exito then
-				self:_Notificar(jugador, string.format("+%s por jugar el partido.", Format.Moneda(monto)), "exito")
-			elseif typeof(saldo) == "string" then
-				self:_Notificar(jugador, "No se acreditó la recompensa del partido: " .. saldo, "aviso")
+				local cantidad = tonumber(acreditado) or monto
+				if cantidad > 0 then
+					self:_Notificar(jugador, string.format("+%s por jugar el partido.", Format.Moneda(cantidad)), "exito")
+				end
+			elseif saldo ~= "limite_diario" then
+				-- El límite diario ya lo avisa EconomyService; el resto se explica sin códigos internos.
+				self:_Notificar(jugador, "No se pudo acreditar la recompensa del partido; inténtalo más tarde.", "aviso")
+				self:_Registrar("Economia", jugador, "RecompensaPartido", "no acreditada: " .. tostring(saldo))
 			end
 		end)
 	end
@@ -1622,9 +1658,18 @@ function FootballService:Estado()
 	}
 end
 
--- Estado para un jugador concreto: añade MiEquipo, EsArbitro y PuedeIniciar.
-function FootballService:Snapshot(player)
-	local estado = self:Estado()
+-- Estado para un jugador concreto: añade MiEquipo, EsArbitro y PuedeIniciar. 'base' (opcional) es un Estado()
+-- ya calculado: se copia en superficie para no recalcularlo por cada destinatario.
+function FootballService:Snapshot(player, base)
+	local estado = nil
+	if typeof(base) == "table" then
+		estado = {}
+		for clave, valor in pairs(base) do
+			estado[clave] = valor
+		end
+	else
+		estado = self:Estado()
+	end
 	if esJugador(player) then
 		estado.MiEquipo = self.equipoDe[player.UserId]
 		estado.EsArbitro = self:_EsArbitro(player)
@@ -1677,8 +1722,10 @@ function FootballService:_EmitirEstado()
 			if not RemoteService or typeof(RemoteService.Enviar) ~= "function" then
 				return
 			end
+			-- Estado() (equipos, árbitro conectado...) se calcula una vez; por jugador solo se añaden sus campos.
+			local base = self:Estado()
 			for _, player in ipairs(self:_Destinatarios()) do
-				RemoteService:Enviar(player, "Futbol", { Sub = "Estado", Estado = self:Snapshot(player) })
+				RemoteService:Enviar(player, "Futbol", { Sub = "Estado", Estado = self:Snapshot(player, base) })
 			end
 		end)
 		if not ok then
