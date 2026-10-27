@@ -36,7 +36,7 @@ MetricsService.Top = 10 -- Elementos de las listas "top" del informe.
 -- Valores reconocidos de los campos de texto enviados por el cliente (el resto se agrupa como "Otro";
 -- así ningún texto libre de un jugador llega al panel de otro jugador).
 MetricsService.DispositivosConocidos = { "PC", "Tableta", "Movil", "Mando", "Consola" }
-MetricsService.ModosConocidos = RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Bajos" }
+MetricsService.ModosConocidos = RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Medio", "Bajos" }
 
 local ESQUEMA_CLIENTE = Validate.Esquema({
 	FPS = Validate.Num(0, 1000),

@@ -149,4 +149,33 @@ return function()
 		local _, b = est:invocar("StaffAction", { Accion = "PanelDirector", Datos = {} })
 		Sim.afirmar(type(b) == "table" and b.ok == false, "un estudiante abrió el panel del director")
 	end)
+
+	Sim.prueba("Ajustes: panel con controles y modos Bajo/Medio/Alto", function()
+		local P = Sim.P
+		local est = Sim.jugador("Cliente", { cliente = true, dispositivo = "pc" })
+		Sim.avanzar(30)
+		local function pulsar(b)
+			P.ejecutarHastaTerminar(function() P.disparar(b.Activated) end, est.ctx, 5)
+			Sim.avanzar(3)
+		end
+		local function buscar(raiz, f)
+			for _, d in ipairs(raiz:GetDescendants()) do if f(d) then return d end end
+		end
+		local menu = est:gui("ColegioRP_Menu")
+		local bAj = menu and buscar(menu, function(d) return d.Name == "AJUSTES" end)
+		Sim.afirmar(bAj ~= nil, "no hay botón AJUSTES en el menú")
+		pulsar(bAj)
+		local gui = est:gui("ColegioRP_Ajustes")
+		local fila = gui and buscar(gui, function(d) return d.Name == "ModoGraficos" end)
+		Sim.afirmar(fila ~= nil, "no se construyó la fila de modos")
+		local n = 0
+		for _, d in ipairs(gui:GetDescendants()) do if d.Name == "Interruptor" and d.Parent and d.Parent.Parent then n = n + 1 end end
+		Sim.afirmar(n >= 8, "interruptores visibles: " .. n)
+		for _, modo in ipairs({ "Calidad", "Bajos", "Medio" }) do
+			pulsar(fila:FindFirstChild(modo))
+			Sim.avanzar(5)
+			Sim.afirmar(est.inst:GetAttribute("ModoGraficos") == modo, "modo " .. modo .. " -> " .. tostring(est.inst:GetAttribute("ModoGraficos")))
+		end
+		Sim.nota(n .. " interruptores; modos Alto/Bajo/Medio aplicados")
+	end)
 end

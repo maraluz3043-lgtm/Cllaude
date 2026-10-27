@@ -1,6 +1,6 @@
 {
  "version": "2.0.0",
- "generado": "2026-10-27T00:13:36.996451+00:00",
+ "generado": "2026-10-27T00:46:03.317619+00:00",
  "archivos": [
   {
    "destino": "ReplicatedFirst.ColegioRP_Carga",
@@ -21,7 +21,7 @@
    "clase": "ModuleScript",
    "origen": "src/ReplicatedStorage/ColegioRP/Shared/Config.lua",
    "lineas": 321,
-   "sha1": "dec6cabc284b"
+   "sha1": "2904f43fe4f8"
   },
   {
    "destino": "ReplicatedStorage.ColegioRP.Shared.MapaLogico",
@@ -35,7 +35,7 @@
    "clase": "ModuleScript",
    "origen": "src/ReplicatedStorage/ColegioRP/Shared/RemoteContracts.lua",
    "lineas": 509,
-   "sha1": "01b18f9f2030"
+   "sha1": "1fd657c82cda"
   },
   {
    "destino": "ReplicatedStorage.ColegioRP.Shared.RoleDefinitions",
@@ -161,7 +161,7 @@
    "clase": "ModuleScript",
    "origen": "src/ServerScriptService/ColegioRP/Services/DataService.lua",
    "lineas": 984,
-   "sha1": "225ea60a0c97"
+   "sha1": "fa196a5f1488"
   },
   {
    "destino": "ServerScriptService.ColegioRP.Services.DoorService",
@@ -203,7 +203,7 @@
    "clase": "ModuleScript",
    "origen": "src/ServerScriptService/ColegioRP/Services/MetricsService.lua",
    "lineas": 579,
-   "sha1": "b10b6e311a3f"
+   "sha1": "4416c56819c4"
   },
   {
    "destino": "ServerScriptService.ColegioRP.Services.ModerationService",
@@ -363,8 +363,8 @@
    "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.SettingsController",
    "clase": "ModuleScript",
    "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/SettingsController.lua",
-   "lineas": 1569,
-   "sha1": "3fcb842b67e8"
+   "lineas": 1713,
+   "sha1": "a92254f9897d"
   },
   {
    "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.Controllers.StaffController",
@@ -391,8 +391,8 @@
    "destino": "StarterPlayer.StarterPlayerScripts.ColegioRP.UI.UIBuilder",
    "clase": "ModuleScript",
    "origen": "src/StarterPlayer/StarterPlayerScripts/ColegioRP/UI/UIBuilder.lua",
-   "lineas": 1913,
-   "sha1": "9b7bb5d929e3"
+   "lineas": 1923,
+   "sha1": "9adb9db55da2"
   }
  ]
 }

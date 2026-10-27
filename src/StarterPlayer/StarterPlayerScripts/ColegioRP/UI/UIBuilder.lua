@@ -1087,6 +1087,15 @@ function UIBuilder.Boton(parent, texto, onClick, props)
 end
 
 -- Activa o desactiva un botón creado con Boton (color apagado, sin foco de mando).
+-- Cambia el estilo de un botón ya creado ("Primario", "Secundario", "Exito", "Peligro"...).
+function UIBuilder.EstiloBoton(boton, estilo)
+	if typeof(boton) ~= "Instance" or not estilosBoton[estilo] then
+		return
+	end
+	boton:SetAttribute("Estilo", estilo)
+	pintarBoton(boton, "Normal")
+end
+
 function UIBuilder.Habilitar(boton, habilitado)
 	if typeof(boton) ~= "Instance" then
 		return
@@ -1278,6 +1287,7 @@ local function filaControl(parent, texto, props)
 		descripcion.Size = UDim2.new(1, -anchoDerecha - 8, 0, 22)
 		descripcion.Parent = fila
 	end
+	fila.Parent = parent
 	return fila, etiqueta, alto
 end
 

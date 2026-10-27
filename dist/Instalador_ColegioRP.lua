@@ -2453,7 +2453,7 @@ Config.Moderacion = {
 -- Gráficos (SettingsController)
 ---------------------------------------------------------------------------------------------------
 Config.Graficos = {
-	ModoPorDefecto = "Automatico", -- "Automatico" | "Calidad" | "Bajos".
+	ModoPorDefecto = "Medio", -- "Bajos" | "Medio" | "Calidad" (lo elige el jugador; "Automatico" solo por compatibilidad).
 	DistanciaDecoracionLejana = 350, -- Distancia (studs) a partir de la cual se oculta la decoración pesada.
 	FPSAvisoBajos = 25, -- Si el FPS medio baja de este valor durante FPSAvisoSeg en modo Calidad, se sugiere Bajos.
 	FPSAvisoSeg = 10,
@@ -3470,7 +3470,7 @@ RemoteContracts.Acciones = {
 RemoteContracts.CategoriasReporte = { "Bug", "Abuso", "Duda", "Sugerencia" }
 RemoteContracts.Alcances = { "Global", "Aula" }
 RemoteContracts.EquiposFutbol = { "A", "B" }
-RemoteContracts.ModosGraficos = { "Automatico", "Calidad", "Bajos" }
+RemoteContracts.ModosGraficos = { "Automatico", "Calidad", "Medio", "Bajos" }
 
 -- Tipos del canal EventoCliente (servidor -> cliente).
 RemoteContracts.TiposEventoCliente = {
@@ -13104,13 +13104,13 @@ function DataService.PerfilPorDefecto()
 	return {
 		Version = ESQUEMA_VERSION,
 		Ajustes = {
-			ModoGraficos = graficos.ModoPorDefecto or "Automatico",
+			ModoGraficos = graficos.ModoPorDefecto or "Medio",
 			Particulas = true,
 			DecoracionLejana = true,
-			Postprocesado = true,
+			Postprocesado = false,
 			SonidosAmbiente = true,
-			AnimacionesCosmeticas = true,
-			LimiteEfectos = 2,
+			AnimacionesCosmeticas = false,
+			LimiteEfectos = 1,
 			EscalaTexto = 1,
 			MovimientoReducido = false,
 			Subtitulos = true,
@@ -21500,7 +21500,7 @@ MetricsService.Top = 10 -- Elementos de las listas "top" del informe.
 -- Valores reconocidos de los campos de texto enviados por el cliente (el resto se agrupa como "Otro";
 -- así ningún texto libre de un jugador llega al panel de otro jugador).
 MetricsService.DispositivosConocidos = { "PC", "Tableta", "Movil", "Mando", "Consola" }
-MetricsService.ModosConocidos = RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Bajos" }
+MetricsService.ModosConocidos = RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Medio", "Bajos" }
 
 local ESQUEMA_CLIENTE = Validate.Esquema({
 	FPS = Validate.Num(0, 1000),
@@ -49448,20 +49448,20 @@ do
 end
 
 local MODOS_VALIDOS = {}
-for _, modo in ipairs(RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Bajos" }) do
+for _, modo in ipairs(RemoteContracts.ModosGraficos or { "Automatico", "Calidad", "Medio", "Bajos" }) do
 	MODOS_VALIDOS[modo] = true
 end
 
 -- Valores por defecto (mismos que Perfil.Ajustes de DataService, docs/ARQUITECTURA.md §4) + claves locales.
 local PREDETERMINADOS = {
-	ModoGraficos = MODOS_VALIDOS[GRAFICOS.ModoPorDefecto] and GRAFICOS.ModoPorDefecto or "Automatico",
+	ModoGraficos = MODOS_VALIDOS[GRAFICOS.ModoPorDefecto] and GRAFICOS.ModoPorDefecto or "Medio",
 	Particulas = true,
 	DecoracionLejana = true,
-	Postprocesado = true,
+	Postprocesado = false,
 	Sombras = true,
 	SonidosAmbiente = true,
-	AnimacionesCosmeticas = true,
-	LimiteEfectos = 2,
+	AnimacionesCosmeticas = false,
+	LimiteEfectos = 1,
 	EscalaTexto = 1,
 	MovimientoReducido = false,
 	Subtitulos = true,
@@ -49487,12 +49487,19 @@ for _, entrada in ipairs(Catalogs.DecoracionPesada or {}) do
 end
 
 local NOMBRES_DISPOSITIVO = { PC = "PC", Tableta = "Tableta", Movil = "Móvil", Mando = "Mando / consola" }
-local NOMBRES_MODO = { Calidad = "Calidad", Bajos = "Bajos recursos", Automatico = "Automático" }
+local NOMBRES_MODO = { Calidad = "Calidad alta", Medio = "Calidad media", Bajos = "Bajos recursos", Automatico = "Automático" }
 
 local OPCIONES_MODO = {
-	{ Valor = "Automatico", Texto = "Automático" },
-	{ Valor = "Bajos", Texto = "Bajos recursos" },
-	{ Valor = "Calidad", Texto = "Calidad" },
+	{ Valor = "Bajos", Texto = "Bajo" },
+	{ Valor = "Medio", Texto = "Medio" },
+	{ Valor = "Calidad", Texto = "Alto" },
+}
+
+-- Al elegir un modo se fijan todos los interruptores gráficos a su nivel (luego se pueden retocar).
+local PRESETS_MODO = {
+	Bajos = { Particulas = false, DecoracionLejana = false, Postprocesado = false, Sombras = false, SonidosAmbiente = false, AnimacionesCosmeticas = false, LimiteEfectos = 0 },
+	Medio = { Particulas = true, DecoracionLejana = true, Postprocesado = false, Sombras = true, SonidosAmbiente = true, AnimacionesCosmeticas = false, LimiteEfectos = 1 },
+	Calidad = { Particulas = true, DecoracionLejana = true, Postprocesado = true, Sombras = true, SonidosAmbiente = true, AnimacionesCosmeticas = true, LimiteEfectos = 3 },
 }
 local OPCIONES_LIMITE = {
 	{ Valor = 0, Texto = "0 · ninguno" },
@@ -49664,7 +49671,7 @@ end
 -- de Roblox es <= 3 (cuando es legible); si no, Calidad (docs/ARQUITECTURA.md §7).
 function SettingsController.Modo()
 	local modo = ajustes.ModoGraficos
-	if modo == "Calidad" or modo == "Bajos" then
+	if modo == "Calidad" or modo == "Medio" or modo == "Bajos" then
 		return modo
 	end
 	local dispositivo = UITheme.Dispositivo()
@@ -49674,7 +49681,7 @@ function SettingsController.Modo()
 	if calidadRobloxBaja() then
 		return "Bajos"
 	end
-	return "Calidad"
+	return "Medio"
 end
 
 local function recalcularEfectivo()
@@ -49696,6 +49703,108 @@ local function recalcularEfectivo()
 	efectivo.LimiteEfectos = limite
 	efectivo.Espejo = ajustes.AnimacionesCosmeticas == true and not bajos
 	efectivo.AtmosferaReducida = bajos
+	-- Calidad alta: sin recorte por distancia de la decoración y realce visual local (ver aplicarAlta).
+	efectivo.Alta = modo == "Calidad"
+end
+
+-- Realce de "Calidad alta" solo en este cliente: resplandor, rayos de sol, color e iluminación ambiental
+-- completa. Se crea en la cámara y se retira al salir del modo, restaurando los valores originales.
+local altaEfectos = {}
+local altaOriginal = nil
+local function aplicarAlta()
+	local camara = workspace.CurrentCamera
+	if efectivo.Alta and camara then
+		if #altaEfectos == 0 then
+			local bloom = Instance.new("BloomEffect")
+			bloom.Name = "ColegioRP_AltaBloom"
+			bloom.Intensity = 0.35
+			bloom.Size = 24
+			bloom.Threshold = 1.2
+			local rayos = Instance.new("SunRaysEffect")
+			rayos.Name = "ColegioRP_AltaRayos"
+			rayos.Intensity = 0.04
+			rayos.Spread = 0.6
+			local color = Instance.new("ColorCorrectionEffect")
+			color.Name = "ColegioRP_AltaColor"
+			color.Saturation = 0.08
+			color.Contrast = 0.05
+			for _, efecto in ipairs({ bloom, rayos, color }) do
+				efecto.Parent = camara
+				table.insert(altaEfectos, efecto)
+			end
+		end
+		if altaOriginal == nil then
+			altaOriginal = { Difusa = Lighting.EnvironmentDiffuseScale, Especular = Lighting.EnvironmentSpecularScale }
+			Lighting.EnvironmentDiffuseScale = 1
+			Lighting.EnvironmentSpecularScale = 1
+		end
+	else
+		for _, efecto in ipairs(altaEfectos) do
+			efecto:Destroy()
+		end
+		altaEfectos = {}
+		if altaOriginal then
+			Lighting.EnvironmentDiffuseScale = altaOriginal.Difusa
+			Lighting.EnvironmentSpecularScale = altaOriginal.Especular
+			altaOriginal = nil
+		end
+	end
+end
+
+-- Materiales: en Bajo las piezas con material texturizado pasan a SmoothPlastic solo en este cliente
+-- (menos memoria de texturas y GPU); en Medio y Alto se restauran sus materiales originales. El lugar ya
+-- usa los materiales 2022 e iluminación Future, así que en Alto se ven con la máxima calidad que permita
+-- el nivel gráfico de Roblox del jugador.
+local MATERIALES_SIMPLES = {
+	[Enum.Material.Plastic] = true, [Enum.Material.SmoothPlastic] = true, [Enum.Material.Glass] = true,
+	[Enum.Material.Neon] = true, [Enum.Material.ForceField] = true,
+}
+local materialesOriginales = setmetatable({}, { __mode = "k" })
+local materialesSimplificados = false
+local tareaMateriales = nil
+local function aplicarMateriales()
+	local quiere = efectivo.Bajos == true
+	if quiere == materialesSimplificados then
+		return
+	end
+	materialesSimplificados = quiere
+	if tareaMateriales then
+		pcall(task.cancel, tareaMateriales)
+	end
+	tareaMateriales = task.spawn(function()
+		local n = 0
+		if quiere then
+			for _, inst in ipairs(workspace:GetDescendants()) do
+				if inst:IsA("BasePart") and not inst:IsA("Terrain") and not MATERIALES_SIMPLES[inst.Material] and not esDePersonaje(inst) then
+					if materialesOriginales[inst] == nil then
+						materialesOriginales[inst] = inst.Material
+					end
+					inst.Material = Enum.Material.SmoothPlastic
+					n = n + 1
+					if n % 300 == 0 then
+						task.wait()
+					end
+				end
+			end
+		else
+			local partes = {}
+			for parte in pairs(materialesOriginales) do
+				table.insert(partes, parte)
+			end
+			for _, parte in ipairs(partes) do
+				local material = materialesOriginales[parte]
+				if material and parte.Parent ~= nil then
+					parte.Material = material
+				end
+				materialesOriginales[parte] = nil
+				n = n + 1
+				if n % 300 == 0 then
+					task.wait()
+				end
+			end
+		end
+		tareaMateriales = nil
+	end)
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -49818,7 +49927,7 @@ local function aplicarDecoracion(inst, info, camPos)
 		ocultar = true
 	elseif info.Cosmetica and not efectivo.Cosmeticas then
 		ocultar = true
-	elseif camPos then
+	elseif camPos and not efectivo.Alta then
 		local posicion = posicionDe(inst)
 		if posicion and (posicion - camPos).Magnitude > DISTANCIA_DECORACION then
 			ocultar = true
@@ -50031,6 +50140,8 @@ local function aplicarTodo()
 		pcall(aplicarEspejo, marco, info)
 	end
 	pcall(aplicarSombras)
+	pcall(aplicarAlta)
+	pcall(aplicarMateriales)
 	aplicarAccesibilidad()
 	if efectivo.Modo ~= modoAnterior then
 		modoAnterior = efectivo.Modo
@@ -50245,9 +50356,6 @@ local function textoEstado()
 	local dispositivo = UITheme.Dispositivo()
 	local modo = SettingsController.Modo()
 	local texto = "Modo activo: " .. (NOMBRES_MODO[modo] or modo)
-	if ajustes.ModoGraficos == "Automatico" then
-		texto = texto .. " (automático)"
-	end
 	return texto .. " · Dispositivo: " .. (NOMBRES_DISPOSITIVO[dispositivo] or dispositivo)
 		.. " · FPS medio: " .. tostring(math.floor(fpsMedio + 0.5))
 end
@@ -50332,8 +50440,28 @@ local function construirUI()
 		Nombre = "Estado", Tamano = "Pequeno", Color = Colores.TextoSecundario, LayoutOrder = siguiente(),
 	})
 	UIBuilder.Subtitulo(lista, "Gráficos y rendimiento", { LayoutOrder = siguiente() })
-	selector("ModoGraficos", "Modo gráfico", OPCIONES_MODO)
-	UIBuilder.Texto(lista, "Automático usa Bajos recursos en móvil y tableta (o si la calidad gráfica de Roblox es 3 o menos) y Calidad en el resto. Bajos recursos apaga siempre partículas, postprocesado, sombras, decoración pesada, ventiladores y espejo, y reduce la niebla. Todo se aplica solo en tu dispositivo.", {
+	-- Modo gráfico: tres botones; el elegido se marca con ✓ y en verde.
+	UIBuilder.Texto(lista, "Modo gráfico", { LayoutOrder = siguiente() })
+	local filaModo = UIBuilder.Fila(lista, { LayoutOrder = siguiente(), Nombre = "ModoGraficos", Espaciado = 6 })
+	local botonesModo = {}
+	local control = {}
+	function control:Fijar(valor)
+		for _, entrada in ipairs(botonesModo) do
+			local elegido = entrada.Valor == valor
+			UIBuilder.TextoBoton(entrada.Boton, (elegido and "✓ " or "") .. entrada.Texto)
+			UIBuilder.EstiloBoton(entrada.Boton, elegido and "Exito" or "Secundario")
+		end
+	end
+	for i, opcion in ipairs(OPCIONES_MODO) do
+		local boton = UIBuilder.Boton(filaModo, opcion.Texto, function()
+			cambiar("ModoGraficos", opcion.Valor)
+		end, { Estilo = "Secundario", Ancho = 120, LayoutOrder = i, Nombre = opcion.Valor })
+		table.insert(botonesModo, { Valor = opcion.Valor, Texto = opcion.Texto, Boton = boton })
+	end
+	UIBuilder.Encadenar({ botonesModo[1].Boton, botonesModo[2].Boton, botonesModo[3].Boton }, true)
+	control:Fijar(ajustes.ModoGraficos)
+	ui.Controles.ModoGraficos = control
+	UIBuilder.Texto(lista, "Bajo: materiales simplificados, sin partículas, sombras, efectos ni decoración pesada (máximo rendimiento). Medio: materiales originales, sombras, partículas y decoración cercana. Alto: materiales de máxima calidad, todo activado al máximo, decoración a cualquier distancia y realce de luz y color. Para el máximo absoluto sube también la calidad gráfica de Roblox (Esc → Configuración). Todo se aplica solo en tu dispositivo.", {
 		Nombre = "NotaModo", Tamano = "Pequeno", Color = Colores.TextoApagado, LayoutOrder = siguiente(),
 	})
 	interruptor("Particulas", "Partículas", "Humo, chispas, fuego, rayos y estelas")
@@ -50487,9 +50615,21 @@ cambiar = function(clave, valor)
 	end
 	ajustes[clave] = saneado
 	tocadas[clave] = true
+	local preset = clave == "ModoGraficos" and PRESETS_MODO[saneado]
+	if preset then
+		for k, v in pairs(preset) do
+			if ajustes[k] ~= v then
+				ajustes[k] = v
+				tocadas[k] = true
+			end
+		end
+	end
 	aplicarTodo()
-	if not CLAVES_LOCALES[clave] then
+	if not CLAVES_LOCALES[clave] or preset then
 		programarGuardado()
+	end
+	if preset then
+		refrescarControles()
 	end
 	local control = ui.Controles[clave]
 	if control and typeof(control.Fijar) == "function" then
@@ -50923,6 +51063,10 @@ function SettingsController:Stop()
 		pcall(aplicarEspejo, marco, info)
 	end
 	pcall(aplicarSombras)
+	efectivo.Alta = false
+	pcall(aplicarAlta)
+	efectivo.Bajos = false
+	pcall(aplicarMateriales)
 	if ui.Gui then
 		UIBuilder.Destruir(ui.Gui)
 	end
@@ -55934,6 +56078,15 @@ function UIBuilder.Boton(parent, texto, onClick, props)
 end
 
 -- Activa o desactiva un botón creado con Boton (color apagado, sin foco de mando).
+-- Cambia el estilo de un botón ya creado ("Primario", "Secundario", "Exito", "Peligro"...).
+function UIBuilder.EstiloBoton(boton, estilo)
+	if typeof(boton) ~= "Instance" or not estilosBoton[estilo] then
+		return
+	end
+	boton:SetAttribute("Estilo", estilo)
+	pintarBoton(boton, "Normal")
+end
+
 function UIBuilder.Habilitar(boton, habilitado)
 	if typeof(boton) ~= "Instance" then
 		return
@@ -56125,6 +56278,7 @@ local function filaControl(parent, texto, props)
 		descripcion.Size = UDim2.new(1, -anchoDerecha - 8, 0, 22)
 		descripcion.Parent = fila
 	end
+	fila.Parent = parent
 	return fila, etiqueta, alto
 end
 

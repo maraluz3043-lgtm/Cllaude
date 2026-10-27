@@ -245,7 +245,7 @@ Config.Moderacion = {
 -- Gráficos (SettingsController)
 ---------------------------------------------------------------------------------------------------
 Config.Graficos = {
-	ModoPorDefecto = "Automatico", -- "Automatico" | "Calidad" | "Bajos".
+	ModoPorDefecto = "Medio", -- "Bajos" | "Medio" | "Calidad" (lo elige el jugador; "Automatico" solo por compatibilidad).
 	DistanciaDecoracionLejana = 350, -- Distancia (studs) a partir de la cual se oculta la decoración pesada.
 	FPSAvisoBajos = 25, -- Si el FPS medio baja de este valor durante FPSAvisoSeg en modo Calidad, se sugiere Bajos.
 	FPSAvisoSeg = 10,

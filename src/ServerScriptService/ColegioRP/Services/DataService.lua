@@ -135,13 +135,13 @@ function DataService.PerfilPorDefecto()
 	return {
 		Version = ESQUEMA_VERSION,
 		Ajustes = {
-			ModoGraficos = graficos.ModoPorDefecto or "Automatico",
+			ModoGraficos = graficos.ModoPorDefecto or "Medio",
 			Particulas = true,
 			DecoracionLejana = true,
-			Postprocesado = true,
+			Postprocesado = false,
 			SonidosAmbiente = true,
-			AnimacionesCosmeticas = true,
-			LimiteEfectos = 2,
+			AnimacionesCosmeticas = false,
+			LimiteEfectos = 1,
 			EscalaTexto = 1,
 			MovimientoReducido = false,
 			Subtitulos = true,

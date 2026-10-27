@@ -53,7 +53,7 @@ RemoteContracts.Acciones = {
 RemoteContracts.CategoriasReporte = { "Bug", "Abuso", "Duda", "Sugerencia" }
 RemoteContracts.Alcances = { "Global", "Aula" }
 RemoteContracts.EquiposFutbol = { "A", "B" }
-RemoteContracts.ModosGraficos = { "Automatico", "Calidad", "Bajos" }
+RemoteContracts.ModosGraficos = { "Automatico", "Calidad", "Medio", "Bajos" }
 
 -- Tipos del canal EventoCliente (servidor -> cliente).
 RemoteContracts.TiposEventoCliente = {
