@@ -1348,8 +1348,29 @@ local function reproducirIntro()
 	return true
 end
 
+-- DataService fija el atributo IntroVista al cargar el perfil. Si aún no existe (perfil en carga), se espera
+-- como mucho 3 s para no repetir la intro a quien ya la vio; pulsar Saltar durante la espera omite la intro.
+local function esperarDatosIntro()
+	local ok, valor = pcall(function()
+		return player:GetAttribute("IntroVista")
+	end)
+	if not ok or valor ~= nil then
+		return false
+	end
+	conectar(player:GetAttributeChangedSignal("IntroVista"), notificarCambio)
+	local pulsacionesAntes = estado.Pulsaciones
+	esperarHasta(function()
+		return player:GetAttribute("IntroVista") ~= nil or estado.Pulsaciones > pulsacionesAntes
+	end, 3)
+	return player:GetAttribute("IntroVista") == nil and estado.Pulsaciones > pulsacionesAntes
+end
+
 local introMostrada = false
-if not introYaVista() then
+local okDatos, omitirIntro = pcall(esperarDatosIntro)
+if not okDatos then
+	omitirIntro = false
+end
+if not omitirIntro and not introYaVista() then
 	local okIntro, resultado = pcall(reproducirIntro)
 	if okIntro then
 		introMostrada = resultado == true
@@ -2099,9 +2120,8 @@ Catalogs.Programacion = Programacion
 ---------------------------------------------------------------------------------------------------
 -- Cuestionarios por materia.
 -- CuestionariosPublicos: preguntas y opciones (el cliente puede mostrarlas).
--- CuestionariosRespuestas: índice de la opción correcta por pregunta. SOLO EL SERVIDOR (PCService /
--- ClassroomService) debe leer esta tabla para corregir; el cliente no debe usarla para mostrar
--- respuestas. Está en ReplicatedStorage por simplicidad (RP escolar, sin recompensas competitivas).
+-- Las respuestas correctas y la corrección viven solo en el servidor:
+-- ServerScriptService.ColegioRP.Datos.CuestionariosRespuestas (el cliente no puede leerlas).
 ---------------------------------------------------------------------------------------------------
 Catalogs.CuestionariosPublicos = {
 	{
@@ -2133,13 +2153,6 @@ Catalogs.CuestionariosPublicos = {
 	},
 }
 
--- SOLO SERVIDOR: índice (1..4) de la opción correcta de cada pregunta, por id de cuestionario.
-Catalogs.CuestionariosRespuestas = {
-	MAT_1 = { 3, 1, 4, 2 },
-	ESP_1 = { 3, 2, 1, 2 },
-	CIE_1 = { 2, 3, 1, 3 },
-}
-
 Catalogs.PuntosPorAcierto = (Config.Economia and Config.Economia.Recompensas and Config.Economia.Recompensas.Respuesta) or 5
 
 local cuestionariosPorId = {}
@@ -2165,28 +2178,6 @@ function Catalogs.CuestionarioDeMateria(materia)
 	return nil
 end
 
--- (Servidor) Corrige respuestas { [indicePregunta] = indiceOpcion }. Devuelve aciertos, total, detalle { bool... }.
-function Catalogs.CorregirCuestionario(id, respuestas)
-	local cuestionario = Catalogs.Cuestionario(id)
-	local correctas = Catalogs.CuestionariosRespuestas[id]
-	if not cuestionario or not correctas then
-		return 0, 0, {}
-	end
-	if typeof(respuestas) ~= "table" then
-		respuestas = {}
-	end
-	local aciertos = 0
-	local detalle = {}
-	for i = 1, #cuestionario.Preguntas do
-		local elegida = tonumber(respuestas[i])
-		local acierto = elegida ~= nil and elegida == correctas[i]
-		detalle[i] = acierto
-		if acierto then
-			aciertos = aciertos + 1
-		end
-	end
-	return aciertos, #cuestionario.Preguntas, detalle
-end
 
 ---------------------------------------------------------------------------------------------------
 -- Decoración pesada del mapa original. MapService pone el tag Config.Tags.Decoracion a las instancias
@@ -5694,11 +5685,22 @@ local function nombreRuta(ruta)
 	return ruta
 end
 
-local function unirRuta(ruta, clave)
-	if ruta == nil or ruta == "" then
+-- Las claves pueden venir del cliente: solo se muestran si son identificadores cortos (nunca texto libre).
+local function claveSegura(clave)
+	if typeof(clave) == "number" then
 		return tostring(clave)
 	end
-	return ruta .. "." .. tostring(clave)
+	if typeof(clave) == "string" and #clave <= 24 and string.match(clave, "^[%w_]+$") then
+		return clave
+	end
+	return "?"
+end
+
+local function unirRuta(ruta, clave)
+	if ruta == nil or ruta == "" then
+		return claveSegura(clave)
+	end
+	return ruta .. "." .. claveSegura(clave)
 end
 
 local function enLista(lista, valor)
@@ -5807,7 +5809,7 @@ local function comprobarCampos(campos, estricto, valor, ruta, ctx, profundidad)
 			return false, "demasiados datos en la petición"
 		end
 		if estricto and (typeof(clave) ~= "string" or campos[clave] == nil) then
-			return false, string.format("%s tiene una clave desconocida (%s)", nombreRuta(ruta), tostring(clave))
+			return false, string.format("%s tiene una clave desconocida (%s)", nombreRuta(ruta), claveSegura(clave))
 		end
 	end
 	return true
@@ -6368,6 +6370,47 @@ return Zones
 ]=] }
 FUENTES["ServerScriptService"] = { clase = "Folder" }
 FUENTES["ServerScriptService/ColegioRP"] = { clase = "Folder" }
+FUENTES["ServerScriptService/ColegioRP/Datos"] = { clase = "Folder" }
+FUENTES["ServerScriptService/ColegioRP/Datos/CuestionariosRespuestas"] = { clase = "ModuleScript", fuente = [=[
+-- SOLO SERVIDOR: respuestas correctas de los cuestionarios de Catalogs.CuestionariosPublicos y su corrección.
+-- Vive en ServerScriptService para que ningún cliente pueda leer las respuestas.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Catalogs = require(ReplicatedStorage:WaitForChild("ColegioRP"):WaitForChild("Shared"):WaitForChild("Catalogs"))
+
+local CuestionariosRespuestas = {}
+
+-- Índice (1..4) de la opción correcta de cada pregunta, por id de cuestionario.
+CuestionariosRespuestas.Respuestas = {
+	MAT_1 = { 3, 1, 4, 2 },
+	ESP_1 = { 3, 2, 1, 2 },
+	CIE_1 = { 2, 3, 1, 3 },
+}
+
+-- Corrige respuestas { [indicePregunta] = indiceOpcion }. Devuelve aciertos, total, detalle { bool... }.
+function CuestionariosRespuestas.Corregir(id, respuestas)
+	local cuestionario = Catalogs.Cuestionario(id)
+	local correctas = CuestionariosRespuestas.Respuestas[id]
+	if not cuestionario or not correctas then
+		return 0, 0, {}
+	end
+	if typeof(respuestas) ~= "table" then
+		respuestas = {}
+	end
+	local aciertos = 0
+	local detalle = {}
+	for i = 1, #cuestionario.Preguntas do
+		local elegida = tonumber(respuestas[i])
+		local acierto = elegida ~= nil and elegida == correctas[i]
+		detalle[i] = acierto
+		if acierto then
+			aciertos = aciertos + 1
+		end
+	end
+	return aciertos, #cuestionario.Preguntas, detalle
+end
+
+return CuestionariosRespuestas
+]=] }
 FUENTES["ServerScriptService/ColegioRP/Main"] = { clase = "Script", fuente = [=[
 --[[
 	Ruta en el Explorer: ServerScriptService.ColegioRP.Main
@@ -14678,6 +14721,7 @@ function DoorService:ConstruirPuerta(id, cfg)
 		Normal = normal,
 		EjeAncho = ejeAncho,
 		MedioAncho = math.max(0.5, (maxW - minW) / 2),
+		MedioGrosor = math.max(0, ejes[iFino][2] / 2),
 		Referencia = referencia,
 		CargosBloqueo = cargosSet,
 		CargosTexto = cargosTexto,
@@ -15025,7 +15069,14 @@ function DoorService:EsDentro(puerta, posicion)
 	local rel = plano(posicion - puerta.Punto)
 	local dp = rel:Dot(puerta.Normal)
 	local lateral = math.abs(rel:Dot(puerta.EjeAncho))
-	if math.abs(dp) < 0.75 and lateral <= puerta.MedioAncho + 1 then
+	-- Con la hoja cerrada (sólida) solo cuenta como umbral quien quedó dentro de la propia hoja: pegarse a ella
+	-- desde fuera no basta para abrir una puerta bloqueada ni un baño con privacidad. Sin referencia ni zona no hay
+	-- otra forma de saber el lado, así que se mantiene el umbral amplio (nunca se encierra a nadie).
+	local umbral = 0.75
+	if not puerta.Abierta and (puerta.Referencia or puerta.ZonaDef) then
+		umbral = math.min(umbral, (puerta.MedioGrosor or 0) + 0.25)
+	end
+	if math.abs(dp) < umbral and lateral <= puerta.MedioAncho + 1 then
 		return true
 	end
 	local zona = puerta.ZonaDef
@@ -16206,7 +16257,9 @@ local CFG = Config.Comedor or {}
 FoodService.RacionesPorLote = math.max(1, math.floor(tonumber(CFG.RacionesPorLote) or 40))
 FoodService.LotesPorJornada = math.max(1, math.floor(tonumber(CFG.LotesPorJornada) or 3))
 FoodService.CooldownReclamo = math.max(0, tonumber(CFG.CooldownReclamo) or 120)
-FoodService.DistanciaMax = 12 -- studs hasta la estación / ventana de servicio (FoodAction y prompts)
+FoodService.DistanciaMax = 12 -- studs hasta la ventana de servicio (reclamo por FoodAction y prompt)
+-- studs hasta una estación de cocina (FoodAction "Paso"/"Entregar"/"Reponer" y prompts): Config.Distancias.Estacion.
+FoodService.DistanciaEstacion = math.max(1, tonumber(Config.Distancias and Config.Distancias.Estacion) or 10)
 FoodService.Tolerancia = 2 -- latencia y tamaño del personaje
 FoodService.DuracionBandeja = 20 -- segundos que el jugador sostiene la bandeja
 FoodService.InactividadRecetaSeg = 180 -- una receta sin actividad durante este tiempo se cancela
@@ -16897,7 +16950,7 @@ function FoodService:_PosicionEstacion(nombre)
 	return nil
 end
 
--- ¿El jugador está a <= DistanciaMax de la estación? Si la estación no tiene posición, basta con estar en la cocina.
+-- ¿El jugador está a <= DistanciaEstacion de la estación? Si la estación no tiene posición, basta con estar en la cocina.
 function FoodService:_CercaDeEstacion(player, nombre, extra)
 	local pos = posicionDe(player)
 	if not pos then
@@ -16910,7 +16963,7 @@ function FoodService:_CercaDeEstacion(player, nombre, extra)
 		end
 		return false, "lejos_cocina"
 	end
-	local limite = self.DistanciaMax + self.Tolerancia + (extra or 0)
+	local limite = self.DistanciaEstacion + self.Tolerancia + (extra or 0)
 	if (pos - objetivo).Magnitude <= limite then
 		return true
 	end
@@ -22455,8 +22508,9 @@ function ModerationService:PuedeActuar(admin, objetivo)
 	if admin == objetivo then
 		return false, "No puedes aplicarte esta acción a ti mismo/a.", "propio"
 	end
-	if self:Rango(objetivo) > self:Rango(admin) then
-		return false, "No puedes actuar sobre alguien con un cargo superior al tuyo.", "objetivo_superior"
+	-- Ni superiores ni iguales (dos Directores o dos Coordinadores no se moderan entre sí).
+	if self:Rango(objetivo) >= self:Rango(admin) then
+		return false, "No puedes actuar sobre alguien con un cargo igual o superior al tuyo.", "objetivo_superior"
 	end
 	return true
 end
@@ -24089,6 +24143,7 @@ local RP = ReplicatedStorage:WaitForChild("ColegioRP")
 local Shared = RP:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("Config"))
 local Catalogs = require(Shared:WaitForChild("Catalogs"))
+local Respuestas = require(script.Parent.Parent:WaitForChild("Datos"):WaitForChild("CuestionariosRespuestas"))
 local TimetableDefinitions = require(Shared:WaitForChild("TimetableDefinitions"))
 local MapaLogico = require(Shared:WaitForChild("MapaLogico"))
 local UITheme = require(Shared:WaitForChild("UITheme"))
@@ -25070,7 +25125,7 @@ function PCService:Usar(player, pcId, origen)
 		self:Liberar(pcId, nil, true)
 	end
 	local sala = self:Sala(info.RoomId)
-	if estado.Bloqueado or sala.Bloqueado then
+	if (estado.Bloqueado or sala.Bloqueado) and not self:EsControlDocente(player) then
 		return false, "Este equipo está bloqueado por el docente."
 	end
 
@@ -25364,7 +25419,7 @@ function PCService:ComprobarOcupante(player, pcId, requiereActivo)
 		return nil, "No estás usando este equipo."
 	end
 	if requiereActivo then
-		if estado.Bloqueado then
+		if estado.Bloqueado and not self:EsControlDocente(player) then
 			return nil, "El docente bloqueó este equipo."
 		end
 		if not estado.Encendido then
@@ -25393,7 +25448,7 @@ function PCService:AccionEnergia(player, pcId, encender)
 	if not estado then
 		return fallo(err)
 	end
-	if encender and estado.Bloqueado then
+	if encender and estado.Bloqueado and not self:EsControlDocente(player) then
 		return fallo("El docente bloqueó este equipo.")
 	end
 	if estado.Encendido ~= encender then
@@ -25588,7 +25643,7 @@ function PCService:ResultadoCuestionario(player, pcId, extra)
 	end
 	local id = extra.CuestionarioId
 	local cuestionario = Catalogs.Cuestionario(id)
-	local correctas = cuestionario and Catalogs.CuestionariosRespuestas and Catalogs.CuestionariosRespuestas[id]
+	local correctas = cuestionario and Respuestas.Respuestas[id]
 	if not cuestionario or typeof(correctas) ~= "table" then
 		self:Rechazo(player, "cuestionario_invalido", tostring(id), true)
 		return nil, "Ese cuestionario no existe."
@@ -25629,7 +25684,7 @@ function PCService:ResultadoCuestionario(player, pcId, extra)
 		return copia
 	end
 
-	local aciertos, total, detalle = Catalogs.CorregirCuestionario(id, limpias)
+	local aciertos, total, detalle = Respuestas.Corregir(id, limpias)
 	local fraccion = 0
 	if total > 0 then
 		fraccion = aciertos / total
@@ -25885,6 +25940,13 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Control docente: bloqueo y proyección de la sala
 ---------------------------------------------------------------------------------------------------
+
+-- ¿El jugador controla las salas (pc.bloquear)? El bloqueo de la sala no le impide usar su propio equipo: desde él
+-- se desbloquea la sala y se proyecta (si no, quedaría fuera de los controles hasta el fin de la jornada).
+function PCService:EsControlDocente(player)
+	local okT, tiene = invocar(self:Servicio("RoleService"), "Tiene", player, "pc.bloquear")
+	return okT and tiene == true
+end
 
 -- Sala que el docente puede controlar a partir de un PcId, un id de sala o su posición. Devuelve roomId | nil, mensaje.
 function PCService:SalaDeDocente(player, pcIdOSala)
@@ -27366,6 +27428,16 @@ function ReportService:Procesar(player, categoria, ubicacion, descripcion, orige
 		end
 	else
 		self.Estadisticas.SoloMemoria = self.Estadisticas.SoloMemoria + 1
+	end
+
+	-- Id único también en memoria (reporte no persistido en el mismo segundo que otro del mismo autor).
+	if self:Obtener(reporte.Id) ~= nil then
+		local base = reporte.Id
+		local sufijo = 1
+		while self:Obtener(base .. "_m" .. sufijo) ~= nil do
+			sufijo = sufijo + 1
+		end
+		reporte.Id = base .. "_m" .. sufijo
 	end
 
 	-- Memoria (últimos MaxEnMemoria).
@@ -29176,7 +29248,7 @@ SchoolDayService.IntervaloTardanzaSeg = 2 -- Frecuencia de detección de llegada
 SchoolDayService.MargenAulaStuds = 1.5 -- Margen alrededor de la caja del aula (marcos de puerta, paredes).
 SchoolDayService.EscalaMin = 0.1 -- Límites de EscalaTiempo aceptados por Configurar.
 SchoolDayService.EscalaMax = 5
-SchoolDayService.DuracionMinSeg = 5 -- Límites de duración (segundos, escala 1) aceptados por Configurar.
+SchoolDayService.DuracionMinSeg = 15 -- Límites de duración (segundos, escala 1) aceptados por Configurar.
 SchoolDayService.DuracionMaxSeg = 3600
 SchoolDayService.EstudiantesPorAulaLimite = 60 -- Máximo admitido para EstudiantesPorAulaMax.
 SchoolDayService.MaxAulasActivas = 64 -- Elementos máximos de AulasActivas en Configurar.
@@ -33036,7 +33108,9 @@ function StaffService:Manejar(player, peticion)
 	if def.Esquema then
 		local okEsquema, errEsquema = Validate.Comprobar(def.Esquema, datos)
 		if not okEsquema then
-			return self:Rechazar(player, nombre, "esquema: " .. tostring(errEsquema), "Datos no válidos: " .. tostring(errEsquema))
+			-- El detalle del esquema puede contener claves escritas por el cliente (texto sin filtrar): solo lo ve
+			-- quien envió la petición; la auditoría (visible para la dirección) guarda el motivo genérico.
+			return self:Rechazar(player, nombre, "esquema", "Datos no válidos: " .. tostring(errEsquema))
 		end
 	end
 	if def.Cooldown then
@@ -33768,6 +33842,12 @@ function StaffService:AccionReporteConvivencia(player, datos)
 	local objetivo, err = self:Objetivo(datos.ObjetivoUserId, false, player)
 	if not objetivo then
 		return fallo(err)
+	end
+	-- Jerarquía de moderación: nadie registra casos a un cargo igual o superior al suyo.
+	local okJerarquia, puede, mensajeJerarquia, codigoJerarquia = self:Llamar("ModerationService", "PuedeActuar", player, objetivo)
+	if okJerarquia and puede ~= true then
+		return self:Rechazar(player, "ReporteConvivencia", tostring(codigoJerarquia or "jerarquia"),
+			tostring(mensajeJerarquia or "No puedes actuar sobre esa persona."))
 	end
 	local clave = "Conv:" .. objetivo.UserId
 	local enEspera, restante = self:EnCooldown(player, clave, 20)
@@ -35200,7 +35280,9 @@ BoardController.Actualizado = Signal.new() -- (roomId) tras aplicar un cambio de
 -- Constantes (deben coincidir con BoardService)
 ---------------------------------------------------------------------------------------------------
 local LOG = "[ColegioRP][BoardController] "
-local ORDEN_PANTALLA = UITheme.Capas.Panel
+-- Un nivel por encima de los paneles: se abre desde el panel del aula (pantalla completa en móvil), que con el
+-- mismo DisplayOrder podría dibujarse encima y ocultar el tablero.
+local ORDEN_PANTALLA = UITheme.Capas.Panel + 1
 local TABLERO = Config.Tablero or {}
 local MAX_CARACTERES = tonumber(TABLERO.MaxCaracteres) or 400
 local MAX_TRAZOS = tonumber(TABLERO.MaxTrazos) or 300
@@ -38187,6 +38269,7 @@ FUENTES["StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/ClassroomContr
 ]]
 
 local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
 
 local ClassroomController = {}
 ClassroomController.Nombre = "ClassroomController"
@@ -38194,6 +38277,7 @@ ClassroomController.AnchoPanel = 420 -- Ancho del panel lateral en PC (unidades 
 ClassroomController.MargenSuperiorPC = 172 -- Deja libres los botones del HUD (esquina superior derecha).
 ClassroomController.IntervaloTickSeg = 1 -- Detección de aula, temporizadores y autoguardado (1 Hz).
 ClassroomController.MinConsultaSeg = 2 -- Mínimo entre dos ConsultarEstado automáticos.
+ClassroomController.ReintentoCuadernoSeg = 8 -- Reintento de la carga del cuaderno si falló (perfil aún cargando).
 
 local UIBuilder, UITheme, Net, Maid, Format, Zones, RoleDefinitions, TimetableDefinitions, MapaLogico, Config
 local Colores
@@ -38253,6 +38337,17 @@ local function limpiarHijos(marco)
 			hijo:Destroy()
 		end
 	end
+end
+
+-- Botones enfocables con el mando dentro de un marco, en orden de árbol.
+local function seleccionablesDe(marco)
+	local lista = {}
+	for _, descendiente in ipairs(marco:GetDescendants()) do
+		if descendiente:IsA("GuiButton") and descendiente.Selectable then
+			table.insert(lista, descendiente)
+		end
+	end
+	return lista
 end
 
 local function nombreAula(roomId)
@@ -38337,6 +38432,8 @@ function ClassroomController:Init(registro)
 	-- Cuaderno
 	self.cuaderno = nil
 	self.cargandoCuaderno = false
+	self.ultimoIntentoCuaderno = -math.huge
+	self.ultimoErrorCuaderno = -math.huge
 	self.paginaActual = 1
 	self.pendientes = {}
 	self.guardando = false
@@ -39031,6 +39128,11 @@ function ClassroomController:_Tick()
 	if self.abierto and not self.minimizado then
 		self:_RefrescarTemporizadores()
 	end
+	-- Si la carga del cuaderno falló (p. ej. el perfil aún se estaba cargando), se reintenta mientras se ve.
+	if self.abierto and not self.minimizado and self.pestana == "Cuaderno" and not self.cuaderno
+		and not self.cargandoCuaderno and os.clock() - self.ultimoIntentoCuaderno >= self.ReintentoCuadernoSeg then
+		self:_CargarCuaderno()
+	end
 	self:_ProcesarGuardado(false)
 end
 
@@ -39371,6 +39473,11 @@ function ClassroomController:_AplicarEstado(datos)
 		self.sala = datos.RoomId
 		self:_ReiniciarEstadoSala()
 	end
+	if datos.SesionAbierta ~= true then
+		-- Sin sesión abierta (p. ej. se cerró mientras estábamos fuera del aula y no llegó SesionCerrada):
+		-- la actividad, la mano y la invitación de la clase anterior ya no son válidas.
+		self:_ReiniciarEstadoSala()
+	end
 	self.estado = datos
 	if datos.Rol == "Docente" then
 		self.actividadDocente = datos.ActividadActiva or datos.ActividadRespuestas
@@ -39594,6 +39701,29 @@ function ClassroomController:_ConstruirSesionDocente(pagina)
 			self:_Notificar(string.format("Aviso enviado a %d jugador(es) del aula.", tonumber(d.Destinatarios) or 0), "exito")
 		end)
 	end, { Estilo = "Secundario", LayoutOrder = siguiente(), Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()) })
+	-- Sala de computadores (Informática / Robótica): proyectar el tema y bloquear o liberar los PC.
+	UIBuilder.Separador(pagina, { LayoutOrder = siguiente() })
+	UIBuilder.Texto(pagina, "Sala de computadores", { LayoutOrder = siguiente(), Tamano = "Pequeno", Color = Colores.TextoSecundario })
+	local filaPC = UIBuilder.Fila(pagina, { LayoutOrder = siguiente(), Espaciado = 6 })
+	local function accionPC(accion)
+		local PCController = self.registro and self.registro.Get and self.registro.Get("PCController")
+		if not PCController or typeof(PCController.AccionDocente) ~= "function" then
+			self:_Notificar("Los computadores no están disponibles.", "aviso")
+			return
+		end
+		local texto = recortar(self.ui.EntradaTema and self.ui.EntradaTema.Text or "")
+		if accion == "Proyectar" and texto == "" then
+			self:_Notificar("Escribe el tema para proyectarlo.", "aviso")
+			return
+		end
+		PCController.AccionDocente(accion, self.sala or "SALA", texto)
+	end
+	local botonesPC = {
+		UIBuilder.Boton(filaPC, "Proyectar tema", function() accionPC("Proyectar") end, { Estilo = "Secundario", Ancho = 140, LayoutOrder = 1 }),
+		UIBuilder.Boton(filaPC, "Bloquear PC", function() accionPC("Bloquear") end, { Estilo = "Secundario", Ancho = 120, LayoutOrder = 2 }),
+		UIBuilder.Boton(filaPC, "Liberar PC", function() accionPC("Desbloquear") end, { Estilo = "Secundario", Ancho = 120, LayoutOrder = 3 }),
+	}
+	UIBuilder.Encadenar(botonesPC, true)
 	UIBuilder.Separador(pagina, { LayoutOrder = siguiente() })
 	self.ui.BotonTableroDocente = UIBuilder.Boton(pagina, "Ver tablero", function()
 		self:_VerTablero()
@@ -39755,6 +39885,33 @@ local function textoVacio(parent, texto)
 	UIBuilder.Texto(parent, texto, { Tamano = "Pequeno", Color = Colores.TextoApagado, LayoutOrder = 0 })
 end
 
+-- Vacía y reconstruye una lista conservando el foco del mando: las listas se rehacen en cada actualización
+-- (ocupación, respuestas, manos...) y, si el botón enfocado estaba dentro, se enfoca el que ocupa la misma
+-- posición en la lista nueva en lugar de perder la selección.
+function ClassroomController:_Rehacer(marco, construir)
+	local seleccionado = GuiService.SelectedObject
+	local posicion = nil
+	if seleccionado ~= nil and seleccionado:IsDescendantOf(marco) then
+		for i, control in ipairs(seleccionablesDe(marco)) do
+			if control == seleccionado then
+				posicion = i
+				break
+			end
+		end
+	end
+	limpiarHijos(marco)
+	construir()
+	if posicion then
+		local nuevos = seleccionablesDe(marco)
+		local destino = nuevos[math.min(posicion, #nuevos)]
+		if destino then
+			pcall(function()
+				GuiService.SelectedObject = destino
+			end)
+		end
+	end
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Render dinámico
 ---------------------------------------------------------------------------------------------------
@@ -39765,29 +39922,30 @@ function ClassroomController:_RenderOpciones()
 	if not marco or marco.Parent == nil then
 		return
 	end
-	limpiarHijos(marco)
-	local act = self.actividad
-	if not act or act.Type ~= "Opciones" or typeof(act.Options) ~= "table" then
-		return
-	end
-	local enClase = self:_EnClase()
-	local puede = act.Estado == "Abierta" and self.miRespuesta == nil and enClase and self:_Presente()
-		and ahoraServidor() <= (tonumber(act.DueAt) or 0)
-	local creados = {}
-	for i, texto in ipairs(act.Options) do
-		local elegido = self.miRespuesta and self.miRespuesta.Indice == i
-		local boton = UIBuilder.Boton(marco, (LETRAS[i] or tostring(i)) .. ")  " .. tostring(texto), function()
-			self:_ResponderOpcion(i)
-		end, {
-			Estilo = elegido and "Primario" or "Secundario", LayoutOrder = i, Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()),
-			Alineacion = Enum.TextXAlignment.Left, Desactivado = not puede and not elegido,
-		})
-		if elegido then
-			boton:SetAttribute("Desactivado", false)
+	self:_Rehacer(marco, function()
+		local act = self.actividad
+		if not act or act.Type ~= "Opciones" or typeof(act.Options) ~= "table" then
+			return
 		end
-		table.insert(creados, boton)
-	end
-	UIBuilder.Encadenar(creados, false)
+		local enClase = self:_EnClase()
+		local puede = act.Estado == "Abierta" and self.miRespuesta == nil and enClase and self:_Presente()
+			and ahoraServidor() <= (tonumber(act.DueAt) or 0)
+		local creados = {}
+		for i, texto in ipairs(act.Options) do
+			local elegido = self.miRespuesta and self.miRespuesta.Indice == i
+			local boton = UIBuilder.Boton(marco, (LETRAS[i] or tostring(i)) .. ")  " .. tostring(texto), function()
+				self:_ResponderOpcion(i)
+			end, {
+				Estilo = elegido and "Primario" or "Secundario", LayoutOrder = i, Size = UDim2.new(1, 0, 0, UIBuilder.AltoBoton()),
+				Alineacion = Enum.TextXAlignment.Left, Desactivado = not puede and not elegido,
+			})
+			if elegido then
+				boton:SetAttribute("Desactivado", false)
+			end
+			table.insert(creados, boton)
+		end
+		UIBuilder.Encadenar(creados, false)
+	end)
 end
 
 function ClassroomController:_RenderResumen(marco, resumen)
@@ -39867,7 +40025,6 @@ function ClassroomController:_RenderRespuestas()
 	if not marco or marco.Parent == nil then
 		return
 	end
-	limpiarHijos(marco)
 	local act = self.actividadDocente
 	if self.ui.RespTitulo then
 		if act then
@@ -39876,29 +40033,31 @@ function ClassroomController:_RenderRespuestas()
 			self.ui.RespTitulo.Text = "Crea una actividad para recibir respuestas."
 		end
 	end
-	if #self.respuestas == 0 then
-		textoVacio(marco, "Sin respuestas todavía.")
-		return
-	end
-	for i, registro in ipairs(self.respuestas) do
-		local partes = { tostring(registro.Nombre) .. ": " .. tostring(registro.Respuesta or "") }
-		if registro.Correcta ~= nil then
-			table.insert(partes, registro.Correcta and "✓ Correcta" or "✗ Incorrecta")
+	self:_Rehacer(marco, function()
+		if #self.respuestas == 0 then
+			textoVacio(marco, "Sin respuestas todavía.")
+			return
 		end
-		if registro.Puntos ~= nil then
-			local comentario = ""
-			if typeof(registro.Comentario) == "string" and registro.Comentario ~= "" then
-				comentario = " · “" .. registro.Comentario .. "”"
+		for i, registro in ipairs(self.respuestas) do
+			local partes = { tostring(registro.Nombre) .. ": " .. tostring(registro.Respuesta or "") }
+			if registro.Correcta ~= nil then
+				table.insert(partes, registro.Correcta and "✓ Correcta" or "✗ Incorrecta")
 			end
-			table.insert(partes, "Nota: " .. tostring(registro.Puntos) .. " / 10" .. comentario)
+			if registro.Puntos ~= nil then
+				local comentario = ""
+				if typeof(registro.Comentario) == "string" and registro.Comentario ~= "" then
+					comentario = " · “" .. registro.Comentario .. "”"
+				end
+				table.insert(partes, "Nota: " .. tostring(registro.Puntos) .. " / 10" .. comentario)
+			end
+			local copia = registro
+			self:_Fila(marco, table.concat(partes, "\n"), i, {
+				{ Texto = registro.Puntos ~= nil and "Cambiar nota" or "Calificar", Estilo = "Primario", Ancho = 140, Accion = function()
+					self:_AbrirCalificar(copia)
+				end },
+			})
 		end
-		local copia = registro
-		self:_Fila(marco, table.concat(partes, "\n"), i, {
-			{ Texto = registro.Puntos ~= nil and "Cambiar nota" or "Calificar", Estilo = "Primario", Ancho = 140, Accion = function()
-				self:_AbrirCalificar(copia)
-			end },
-		})
-	end
+	end)
 end
 
 function ClassroomController:_RenderAlumnos()
@@ -39907,10 +40066,11 @@ function ClassroomController:_RenderAlumnos()
 	end
 	local enSesion = self:_SoyDocenteDeSesion()
 	local enClase = self:_EnClase()
-	limpiarHijos(self.ui.AlManos)
-	if #self.manos == 0 then
-		textoVacio(self.ui.AlManos, "Nadie tiene la mano levantada.")
-	else
+	self:_Rehacer(self.ui.AlManos, function()
+		if #self.manos == 0 then
+			textoVacio(self.ui.AlManos, "Nadie tiene la mano levantada.")
+			return
+		end
 		for i, mano in ipairs(self.manos) do
 			local id = mano.UserId
 			self:_Fila(self.ui.AlManos, "✋  " .. tostring(mano.Nombre), i, {
@@ -39919,33 +40079,34 @@ function ClassroomController:_RenderAlumnos()
 				end },
 			}, Colores.Azul)
 		end
-	end
+	end)
 	if self.ui.TituloManos then
 		self.ui.TituloManos.Text = "Manos levantadas (" .. #self.manos .. ")"
 	end
 
 	local ocupacion = self.ocupacion or { Sentados = {}, DePie = {} }
 	local function rellenar(marco, lista, titulo, etiqueta)
-		limpiarHijos(marco)
 		if titulo then
 			titulo.Text = etiqueta .. " (" .. #lista .. ")"
 		end
-		if #lista == 0 then
-			textoVacio(marco, "Nadie.")
-			return
-		end
-		for i, alumno in ipairs(lista) do
-			local id = alumno.UserId
-			local nombre = alumno.Nombre
-			self:_Fila(marco, tostring(nombre), i, {
-				{ Texto = "Ver cuaderno", Ancho = 130, Desactivado = not enSesion, Accion = function()
-					self:_VerCuadernoDe(id, nombre)
-				end },
-				{ Texto = "Invitar", Ancho = 100, Desactivado = not (enSesion and enClase), Accion = function()
-					self:_Invitar(id, nombre)
-				end },
-			})
-		end
+		self:_Rehacer(marco, function()
+			if #lista == 0 then
+				textoVacio(marco, "Nadie.")
+				return
+			end
+			for i, alumno in ipairs(lista) do
+				local id = alumno.UserId
+				local nombre = alumno.Nombre
+				self:_Fila(marco, tostring(nombre), i, {
+					{ Texto = "Ver cuaderno", Ancho = 130, Desactivado = not enSesion, Accion = function()
+						self:_VerCuadernoDe(id, nombre)
+					end },
+					{ Texto = "Invitar", Ancho = 100, Desactivado = not (enSesion and enClase), Accion = function()
+						self:_Invitar(id, nombre)
+					end },
+				})
+			end
+		end)
 	end
 	rellenar(self.ui.AlSentados, ocupacion.Sentados or {}, self.ui.TituloSentados, "Sentados")
 	rellenar(self.ui.AlDePie, ocupacion.DePie or {}, self.ui.TituloDePie, "De pie")
@@ -40463,11 +40624,16 @@ function ClassroomController:_CargarCuaderno()
 		return
 	end
 	self.cargandoCuaderno = true
+	self.ultimoIntentoCuaderno = os.clock()
 	task.spawn(function()
 		local ok, respuesta = Net.Invocar("NotebookUpdate", { Accion = "Cargar" })
 		self.cargandoCuaderno = false
 		if not ok or typeof(respuesta.datos) ~= "table" then
-			self:_Notificar(mensajeDe(respuesta), "error")
+			-- _Tick reintenta la carga: el aviso no se repite en cada intento.
+			if os.clock() - self.ultimoErrorCuaderno > 30 then
+				self.ultimoErrorCuaderno = os.clock()
+				self:_Notificar(mensajeDe(respuesta), "error")
+			end
 			return
 		end
 		local d = respuesta.datos
@@ -40547,6 +40713,10 @@ end
 function ClassroomController:_RefrescarEstadoCuaderno()
 	if not self.ui.EstadoGuardado or self.ui.EstadoGuardado.Parent == nil then
 		return
+	end
+	-- Sin cuaderno cargado no se puede escribir: lo tecleado no quedaría pendiente y la carga lo sustituiría.
+	if self.ui.EntradaCuaderno then
+		self.ui.EntradaCuaderno.TextEditable = self.cuaderno ~= nil
 	end
 	local pagina = self.cuaderno and self.cuaderno.Paginas[self.paginaActual] or nil
 	if self.ui.ContadorCuaderno then
@@ -40731,9 +40901,10 @@ FUENTES["StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/FoodController
 	Panel del comedor gratuito (docs/ARQUITECTURA.md §7): muestra el ESTADO (abierto/cerrado y periodo, raciones,
 	lote, menú y el tiempo que falta para el próximo reclamo propio) cuando el jugador está en COCINA, en la fila de
 	la ventana de servicio o en los comedores (detección de zona a 1 Hz). El reclamo se hace con el ProximityPrompt
-	físico "Reclamar almuerzo" (lo procesa el servidor). Para el personal de cocina añade el panel de cocina:
-	receta activa, pasos, progreso, lote y botones que llaman a FoodAction (IniciarReceta, Paso, Entregar,
-	Reponer). Oculta localmente los prompts de las estaciones a quien no tiene permiso de cocina.
+	físico "Reclamar almuerzo" (lo procesa el servidor) o con el botón del panel junto a la ventana de servicio
+	(FoodAction "Reclamar"; el servidor valida distancia, periodo, cooldown y raciones). Para el personal de cocina
+	añade el panel de cocina: receta activa, pasos, progreso, lote y botones que llaman a FoodAction (IniciarReceta,
+	Paso, Entregar, Reponer). Oculta localmente los prompts de las estaciones a quien no tiene permiso de cocina.
 	ScreenGui "ColegioRP_Comedor" (DisplayOrder de paneles). Escucha EventoCliente Tipo "Comida".
 ]]
 
@@ -40788,7 +40959,7 @@ local INTERVALO_ZONA = 1
 local INTERVALO_UI = 0.2
 local CONSULTA_MIN_SEG = 5
 local ANCHO_PANEL = 330
-local ALTO_ESTADO = 300
+local ALTO_ESTADO = 340 -- incluye el botón «Reclamar almuerzo»
 local ALTO_COCINA = 560
 local MARGEN_BOTONES_HUD = 176 -- alto aproximado de la columna de botones del HUD (esquina superior derecha)
 local RACIONES_POR_LOTE = math.max(1, math.floor(tonumber(Config.Comedor and Config.Comedor.RacionesPorLote) or 40))
@@ -41060,12 +41231,16 @@ local function construirUI()
 	ui.Lotes = texto(lista, "", 4, { Tamano = "Pequeno", Color = Colores.TextoSecundario })
 	ui.Menu = texto(lista, "", 5, { Color = Colores.TextoSecundario })
 	ui.Turno = texto(lista, "", 6, { Rico = true, Fuente = "Subtitulo" })
-	ui.Ayuda = texto(lista, "El almuerzo es gratis: acércate a la ventana de servicio de la cocina y usa «Reclamar almuerzo».", 7, {
+	-- Reclamo desde el panel (solo junto a la ventana de servicio; el servidor vuelve a validarlo todo).
+	ui.BotonReclamar = botonAncho(lista, "Reclamar almuerzo", function()
+		pedir("Reclamar", nil)
+	end, 7, "Exito", "Reclamar")
+	ui.Ayuda = texto(lista, "El almuerzo es gratis: acércate a la ventana de servicio de la cocina y usa «Reclamar almuerzo».", 8, {
 		Tamano = "Pequeno", Color = Colores.TextoApagado,
 	})
 
 	-- Sección de cocina (solo personal con cocina.operar / comedor.reponer).
-	local cocina = UIBuilder.Marco(lista, { Nombre = "Cocina", AutoAlto = true, LayoutOrder = 8 })
+	local cocina = UIBuilder.Marco(lista, { Nombre = "Cocina", AutoAlto = true, LayoutOrder = 9 })
 	UIBuilder.Disposicion(cocina, { Espaciado = 6 })
 	ui.Cocina = cocina
 	UIBuilder.Separador(cocina, { LayoutOrder = 1 })
@@ -41159,6 +41334,19 @@ local function textoTurno()
 		return "<font color=\"" .. HEX_AMARILLO .. "\">Sin raciones por ahora: la cocina está preparando más.</font>"
 	end
 	return "<font color=\"" .. HEX_VERDE .. "\">¡Puedes reclamar tu almuerzo!</font>"
+end
+
+-- Botón de reclamo: visible en la fila de la ventana de servicio o en la cocina; activo si el servidor lo permitiría.
+local function refrescarReclamo()
+	if not ui.BotonReclamar then
+		return
+	end
+	local visible = estado ~= nil and (zonaActual == "FILA" or zonaActual == ZONA_COCINA)
+	ui.BotonReclamar.Visible = visible
+	if visible then
+		local raciones = tonumber(estado.RacionesDisponibles) or 0
+		UIBuilder.Habilitar(ui.BotonReclamar, not pidiendo and estado.Abierto == true and restanteReclamo() <= 0 and raciones > 0)
+	end
 end
 
 local function refrescarPaso()
@@ -41296,6 +41484,7 @@ local function refrescar()
 		end
 		ui.Turno.Text = textoTurno()
 	end
+	refrescarReclamo()
 	refrescarCocina()
 	ajustarPanel()
 end
@@ -41352,6 +41541,7 @@ pedir = function(accion, extra)
 		return
 	end
 	pidiendo = true
+	refrescarReclamo()
 	refrescarCocina()
 	task.spawn(function()
 		local datos = { Accion = accion }
@@ -41634,6 +41824,8 @@ function FoodController:Start()
 					if ui.Turno then
 						ui.Turno.Text = textoTurno()
 					end
+					-- El cooldown vence en el cliente: el botón de reclamo vuelve a activarse sin esperar al servidor.
+					refrescarReclamo()
 					if pasoActual and tonumber(pasoActual.FinServidor) and ahoraServidor() > pasoActual.FinServidor + 3 then
 						-- El paso debió terminar y no llegó la confirmación: se pide el estado.
 						pasoActual = nil
@@ -42982,6 +43174,9 @@ function HUDController:Start()
 		end
 		self:FijarCargo(nil, salon)
 	end))
+	self.maid:GiveTask(player:GetAttributeChangedSignal("CertificadoLocal"):Connect(function()
+		self:_RefrescarCargo()
+	end))
 	self.maid:GiveTask(player:GetAttributeChangedSignal("Atendido"):Connect(function()
 		self:_RefrescarAtendido()
 	end))
@@ -43299,7 +43494,11 @@ function HUDController:_RefrescarCargo()
 		if zona and typeof(zona.Nombre) == "string" and zona.Nombre ~= salon then
 			textoSalon = salon .. " · " .. zona.Nombre
 		end
-		self.lblSalon.Text = "Salón: " .. Format.Truncar(textoSalon, 48)
+		local certificado = player:GetAttribute("CertificadoLocal")
+		if typeof(certificado) == "string" and certificado ~= "" then
+			textoSalon = textoSalon .. " (" .. (string.match(certificado, "^Certificado (%S+)") or certificado) .. ")"
+		end
+		self.lblSalon.Text = "Salón: " .. Format.Truncar(textoSalon, 60)
 	else
 		self.lblSalon.Text = "Salón: sin asignar"
 	end
@@ -44028,6 +44227,8 @@ local function construirUI()
 		})
 		ui.Contenido = contenido
 	end
+	-- El contenido es solo texto: seleccionable para que el mando pueda desplazarlo con el stick.
+	ui.Contenido.Selectable = true
 
 	local botones = {}
 	for i, seccion in ipairs(SECCIONES) do
@@ -45047,6 +45248,16 @@ function MenuController:Start()
 	end
 	self.maid:GiveTask(player:GetAttributeChangedSignal("Cargo"):Connect(revisarCargo))
 	revisarCargo()
+
+	-- La escala de texto del perfil llega después de construir el menú: se reajusta la disposición.
+	local Settings = self.registro.Get("SettingsController")
+	if Settings and typeof(Settings.Cambiado) == "table" and typeof(Settings.Cambiado.Connect) == "function" then
+		self.maid:GiveTask(Settings.Cambiado:Connect(function()
+			if self.abierto and not self.suspendido and self.vista == "Principal" and self:_EsBajo() ~= self.bajo then
+				self:_MostrarPrincipal()
+			end
+		end))
+	end
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -45091,7 +45302,8 @@ function MenuController:_Construir()
 	principal.Parent = contenido
 	self.principal = principal
 
-	local bajo = UIBuilder.AltoUI() < 700
+	local bajo = self:_EsBajo()
+	self.bajo = bajo
 	UIBuilder.Disposicion(principal, {
 		Horizontal = bajo,
 		Espaciado = bajo and 40 or 18,
@@ -45188,6 +45400,23 @@ function MenuController:_Construir()
 	self:_ActualizarBotones()
 end
 
+-- ¿Pantalla baja (teléfono en horizontal, escala de texto grande)? Decide la disposición del menú principal.
+function MenuController:_EsBajo()
+	return UIBuilder.AltoUI() < 700
+end
+
+-- Si cambió el alto disponible (escala de texto del perfil, ventana, rotación) se rehace la pantalla
+-- para que los 7 botones sigan cabiendo. Solo desde la vista principal (no hay vistas que perder).
+function MenuController:_RevisarDisposicion()
+	if self.bajo == nil or self:_EsBajo() == self.bajo then
+		return false
+	end
+	self.panelVista = nil
+	self:_Construir()
+	self.gui.Enabled = self.abierto == true
+	return true
+end
+
 -- Visibilidad de CONTINUAR y navegación con mando entre los botones visibles.
 function MenuController:_ActualizarBotones()
 	if not self.botonContinuar then
@@ -45219,6 +45448,7 @@ function MenuController:_MostrarPrincipal()
 		UIBuilder.Destruir(self.panelVista)
 		self.panelVista = nil
 	end
+	self:_RevisarDisposicion()
 	self.vista = "Principal"
 	self.principal.Visible = true
 	self:_ActualizarBotones()
@@ -45252,6 +45482,8 @@ function MenuController:_NuevaVista(titulo)
 		end,
 	})
 	self.panelVista = panel
+	-- Vistas de solo texto (ACTUALIZACIONES, EQUIPO): la lista es seleccionable para desplazarla con el mando.
+	lista.Selectable = true
 	local orden = 0
 	local function siguiente()
 		orden = orden + 1
@@ -46152,6 +46384,7 @@ FUENTES["StarterPlayer/StarterPlayerScripts/ColegioRP/Controllers/NotificationCo
 ]]
 
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local TextChatService = game:GetService("TextChatService")
 
 local NotificationController = {}
 NotificationController.Nombre = "NotificationController"
@@ -46240,7 +46473,35 @@ function NotificationController:Init(registro)
 	self:_Construir()
 end
 
+-- Silencio de moderación: el servidor ya bloquea el envío (TextSource.CanSend); aquí se desactiva la barra
+-- de chat y se explica hasta cuándo, también en el chat heredado donde solo existe el atributo.
+function NotificationController:_VigilarSilencio()
+	local jugador = game:GetService("Players").LocalPlayer
+	local function aplicar()
+		local silenciado = jugador:GetAttribute("Silenciado") == true
+		pcall(function()
+			local barra = TextChatService:FindFirstChildOfClass("ChatInputBarConfiguration")
+			if barra then
+				barra.Enabled = not silenciado
+			end
+		end)
+		if silenciado then
+			local hasta = tonumber(jugador:GetAttribute("SilenciadoHasta"))
+			local cuando = ""
+			if hasta and hasta > 0 then
+				cuando = " hasta las " .. os.date("%H:%M", math.floor(hasta))
+			end
+			self:Notificar("Estás silenciado" .. cuando .. ". No puedes escribir en el chat.", "aviso", 6)
+		end
+	end
+	jugador:GetAttributeChangedSignal("Silenciado"):Connect(aplicar)
+	if jugador:GetAttribute("Silenciado") == true then
+		aplicar()
+	end
+end
+
 function NotificationController:Start()
+	pcall(self._VigilarSilencio, self)
 	-- Aviso de la pantalla de carga si continuó sin todos los recursos.
 	local nombre = (Config.Nombres and Config.Nombres.SenalCargaLista) or "ColegioRP_CargaLista"
 	local senal = ReplicatedFirst:FindFirstChild(nombre)
@@ -48431,7 +48692,8 @@ function refrescarOverlays()
 	if not ui.CapaApagado or not ui.CapaBloqueo then
 		return
 	end
-	local bloqueado = estado.Bloqueado == true
+	-- El docente con pc.bloquear no ve la capa de bloqueo: desde su equipo desbloquea la sala (el servidor lo permite).
+	local bloqueado = estado.Bloqueado == true and not tienePermisoDocente()
 	local apagado = (not bloqueado) and estado.Encendido == false
 	local antesBloqueo = ui.CapaBloqueo.Visible
 	local antesApagado = ui.CapaApagado.Visible
@@ -48462,7 +48724,7 @@ local function programarAvisoApp()
 	estado.AvisoAppPendiente = true
 	task.delay(DEBOUNCE_APP, function()
 		estado.AvisoAppPendiente = false
-		if not estado.Abierto or estado.Encendido ~= true or estado.Bloqueado then
+		if not estado.Abierto or estado.Encendido ~= true or (estado.Bloqueado and not tienePermisoDocente()) then
 			return
 		end
 		local app = estado.App
@@ -49056,6 +49318,7 @@ function PCController:Start()
 	end))
 	maidGlobal:GiveTask(LocalPlayer:GetAttributeChangedSignal("Cargo"):Connect(function()
 		refrescarControlesDocente()
+		refrescarOverlays()
 	end))
 
 	local remoto = Net.Evento(Net.NombreEventoCliente or "EventoCliente")
@@ -50334,8 +50597,12 @@ local function cargarSnapshot()
 			elseif typeof(respuesta.Ajustes) == "table" then
 				remotos = respuesta.Ajustes
 			end
-			aplicarSnapshot(remotos)
-			return
+			-- Sin Ajustes el perfil aún no se cargó en el servidor: no se da por conocido (si no, el siguiente
+			-- guardado enviaría los predeterminados y sobrescribiría los ajustes guardados). Se reintenta.
+			if remotos then
+				aplicarSnapshot(remotos)
+				return
+			end
 		end
 	end
 	warn(LOG .. "No se pudo obtener StateSnapshot; se usan los ajustes locales (solo se guardarán los cambios).")
@@ -51169,6 +51436,8 @@ function StaffController:Start()
 				ok, err = pcall(self._AlPersonal, self, datos)
 			elseif carga.Tipo == "Jornada" then
 				ok, err = pcall(self._AlJornada, self, datos)
+			elseif carga.Tipo == "Moderacion" then
+				ok, err = pcall(self._AlModeracion, self, datos)
 			end
 			if not ok then
 				warn(LOG .. tostring(err))
@@ -51418,10 +51687,45 @@ function StaffController:_AlPersonal(datos)
 			self:_Refrescar("Casos")
 		end
 	elseif sub == "Certificado" then
+		if typeof(datos.Certificado) == "table" then
+			-- Certificado propio (matrícula): el servidor ya lo notifica; queda en un atributo local para el HUD.
+			local c = datos.Certificado
+			self.miCertificado = c
+			pcall(function()
+				Players.LocalPlayer:SetAttribute("CertificadoLocal", "Certificado " .. tostring(c.Id or "?") .. (c.Aula and (" · aula " .. tostring(c.Aula)) or ""))
+			end)
+		end
 		if typeof(datos.Certificados) == "table" then
 			self.certificados = listaDe(datos.Certificados)
 			self:_Refrescar("Certificados")
 		end
+	end
+end
+
+-- Avisos del canal Moderacion para el personal: reportes nuevos (ReportService) y jugadores marcados como
+-- sospechosos (RemoteService). Silencios y advertencias ya llegan al implicado como Notificacion.
+function StaffController:_AlModeracion(datos)
+	if datos.Sub == "Reporte" and typeof(datos.Reporte) == "table" then
+		if not (self:_Tiene("reportes.ver") or self:_Tiene("convivencia.gestionar")) then
+			return
+		end
+		local r = datos.Reporte
+		local partes = { "Nuevo reporte" }
+		local categoria = texto(r.CategoriaNombre or r.Categoria)
+		if categoria ~= "" then
+			table.insert(partes, categoria)
+		end
+		local ubicacion = texto(r.Ubicacion)
+		if ubicacion ~= "" then
+			table.insert(partes, Format.Truncar(ubicacion, 40))
+		end
+		self:_Toast(table.concat(partes, " · ") .. ": " .. Format.Truncar(texto(r.Descripcion), 100), "aviso")
+	elseif datos.Tipo == "Sospechoso" then
+		if not self:_Tiene("moderacion.basica") then
+			return
+		end
+		self:_Toast("Moderación: " .. texto(datos.Nombre) .. " acumula " .. texto(datos.Rechazos)
+			.. " peticiones rechazadas. Revisa su registro en el panel de cargo.", "aviso")
 	end
 end
 
@@ -51704,8 +52008,12 @@ function StaffController:_Moderar(accion, objetivoId, motivo, extra, etiqueta, a
 	for clave, valor in pairs(extra or {}) do
 		datos[clave] = valor
 	end
-	local critica = accion == "Expulsar" or accion == "BloquearTemporal" or accion == "AsignarCargo" or accion == "RevocarCargo"
-	local mensaje = "Paso 1 de 2 · " .. etiqueta .. " a " .. nombre .. ".\nMotivo: " .. motivo
+	-- Mismas acciones críticas que ModerationService.Criticas (el servidor emite Token solo para ellas).
+	local critica = accion == "Expulsar" or accion == "BloquearTemporal" or accion == "RevocarCargo"
+	local mensaje = etiqueta .. " a " .. nombre .. ".\nMotivo: " .. motivo
+	if critica then
+		mensaje = "Paso 1 de 2 · " .. mensaje
+	end
 	UIBuilder.Confirmar("Confirmar acción", mensaje, function()
 		self:_Pedir("ModerationAction", datos, function(ok, cuerpo)
 			if not ok then
@@ -52137,7 +52445,7 @@ function StaffController:_TabPersonal(cuerpo, o)
 		self:_Refrescar("ResumenPersonal")
 	end))
 
-	local gestion = seccion(cuerpo, "Asignar o revocar cargo", o(), "Ambas acciones piden confirmación en dos pasos y quedan auditadas.")
+	local gestion = seccion(cuerpo, "Asignar o revocar cargo", o(), "Asignar pide confirmación; revocar, confirmación en dos pasos. Ambas quedan auditadas.")
 	local selector = self:_SelectorJugadores(gestion, 10, { Alto = 200, MostrarSalon = true })
 	local opciones = {}
 	for _, rol in ipairs(RoleDefinitions.Lista()) do
