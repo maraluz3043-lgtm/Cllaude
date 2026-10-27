@@ -78,3 +78,7 @@ Nombres de aulas sin placa: edita `mapa/zonas.json` y regenera `MapaLogico` con 
 ## D.7 Desinstalar / volver atrás
 
 `herramientas/Desinstalar.lua` en la Command Bar (respalda y retira todo lo añadido) o restaurar la versión publicada anterior.
+
+## Opción directa: lugar completo
+`dist/COLEGIO_JEAN_PIAGET_ColegioRP.rbxl` es el mapa original con los 56 scripts ya colocados (ReplicatedFirst, ReplicatedStorage, ServerScriptService, StarterPlayerScripts). Ábrelo en Studio y pulsa Play; no hace falta instalador. Se regenera con:
+`python3 tools/inyectar_rbxl.py <COLEGIO_JEAN_PIAGET.rbxl> dist/COLEGIO_JEAN_PIAGET_ColegioRP.rbxl` (las 123.046 instancias del mapa quedan idénticas; verificado leyendo el archivo resultante).
