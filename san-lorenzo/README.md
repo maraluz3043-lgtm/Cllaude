@@ -5,7 +5,7 @@ Corregimiento Ballestas, Bolívar.
 
 | Dato | Valor |
 |---|---|
-| Expediente Afinia | P22302025020027 |
+| Expediente Afinia | P22302026090028 (vigente, 225 kVA). Anterior: P22302025020027 |
 | Proyectista | Efraím de J. Guerra M. |
 | Operador de red | Afinia S.A. E.S.P. |
 | Memorias vigentes (Drive) | `MEMORIAS SAN LORENZO P22302025020027 26 ago 2025.docx` |
@@ -19,7 +19,7 @@ Corregimiento Ballestas, Bolívar.
 | 2 | 2025-05 | Respuesta a observaciones San Lorenzo (y FF, jun-2025) | Respondida |
 | 3 | 2025-10 | Respuesta a Observaciones Proyecto Específico … P22302025020027 (oct) | Respondida |
 | 4 | 2026-02 | NUEVAS OBSERVACIONES FEB 2026.pdf | Revisar si se respondió |
-| 5 | 2026-10 | (pendiente: cargar oficio de Afinia) | **En curso** |
+| 5 | 2026-10-20 | Oficio de devolución, expediente **P22302026090028** (20 observaciones + lista de chequeo) | **En curso**, ver `observaciones/ronda-actual/matriz.md` |
 
 ## Estructura
 
