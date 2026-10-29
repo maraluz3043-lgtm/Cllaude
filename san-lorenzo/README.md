@@ -26,6 +26,7 @@ Corregimiento Ballestas, Bolívar.
 - `observaciones/ronda-actual/` — oficio de Afinia y matriz de observaciones de esta revisión.
 - `referencias/` — extractos de memorias, planos y normativa aplicable (RETIE, NTC 2050, normas CENS/Afinia).
 - `respuestas/` — borradores de la carta de respuesta y anexos.
+- `memoria/` — memoria de cálculos en formato Anexo 5 de Afinia (Word, con índice automático) y su vista previa en PDF.
 
 ## Flujo de trabajo
 
@@ -33,3 +34,10 @@ Corregimiento Ballestas, Bolívar.
 2. Transcribir cada observación en `observaciones/ronda-actual/matriz.md`.
 3. Contrastar con las memorias vigentes y con lo respondido en rondas anteriores (evitar contradicciones).
 4. Redactar la respuesta en `respuestas/` y marcar el estado de cada ítem.
+
+## Estado de la memoria (formato Anexo 5)
+
+`memoria/Memoria_Calculos_San_Lorenzo_Anexo5_P22302026090028_V2.0.docx`: plantilla de cálculos reordenada al esqueleto del Anexo 5
+(portada con control de ediciones, índice automático, matriz RETIE 3.3.1.1, 1. Memoria, 2. Planos, 3. Anexos).
+Los puntos por completar están en amarillo con la marca `[PENDIENTE: …]`. El contenido técnico no se modificó: los errores
+documentales (observaciones 1, 2, 15, 16, 17, 18, 19) se revisan en la fase siguiente.
