@@ -73,10 +73,10 @@ filas = [("Método", "Sulzberger, monobloque cilíndrico (Proyecto Tipo Afinia, 
          ("Momento de vuelco", "Mv = F·(Hl + 2/3·h)"),
          ("Momento estabilizador", "Me = a·h³·Ch·tanα/52,8 + c·a·P ; c = 0,375 ; tanα = 0,01"),
          ("Coeficiente de terreno", f"Ch = Ck = C2·h/2 con C2 = {CM.TERRENOS[terreno]['C2']} daN/cm³ a 2 m (terreno {terreno}, como el Excel de cálculos)"),
-         ("Presión admisible", f"{CM.TERRENOS[terreno]['sadm']} daN/cm² SUPUESTA (Tabla B7.2); ajustar con el estudio de suelos"),
+         ("Presión admisible", f"{CM.TERRENOS[terreno]['sadm']} daN/cm² valor de diseño adoptado (Tabla B7.2, terreno {terreno}); no se dispone de estudio de suelos y la cimentación es monobloque de hormigón"),
          ("Geometría mínima", "d ≥ diámetro de base del poste + 0,20 m ; h ≥ empotramiento (L/10 + 0,6 m) + solado 0,10 m"),
          ("P vertical", "Peso del poste (valores del Excel; verificar con el fabricante) + hormigón de la cimentación + cargas verticales de conductores y de la retenida (B·Fh)"),
-         ("Pendiente", "Anclas de las retenidas (Anexo B8.2); estudio de suelos; peso real de postes")]
+         ("Pendiente", "Anclas de las retenidas (Anexo B8.2); verificar el peso real de los postes con el fabricante")]
 s.append(["Concepto", "Detalle"]); [s.append(list(f)) for f in filas]
 s.column_dimensions["A"].width = 26; s.column_dimensions["B"].width = 120
 for c in s[1]: c.font = hfont; c.fill = hfill

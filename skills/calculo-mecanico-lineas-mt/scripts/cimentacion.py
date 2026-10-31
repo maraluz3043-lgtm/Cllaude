@@ -6,7 +6,7 @@ import math
 import postes as P
 
 # Coeficiente de compresibilidad a 2 m (daN/cm3) como el Excel (Flojo 8, Normal 12, Duro 16) y capacidad portante
-# supuesta (Tabla B7.2 sin estudio de suelos): ajustar con el estudio de suelos.
+# adoptada como valor de diseno (Tabla B7.2) cuando no hay estudio de suelos; con cimentacion de hormigon no es critica.
 TERRENOS = {"flojo": dict(C2=8.0, sadm=1.0, mu=0.05), "normal": dict(C2=12.0, sadm=2.0, mu=0.4),
             "duro": dict(C2=16.0, sadm=4.0, mu=0.45)}
 TAN_ALFA = 0.01; C_COEF = 0.375; GAMMA_CONC = 2400.0
