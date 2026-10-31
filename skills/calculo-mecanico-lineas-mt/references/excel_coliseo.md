@@ -12,3 +12,6 @@ Diferencias frente al Proyecto Tipo:
 - Retenidas: tensión = esfuerzo/sen 30°; el Proyecto Tipo usa los coeficientes A, B, C y el pretensionado.
 - Higiene: #N/A en filas vacías, celdas con valores fijos dentro de columnas de fórmulas (p. ej. Esf M.T. J7 y L7, Mecanicos D7),
   mezcla de Kg y daN con factor 1,02, hoja `Car Apoyo IMP` duplicada, título heredado "LOTES GERMAN CUESTA" en Ciment.
+- Empotramiento: el Excel usa Le = 10 % L + 0,5 m (`Tip Apoyo`); la ficha Afinia ES.03396.TR indica H/10 + 0,6 m.
+- `Esf M.T.!AC` marca «R» a todo FL sin comparar contra el poste (causa de que siempre pida retenida).
+- Proyecto COLISEO DEL NORTE: área rural (Cartagena).

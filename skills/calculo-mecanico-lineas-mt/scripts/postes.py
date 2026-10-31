@@ -37,12 +37,61 @@ TABLA36 = {
  "PH-14/2500": (2500,None,6046,7159,8482,25346), "PH-14/4000": (4000,None,15225,17680,20561,55400),
 }
 
+
+# Catalogo Afinia ES.03396.TR (Tabla 4): ref -> (rotura daN, diametro cima cm, diametro base cm). Conicidad 1,5 cm/m.
+CATALOGO = {
+ "PH-9/500": (500,14,27.5), "PH-9/735": (735,14,27.5), "PH-9/1030": (1030,19,32.5), "PH-9/1324": (1324,21,34.5),
+ "PH-10/500": (500,14,29), "PH-10/735": (735,14,29), "PH-10/1030": (1030,19,34),
+ "PH-11/500": (500,14,30.5), "PH-11/735": (735,14,30.5), "PH-11/1030": (1030,19,35.5), "PH-11/1324": (1324,20,36.5),
+ "PH-12/500": (500,14,32), "PH-12/735": (735,16,34), "PH-12/1030": (1030,19,37), "PH-12/1324": (1324,20,38),
+ "PH-12/1600": (1600,23.5,41.5), "PH-12/2500": (2500,27,45), "PH-12/4000": (4000,34,52),
+ "PH-14/735": (735,16,37), "PH-14/1030": (1030,19,40), "PH-14/1324": (1324,20,41),
+ "PH-14/1600": (1600,23.5,44.5), "PH-14/2500": (2500,27,48), "PH-14/4000": (4000,34,55),
+ "PH-16/1324": (1324,21,45), "PH-16/2000": (2000,26,50), "PH-16/2500": (2500,28,52),
+}
+import re as _re
+def normalizar_poste(ref: str) -> str:
+    """Acepta 'HP-12-1030', 'HP-12-1030 daN', 'PH-12/1030', 'HP 12-1030'... -> 'PH-12/1030'."""
+    mt = _re.search(r"(\d+)\s*[-/ ]\s*(\d[\d\s]*)", ref.replace("daN", ""))
+    if not mt: raise ValueError(f"poste no reconocido: {ref}")
+    out = f"PH-{int(mt.group(1))}/{int(mt.group(2).replace(' ', ''))}"
+    if out not in CATALOGO: raise ValueError(f"{ref}: no esta en el catalogo ES.03396.TR")
+    return out
+
+def rotura(ref: str) -> float:
+    return TABLA36[ref][0] if ref in TABLA36 else CATALOGO[ref][0]
+
+def torsion_ultima(ref: str):
+    return TABLA36[ref][1] if ref in TABLA36 else None
+
+_TERR = {("A","rural"):(130,0.12,"I"), ("A","urbana"):(80,0.28,"IV"), ("B","rural"):(100,0.16,"II"),
+         ("B","urbana"):(60,0.28,"IV"), ("C","rural"):(80,0.16,"II"), ("C","urbana"):(50,0.28,"IV")}
+def _GT(t, h):
+    return {"I": -0.0002*h*h+0.0232*h+1.4661, "II": -0.0002*h*h+0.0274*h+1.6820,
+            "IV": -0.0002*h*h+0.0384*h+2.9284}[t]
+
+def ftvp_calculado(ref: str, zona: str, area: str) -> float:
+    """Esfuerzo equivalente por viento sobre el poste (Anexo B2.3), referido a hN. Reproduce la Tabla 32
+    con mediana 1,4 % de error (hasta ~16 % en la zona critica de Reynolds): usar la tabla cuando exista."""
+    _, dc, db = CATALOGO[ref]; L = largo_poste(ref); Le = empotramiento(ref); hl = L - Le
+    de = (db - 1.5*Le)/100; dcm = dc/100
+    V, al, terr = _TERR[(zona, area)]
+    q0 = 0.06125*(V/(3.6*1.37))**2
+    hp = hl - (2*de + dcm)/(de + dcm)*hl/3
+    Re = (de + dcm)/2*((V/(3.6*1.37*1.45e-5))*(hp/10)**al)
+    cx = 1.2 if Re <= 3e5 else (0.75 if Re >= 4.5e5 else -1.1098*math.log(Re) + 15.1973)
+    return q0*cx*_GT(terr, hp)*hl*(de + dcm)/2*hp/(hl - 0.2)
+
+def empotramiento(ref: str) -> float:
+    """Le = L/10 + 0,6 m (linea de empotramiento del ES.03396.TR; el Excel de COLISEO usa +0,5)."""
+    return largo_poste(ref)/10 + 0.6
+
 def largo_poste(ref: str) -> float:
     return float(ref.split("-")[1].split("/")[0])
 
 def altura_libre(ref: str) -> float:
-    """hl = L - Le, Le = 10% L + 0,5 (como el Excel y la practica de empotramiento)."""
-    L = largo_poste(ref); return L - (0.1*L + 0.5)
+    """hl = L - Le, con Le = L/10 + 0,6 (ES.03396.TR)."""
+    return largo_poste(ref) - empotramiento(ref)
 
 def hN(ref: str) -> float:
     return altura_libre(ref) - 0.2
@@ -76,16 +125,20 @@ def _T(c, a, zona, area, tense, hip):
 
 def evaluar(ap: Apoyo) -> dict:
     c = m.CONDUCTORES[ap.conductor]
-    rot, tors = TABLA36[ap.poste][0], TABLA36[ap.poste][1]
+    ap.poste = normalizar_poste(ap.poste)
+    rot, tors = rotura(ap.poste), torsion_ultima(ap.poste)
     HN = hN(ap.poste); SH = sum(ap.alturas); k = SH/HN
     T01 = _T(c, ap.ar1, ap.zona, ap.area, ap.tense, "vmax"); T02 = _T(c, ap.ar2, ap.zona, ap.area, ap.tense, "vmax")
     T01r = _T(c, ap.ar1, ap.zona, ap.area, ap.tense, "vred"); T02r = _T(c, ap.ar2, ap.zona, ap.area, ap.tense, "vred")
     pv, _ = m.peso_aparente_tabla(c, ap.zona, ap.area)
-    FTVP = TABLA32[ap.poste][_COL[(ap.zona, ap.area)]]
+    if ap.poste in TABLA32:
+        FTVP, fuente = TABLA32[ap.poste][_COL[(ap.zona, ap.area)]], "Tabla 32"
+    else:
+        FTVP, fuente = ftvp_calculado(ap.poste, ap.zona, ap.area), "calculado B2.3 (poste fuera de Tabla 32)"
     FTEC = sum(P*L for P, L in ap.excentricidades)/HN
     av = (ap.a1 + ap.a2)/2
     f = ap.funcion.upper()
-    d = dict(funcion=f, poste=ap.poste, HN=HN, sumH_HN=k, T01=T01, T02=T02, FTVP=FTVP, pv=pv)
+    d = dict(funcion=f, poste=ap.poste, HN=HN, sumH_HN=k, T01=T01, T02=T02, FTVP=FTVP, fuente_FTVP=fuente, pv=pv)
     chk = []                       # (nombre, esfuerzo*factor, capacidad, ok)
 
     if f == "AL":
@@ -140,7 +193,7 @@ def evaluar(ap: Apoyo) -> dict:
 def poste_minimo_autosoportado(ap: Apoyo, largos=None):
     """Poste mas liviano (por rotura) que cumple autosoportado, del mismo largo (o de los `largos` dados)."""
     largos = largos or [largo_poste(ap.poste)]
-    cand = sorted((r[0], k) for k, r in TABLA36.items() if largo_poste(k) in largos)
+    cand = sorted((r[0], k) for k, r in CATALOGO.items() if largo_poste(k) in largos)
     import dataclasses
     for rot, ref in cand:
         r = evaluar(dataclasses.replace(ap, poste=ref))

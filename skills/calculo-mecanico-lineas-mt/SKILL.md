@@ -14,7 +14,7 @@ hipótesis; ver `references/excel_coliseo.md`).
 |---|---|
 | Conductores, viento por zona/área, hipótesis y límites %CR | Hecho |
 | Vano regulador (con factor de Truxá), cambio de estado (Cardano), flechas, tablas de tendido, plantillado | Hecho y validado |
-| Esfuerzos en postes y **decisión autosoportado / retenida** (AL, ANG, ANC, FL; método simplificado Tabla 37) | Hecho (`scripts/postes.py`); falta torsión de postes ≥1600 daN y vertical |
+| Esfuerzos en postes y **decisión autosoportado / retenida** (AL, ANG, ANC, FL; método simplificado Tabla 37) | Hecho (`scripts/postes.py`) con el catálogo Afinia ES.03396.TR (27 postes de 9 a 16 m); falta torsión de postes ≥1600 daN y vertical |
 | Retenidas (coeficientes A, B, C) y cimentaciones (Anexo B7/B8) | Pendiente |
 | Lectura de tabla de apoyos + coordenadas (hoja "Ingreso") y salida a Excel | Pendiente |
 
@@ -41,3 +41,10 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 - Tense reducido solo para área urbana y cantones con vano regulador ≤ 50 m; si no se cumplen distancias, usar tense normal.
 - Decir qué verificaciones están hechas y cuáles no (esfuerzos en postes, retenidas y cimentaciones aún no están en la skill).
 - Si un resultado difiere del Excel del usuario, explicar la causa (hipótesis, interpolación, factores) antes de corregir nada.
+
+## Postes: fuente de datos
+- Catálogo, diámetros y carga de rotura: **Afinia ES.03396.TR «Postes de hormigón centrifugado o vibrado»** (ed. 1, 25/01/2021). Acepta nombres `HP-12-1030`, `HP-12-1030 daN` o `PH-12/1030`.
+- Empotramiento Le = L/10 + 0,6 m (línea de empotramiento de la ficha del ES.03396.TR); el Excel de COLISEO usa +0,5.
+- Viento sobre el poste: Tabla 32 del Proyecto Tipo si el poste está; si no (9, 10 y 16 m), se calcula con Anexo B2.3 (reproduce la Tabla 32 con mediana 1,4 % de error; el resultado lo marca como «calculado»).
+- No hay en ninguno de los dos documentos el momento de torsión de los postes ≥1600 daN: pedir el dato al fabricante.
+- Zona de viento: el Proyecto Tipo la da por mapas por departamento (Anexo A1.1, imágenes). COLISEO DEL NORTE: **área rural**, zona por confirmar en el mapa de Bolívar.
