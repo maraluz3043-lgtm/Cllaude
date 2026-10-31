@@ -47,4 +47,8 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 - Empotramiento Le = L/10 + 0,6 m (línea de empotramiento de la ficha del ES.03396.TR); el Excel de COLISEO usa +0,5.
 - Viento sobre el poste: Tabla 32 del Proyecto Tipo si el poste está; si no (9, 10 y 16 m), se calcula con Anexo B2.3 (reproduce la Tabla 32 con mediana 1,4 % de error; el resultado lo marca como «calculado»).
 - No hay en ninguno de los dos documentos el momento de torsión de los postes ≥1600 daN: pedir el dato al fabricante.
-- Zona de viento: el Proyecto Tipo la da por mapas por departamento (Anexo A1.1, imágenes). COLISEO DEL NORTE: **área rural**, zona por confirmar en el mapa de Bolívar.
+- Zona de viento: el Proyecto Tipo la da por mapas por departamento (Anexo A1.1, imágenes). Zona «costera» = **zona A** (terreno tipo I, 130 km/h rural / 80 urbana). COLISEO DEL NORTE (Cartagena rural, costera) = **zona A rural**.
+- Afinia y EPM comparten normas: ET-TD-ME04-01 (EPM) confirma cargas de rotura y empotramiento (NTC 1329, L/10+0,6) y tampoco trae torsión.
+
+## Evaluar un proyecto completo
+`python3 -I scripts/proyecto.py <libro.xlsx> A rural` lee la hoja «Ingreso» del Excel, arma las líneas (nueva línea en cada FL marcado «I»), los cantones (terminan en FL; usar `--amarres APOYO1,APOYO2` para dividir en ángulos con amarre), calcula ángulos desde las coordenadas y evalúa cada apoyo con su poste. Los «AC» del Excel se tratan como ANG; un AL con deflexión > 5° se evalúa como ANG. No incluye aún el transformador (FTEE/FLEE: ver Proyecto Tipo de Centros de Transformación tipo poste).
