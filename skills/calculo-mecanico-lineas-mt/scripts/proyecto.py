@@ -1,5 +1,5 @@
 """Evalua un proyecto completo (hoja 'Ingreso' del Excel de calculos MT) con el Proyecto Tipo Afinia.
-Uso: python3 -I proyecto.py <libro.xlsx> <zona A|B|C> <area rural|urbana> [--amarres EPP04,EPP05,...]
+Uso: python3 -I proyecto.py <libro.xlsx|.csv> <zona A|B|C> <area rural|urbana> [--amarres A,B] [--tipo EPP7=AL]
 - Cantones: terminan en FL (y en apoyos listados en --amarres). Los 'AC' (apoyos de angulo) del Excel se evaluan como ANG dentro del canton.
 - Un AL con deflexion > 5 grados se evalua como ANG (conservador) y se avisa.
 """
@@ -18,7 +18,8 @@ def leer_csv(path):
         cal = r["calibre"].strip()
         ap.append(dict(nombre=r["apoyo"].strip(), tipo=TIPO[r["tipo"].strip().upper()], marca=r["marca"].strip() or None,
                        cond=CAL[cal], x=float(r["x"]), y=float(r["y"]), largo=float(r["largo"]), existente=False,
-                       rotura=int(r["rotura"]), trafo=(r.get("kva"), r.get("tipo_trafo"))))
+                       rotura=int(r["rotura"]), trafo=(r.get("kva"), r.get("tipo_trafo")),
+                       vano=float(r["vano_sig"]) if r.get("vano_sig") else None))
     return ap
 
 def leer_ingreso(path):
@@ -53,7 +54,7 @@ def deflexion(p0, p1, p2):
 
 def evaluar_linea(linea, zona, area, amarres=()):
     n = len(linea); res = []
-    dist = [math.hypot(linea[i+1]["x"]-linea[i]["x"], linea[i+1]["y"]-linea[i]["y"]) for i in range(n-1)]
+    dist = [linea[i].get("vano") or math.hypot(linea[i+1]["x"]-linea[i]["x"], linea[i+1]["y"]-linea[i]["y"]) for i in range(n-1)]   # vano del plano si existe
     # cantones
     cortes = [0] + [i for i in range(1, n-1) if linea[i]["tipo"] in ("FL", "ANC") or linea[i]["nombre"] in amarres] + [n-1]
     canton_de = {}
@@ -86,8 +87,14 @@ def evaluar_linea(linea, zona, area, amarres=()):
 
 if __name__ == "__main__":
     path, zona, area = sys.argv[1], sys.argv[2].upper(), sys.argv[3].lower()
-    am = sys.argv[5].split(",") if len(sys.argv) > 5 and sys.argv[4] == "--amarres" else ()
-    for li, linea in enumerate(lineas(leer_ingreso(path)), 1):
+    am = sys.argv[sys.argv.index("--amarres")+1].split(",") if "--amarres" in sys.argv else ()
+    datos = leer_ingreso(path)
+    for arg in sys.argv[4:]:                      # --tipo EPP7=AL,EPE02=AL
+        if arg.startswith("--tipo"): continue
+        if "=" in arg:
+            for kv in arg.split(","):
+                k, v = kv.split("="); [a.update(tipo=TIPO[v.upper()]) for a in datos if a["nombre"] == k]
+    for li, linea in enumerate(lineas(datos), 1):
         print(f"\n=== Linea {li}: {linea[0]['nombre']} -> {linea[-1]['nombre']}  ({zona} {area}, {linea[0]['cond']})")
         for x in evaluar_linea(linea, zona, area, am):
             r = x["r"]; usos = [v["uso"] for v in r["verificaciones"] if v["uso"] is not None]

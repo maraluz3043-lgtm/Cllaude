@@ -54,6 +54,7 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 - Cruce de vía / esquina de ~90°: el poste se toma como **dos fines de línea** (`EPP4` y `EPP4A`, mismo punto, cada uno con su cantón), no como ángulo corrido. Cada FL requiere **una sola retenida**, o ninguna si es autosoportado.
 - Poste con doble armado: se modela como otro poste con el mismo nombre terminado en `A` (mismas coordenadas).
 - Marcas de cantón: `I` = inicio, `F` = final. Un FL sin marca en medio de un tramo se evalúa como ANC (anclaje).
+- El plano DXF del proyecto trae tipo, poste, armado y longitud de cada vano (ver `references/plano_coliseo.md`); el CSV acepta la columna `vano_sig` para usar esos vanos. `--tipo EPP7=AL` cambia el tipo de un apoyo.
 - Pendiente (mejora): verificar el poste físico con los esfuerzos combinados de sus dos armados (X + XA); hoy se evalúan por separado, como en el Excel.
 
 ## Evaluar un proyecto completo
