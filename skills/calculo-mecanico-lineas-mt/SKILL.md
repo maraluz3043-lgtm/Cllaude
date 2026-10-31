@@ -55,6 +55,8 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 - Poste con doble armado: se modela como otro poste con el mismo nombre terminado en `A` (mismas coordenadas).
 - Marcas de cantón: `I` = inicio, `F` = final. Un FL sin marca en medio de un tramo se evalúa como ANC (anclaje).
 - El plano DXF del proyecto trae tipo, poste, armado y longitud de cada vano (ver `references/plano_coliseo.md`); el CSV acepta la columna `vano_sig` para usar esos vanos. `--tipo EPP7=AL` cambia el tipo de un apoyo.
+- **Una retenida por poste físico**: en una esquina (X + XA) la retenida bisectora resiste la *resultante* de los tiros de ambos FL (`retenidas.py`, Tabla 42 con cable 3/8\" o 1/2\", flexión del poste, tiro del cable, compresión con 3·PU y pretensionado). Salida: sección «RETENIDAS por poste físico» de `proyecto.py`. Opciones: `--existentes EPE01,EPE03` (no se diseñan), `--bandera EPP5A,EPP6,EPP7,EPP8 --t <m>` (configuración bandera; `t` = distancia del conductor más lejano al eje, de la cruceta de 2,4 m; las posiciones intermedias se suponen cada 0,6 m).
+- Retenida con poste auxiliar a tierra (Figura 6): se calcula igual que la retenida normal; el dimensionamiento del poste auxiliar no está en el método simplificado.
 - Pendiente (mejora): verificar el poste físico con los esfuerzos combinados de sus dos armados (X + XA); hoy se evalúan por separado, como en el Excel.
 
 ## Evaluar un proyecto completo
