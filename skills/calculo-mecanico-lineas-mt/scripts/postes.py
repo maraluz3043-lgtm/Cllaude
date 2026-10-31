@@ -1,0 +1,149 @@
+"""Verificacion de postes de concreto AUTOSOPORTADOS y decision "requiere retenida / no" .
+Proyecto Tipo Afinia, Memoria cap. 9 (metodo simplificado, Tablas 31-37).
+
+Regla de diseno (cap. 9.1): se disena primero con poste autosoportado; solo si ninguna
+comprobacion pasa se pasa a retenida. Este modulo decide eso con el calculo, no por el tipo de apoyo.
+"""
+from __future__ import annotations
+import math
+from dataclasses import dataclass, field
+import mecanica as m
+
+# Tabla 32: esfuerzo EQUIVALENTE por viento sobre el poste (daN), referido a hN.
+# columnas: A rural, A urbana, B rural, B urbana, C rural, C urbana
+_COL = {("A","rural"):0, ("A","urbana"):1, ("B","rural"):2, ("B","urbana"):3, ("C","rural"):4, ("C","urbana"):5}
+TABLA32 = {
+ "PH-11/500": (61.00,52.10,47.30,29.30,30.27,20.35), "PH-11/735": (61.00,52.10,47.30,29.30,30.27,20.35),
+ "PH-11/1030": (55.20,66.14,57.13,37.20,38.44,25.84), "PH-11/1324": (57.59,69.03,57.41,38.83,40.13,26.97),
+ "PH-12/500": (65.74,58.72,53.36,33.03,34.15,22.94), "PH-12/735": (65.51,64.90,59.00,36.51,37.76,25.35),
+ "PH-12/1030": (61.92,74.15,61.66,41.71,43.13,28.96), "PH-12/1324": (64.52,77.29,61.85,43.47,44.97,30.19),
+ "PH-12/1600": (73.52,88.07,61.52,49.54,49.94,34.40), "PH-12/2500": (82.53,94.71,56.17,55.59,50.33,38.61),
+ "PH-12/4000": (100.80,94.65,68.59,67.88,43.90,47.14),
+ "PH-14/735": (66.92,80.07,69.52,45.04,46.64,31.28), "PH-14/1030": (76.18,91.09,70.25,51.24,53.09,35.58),
+ "PH-14/1324": (79.19,94.73,70.22,53.28,55.22,37.00), "PH-14/1600": (90.02,105.52,61.25,60.55,57.26,42.05),
+ "PH-14/2500": (100.69,106.36,68.55,67.73,57.35,47.03), "PH-14/4000": (122.10,91.25,83.16,80.59,53.22,57.03),
+}
+# Tabla 36: (rotura a flexion daN, momento ultimo a torsion daN*m | None, vertical ultimo en hN, hN-0.4, hN-0.8, hN-3.3)
+# Torsion y vertical: el documento no da torsion para los postes >=1600 daN (se marca None).
+TABLA36 = {
+ "PH-11/500": (500,351,709,936,1074,6888), "PH-11/735": (735,380,709,936,1074,6888),
+ "PH-11/1030": (1030,891,2539,3199,3591,18228), "PH-11/1324": (1324,1079,3240,4067,4558,22720),
+ "PH-12/500": (500,351,568,742,847,4919), "PH-12/735": (735,380,568,742,847,4919),
+ "PH-12/1030": (1030,891,2034,2538,2835,13060), "PH-12/1324": (1324,1079,2608,3243,3616,16365),
+ "PH-14/735": (735,568,652,821,920,4139), "PH-14/1030": (1030,891,1372,1687,1869,7474),
+ "PH-14/1324": (1324,1079,1779,2180,2412,9478),
+ "PH-12/1600": (1600,None,5096,6212,7581,27487), "PH-12/2500": (2500,None,8831,10604,12755,43322),
+ "PH-12/4000": (4000,None,22194,26131,30842,94253), "PH-14/1600": (1600,None,3466,4164,5003,16112),
+ "PH-14/2500": (2500,None,6046,7159,8482,25346), "PH-14/4000": (4000,None,15225,17680,20561,55400),
+}
+
+def largo_poste(ref: str) -> float:
+    return float(ref.split("-")[1].split("/")[0])
+
+def altura_libre(ref: str) -> float:
+    """hl = L - Le, Le = 10% L + 0,5 (como el Excel y la practica de empotramiento)."""
+    L = largo_poste(ref); return L - (0.1*L + 0.5)
+
+def hN(ref: str) -> float:
+    return altura_libre(ref) - 0.2
+
+F_NORMAL, F_ANORMAL, F_VERT = 2.5, 1.5, 1.2
+
+
+@dataclass
+class Apoyo:
+    funcion: str                 # AL, ANG, ANC, FL
+    poste: str                   # p.ej. "PH-14/1030"
+    conductor: str               # clave de mecanica.CONDUCTORES
+    zona: str; area: str         # A/B/C ; rural/urbana
+    alturas: list                # altura sobre el suelo de cada conductor de fase (m)
+    ar1: float | None = None     # vano regulador del canton anterior (None si no hay)
+    ar2: float | None = None     # vano regulador del canton posterior (None en FL)
+    a1: float = 0.0              # vano anterior (m)
+    a2: float = 0.0              # vano posterior (m)
+    beta: float = 0.0            # angulo de deflexion (grados) - ANG
+    tense: str = "normal"        # normal | reducido
+    t_rotura: float = 1.0        # distancia (m) del conductor mas alejado al eje (torsion)
+    excentricidades: list = field(default_factory=list)   # [(Pj+Ps daN, Lj m)] solo configuracion en bandera
+    FTEE: float = 0.0; FLEE: float = 0.0                  # equipos (trafo): ver Proyecto Tipo de Centros de Transformacion
+    desequilibrio_importante: bool = False                # ANC: usar hipotesis normal en vez de la anormal
+
+
+def _T(c, a, zona, area, tense, hip):
+    if a is None: return 0.0
+    return m.tabla_vano(c, zona, area, a, tense)[1][hip]["To"]
+
+
+def evaluar(ap: Apoyo) -> dict:
+    c = m.CONDUCTORES[ap.conductor]
+    rot, tors = TABLA36[ap.poste][0], TABLA36[ap.poste][1]
+    HN = hN(ap.poste); SH = sum(ap.alturas); k = SH/HN
+    T01 = _T(c, ap.ar1, ap.zona, ap.area, ap.tense, "vmax"); T02 = _T(c, ap.ar2, ap.zona, ap.area, ap.tense, "vmax")
+    T01r = _T(c, ap.ar1, ap.zona, ap.area, ap.tense, "vred"); T02r = _T(c, ap.ar2, ap.zona, ap.area, ap.tense, "vred")
+    pv, _ = m.peso_aparente_tabla(c, ap.zona, ap.area)
+    FTVP = TABLA32[ap.poste][_COL[(ap.zona, ap.area)]]
+    FTEC = sum(P*L for P, L in ap.excentricidades)/HN
+    av = (ap.a1 + ap.a2)/2
+    f = ap.funcion.upper()
+    d = dict(funcion=f, poste=ap.poste, HN=HN, sumH_HN=k, T01=T01, T02=T02, FTVP=FTVP, pv=pv)
+    chk = []                       # (nombre, esfuerzo*factor, capacidad, ok)
+
+    if f == "AL":
+        FTVC = pv*av*k
+        R = math.hypot(FTEC + FTVC + FTVP, ap.FLEE)
+        chk.append(("Flexion normal (AL)", F_NORMAL*R, rot))
+    elif f == "ANG":
+        b = math.radians(ap.beta)/2
+        Tres = math.sqrt(((T02-T01)*math.cos(b))**2 + ((T02+T01)*math.sin(b))**2)
+        FTVC = (pv*av*math.cos(b) + Tres)*k
+        R = math.hypot(FTEC + FTVC + FTVP, ap.FLEE)
+        chk.append(("Flexion normal (ANG)", F_NORMAL*R, rot))
+    elif f in ("ANC", "FL"):
+        if f == "FL":
+            FTVC = pv*(ap.a1/2)*k                 # 9.2.2.6: Pv*a/2
+            FLTC = T01*k                           # desequilibrio 100 %
+            Tmax_r = T01r
+        else:
+            FTVC = pv*av*k
+            FLTC = abs(T02 - T01)*k
+            Tmax_r = max(T01r, T02r)
+        Rn = math.hypot(FTEC + FTVC + FTVP + ap.FTEE, FLTC)
+        if f == "FL" or ap.desequilibrio_importante:
+            chk.append((f"Flexion normal ({f}, desequilibrio real)", F_NORMAL*Rn, rot))
+        else:
+            FLMC = 0.5*max(T01, T02)*k
+            chk.append(("Flexion anormal ANC (50 % desequilibrio)", F_ANORMAL*FLMC, rot))
+        MT = ap.t_rotura*Tmax_r
+        chk.append(("Torsion anormal (rotura de un conductor, viento reducido 28 C)", F_ANORMAL*MT, tors))
+        d.update(FTVC=FTVC, FLTC=FLTC, MT=MT)
+    else:
+        raise ValueError("funcion debe ser AL, ANG, ANC o FL")
+
+    filas, pendientes = [], []
+    for nombre, solic, cap in chk:
+        if cap is None:
+            pendientes.append(nombre); filas.append(dict(nombre=nombre, solicitado=solic, capacidad=None, uso=None, ok=None))
+        else:
+            filas.append(dict(nombre=nombre, solicitado=solic, capacidad=cap, uso=solic/cap, ok=solic <= cap))
+    ok = all(r["ok"] is not False for r in filas)
+    d["verificaciones"] = filas
+    if not ok:
+        d["veredicto"] = "REQUIERE RETENIDA (el poste no es autosoportado)" if f in ("ANC", "FL", "ANG") else "NO CUMPLE: aumentar poste"
+    elif pendientes:
+        d["veredicto"] = "AUTOSOPORTADO por flexion - no requiere retenida (torsion pendiente: falta dato del poste)"
+    else:
+        d["veredicto"] = "AUTOSOPORTADO - no requiere retenida"
+    d["pendientes"] = pendientes
+    return d
+
+
+def poste_minimo_autosoportado(ap: Apoyo, largos=None):
+    """Poste mas liviano (por rotura) que cumple autosoportado, del mismo largo (o de los `largos` dados)."""
+    largos = largos or [largo_poste(ap.poste)]
+    cand = sorted((r[0], k) for k, r in TABLA36.items() if largo_poste(k) in largos)
+    import dataclasses
+    for rot, ref in cand:
+        r = evaluar(dataclasses.replace(ap, poste=ref))
+        if r["veredicto"].startswith("AUTOSOPORTADO"):
+            return ref, r
+    return None, None

@@ -29,7 +29,13 @@ Q0 = q0·Cxc·Gc·GL, q0 = (1/20)·τ·μ·(Vmáx/(3,6·1,37))², Gc = 1,75 (tip
 
 ## Postes (pendiente de implementar; fórmulas ya leídas, cap. 9)
 - Eolovano av=(a1+a2)/2; gravivano con catenaria (B6.2); P = T01·senh(pc·ag1/T01)+T02·senh(pc·ag2/T02).
-- F*TVC (AL) = Pv·av·ΣHi/HN; (ANG) = [Pv·av·cos(β/2) + √((T02−T01)²cos²(β/2)+(T02+T01)²sin²(β/2))]·ΣHi/HN; (FL, 9.2.2.6) el texto extraído muestra «Pv·a²·ΣHi/HN» con `a` = vano anterior: ambiguo (probablemente Pv·a/2, eolovano de un solo vano); confirmar en el PDF antes de implementar.
+- F*TVC (AL) = Pv·av·ΣHi/HN; (ANG) = [Pv·av·cos(β/2) + √((T02−T01)²cos²(β/2)+(T02+T01)²sin²(β/2))]·ΣHi/HN; (FL, 9.2.2.6) = Pv·(a/2)·ΣHi/HN, con a = vano anterior (el texto extraído partía la fracción).
 - Longitudinal: desequilibrio real |T02−T01|·ΣHi/HN; FL = T0·ΣHi/HN; 50 % = 0,5·máx(T01,T02)·ΣHi/HN; rotura MT = t·máx(T01,T02) a 28 °C + viento reducido.
 - Factores: normal 2,5 (flexión), vertical 1,2; anormal 1,5 (flexión y torsión). Resultante R* = √(ΣT*²+ΣL*²) ≤ rotura/2,5.
 - HN = altura libre − 0,2 m. Capacidades de postes: Tabla 36 (17 referencias).
+
+## Implementado en postes.py
+Flexión normal AL/ANG/FL con 2,5; ANC por hipótesis anormal (1,5·0,5·máx(T01,T02)·ΣHi/HN) o normal si hay desequilibrio importante;
+torsión anormal (1,5·t·máx(T01,T02) a 28 °C + viento reducido) para ANC y FL. Altura libre = L − (0,1·L+0,5); HN = altura libre − 0,2.
+Datos faltantes en el documento: momento de torsión de los postes ≥ 1600 daN (Tabla 36); allí la torsión queda «pendiente».
+Viento en postes: Tabla 32 (Cxp depende de Re, por eso en zona A rural algunos postes dan menos que en urbana: no es un error).

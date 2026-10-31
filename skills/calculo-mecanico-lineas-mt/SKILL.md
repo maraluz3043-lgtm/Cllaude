@@ -14,7 +14,7 @@ hipótesis; ver `references/excel_coliseo.md`).
 |---|---|
 | Conductores, viento por zona/área, hipótesis y límites %CR | Hecho |
 | Vano regulador (con factor de Truxá), cambio de estado (Cardano), flechas, tablas de tendido, plantillado | Hecho y validado |
-| Esfuerzos en postes (eolovano, gravivano, ANG/ANC/FL, factores 2,5/1,5/1,2) | Pendiente |
+| Esfuerzos en postes y **decisión autosoportado / retenida** (AL, ANG, ANC, FL; método simplificado Tabla 37) | Hecho (`scripts/postes.py`); falta torsión de postes ≥1600 daN y vertical |
 | Retenidas (coeficientes A, B, C) y cimentaciones (Anexo B7/B8) | Pendiente |
 | Lectura de tabla de apoyos + coordenadas (hoja "Ingreso") y salida a Excel | Pendiente |
 
@@ -28,6 +28,13 @@ hipótesis; ver `references/excel_coliseo.md`).
 3. Ejemplo: `python3 -I scripts/ejemplo_canton.py`.
 4. Validar siempre que se toque el modelo: `python3 -I scripts/validar_anexoA.py <texto del Proyecto Tipo>`
    compara contra las Tablas A3 del Anexo A (90 tablas, 11.550 valores; error máximo 0,28 %).
+
+## Autosoportado vs. retenida (importante)
+Un fin de línea o anclaje **no requiere retenida por ser FL/ANC**: se verifica primero el poste autosoportado
+(Memoria 9.1). `postes.evaluar(Apoyo(...))` devuelve el veredicto («AUTOSOPORTADO - no requiere retenida» o
+«REQUIERE RETENIDA») con el uso de cada comprobación; `postes.poste_minimo_autosoportado(...)` propone el poste
+más liviano que sí resiste. Solo si ninguno cumple se pasa a retenida. (El Excel de Efraím marca «R» a todo FL
+porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts/test_postes.py`.
 
 ## Reglas al reportar
 - Indicar zona (A/B/C), área (rural/urbana), tipo de tense (normal/reducido), conductor y el estado gobernante.
