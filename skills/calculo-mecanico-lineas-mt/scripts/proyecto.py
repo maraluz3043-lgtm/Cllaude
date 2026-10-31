@@ -5,7 +5,7 @@ Uso: python3 -I proyecto.py <libro.xlsx|.csv> <zona A|B|C> <area rural|urbana> [
 """
 import sys, math, dataclasses, re
 sys.path.insert(0, __file__.rsplit('/', 1)[0])
-import openpyxl, mecanica as m, postes as P, retenidas as R
+import openpyxl, mecanica as m, postes as P, retenidas as R, cimentacion as CM
 
 CAL = {"1/0": "ACSR 1/0 (RAVEN)", "4/0": "ACSR 4/0 (PENGUIN)", "266": "ACSR 266.8 (PARTRIDGE)",
        "266.8": "ACSR 266.8 (PARTRIDGE)", "336": "ACSR 336.4 (LINNET)", "477": "ACSR 477 (HAWK)"}
@@ -146,3 +146,18 @@ if __name__ == "__main__":
               + ("CUMPLE" if s["ok"] else "NO CUMPLE: " + "; ".join(f"{c['nombre']} {c['solicitado']:.0f}>{c['capacidad']:.0f}" for c in s["verificaciones"] if not c["ok"]))
               + (" | torsion: " + ", ".join(("n/d" if v["uso"] is None else f"uso {v['uso']:.2f}") for v in g["torsion"]) if g["torsion"] else "")
               + (f" | accesorios insuficientes: {s['accesorios_insuficientes']}" if s["accesorios_insuficientes"] else "") + (f" | {s['aviso']}" if s["aviso"] else ""))
+
+    if "--terreno" in sys.argv:
+        ter = sys.argv[sys.argv.index("--terreno")+1].lower()
+        print(f"\n=== CIMENTACIONES (Sulzberger, terreno {ter}, monobloque cilindrico, CS >= 1,0, F = rotura/2,5)")
+        ret = {g["poste_fisico"]: g for g in retenidas_por_poste(todos, existentes=exi)}
+        vistos = set()
+        for x in todos:
+            k = clave_poste(x["apoyo"])
+            if x["apoyo"] in exi or k in vistos: continue
+            vistos.add(k); cc = m.CONDUCTORES[x["ap"].conductor]
+            g = ret.get(k)
+            Pex = (g["sel"]["FVERT"] + 18) if g else 3*cc.pc*(x["ap"].a1 + x["ap"].a2)/2 + 18
+            d = CM.dimensionar(x["poste"], ter, "cilindrica", Pex)
+            if d is None: print(f"{k:6s} {x['poste']:11s} sin solucion en los limites de busqueda"); continue
+            print(f"{k:6s} {x['poste']:11s} Pvert extra {Pex:5.0f} daN -> a={d['a']:.2f} m  h={d['h']:.2f} m  CS={d['CS']:.2f}  presion {d['sigma']:.2f}/{d['sigma_adm']:.1f} daN/cm2  V exc {d['V_exc']:.2f} m3  V conc {d['V_conc']:.2f} m3")

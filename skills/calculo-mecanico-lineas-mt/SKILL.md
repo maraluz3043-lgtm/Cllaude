@@ -15,7 +15,8 @@ hipótesis; ver `references/excel_coliseo.md`).
 | Conductores, viento por zona/área, hipótesis y límites %CR | Hecho |
 | Vano regulador (con factor de Truxá), cambio de estado (Cardano), flechas, tablas de tendido, plantillado | Hecho y validado |
 | Esfuerzos en postes y **decisión autosoportado / retenida** (AL, ANG, ANC, FL; método simplificado Tabla 37) | Hecho (`scripts/postes.py`) con el catálogo Afinia ES.03396.TR (27 postes de 9 a 16 m); falta torsión de postes ≥1600 daN y vertical |
-| Retenidas (coeficientes A, B, C) y cimentaciones (Anexo B7/B8) | Pendiente |
+| Retenidas bisectoras (Tabla 42) y cimentaciones de postes (Sulzberger, Anexo B7) | Hecho (`retenidas.py`, `cimentacion.py`) |
+| Anclas de las retenidas (Anexo B8.2) | Pendiente: las fórmulas salen ilegibles del texto extraído; falta la página del PDF o el ancla estándar Afinia |
 | Lectura de tabla de apoyos + coordenadas (hoja "Ingreso") y salida a Excel | Pendiente |
 
 ## Cómo usar
@@ -62,3 +63,6 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 ## Evaluar un proyecto completo
 Entrada: libro Excel con hoja «Ingreso» o un CSV (`ejemplos/coliseo_ingreso.csv`: apoyo,tipo,marca,calibre,x,y,largo,rotura,kva,tipo_trafo).
 `python3 -I scripts/proyecto.py <libro.xlsx> A rural` lee la hoja «Ingreso» del Excel, arma las líneas (nueva línea en cada FL marcado «I»), los cantones (terminan en FL; usar `--amarres APOYO1,APOYO2` para dividir en ángulos con amarre), calcula ángulos desde las coordenadas y evalúa cada apoyo con su poste. Los «AC» del Excel se tratan como ANG; un AL con deflexión > 5° se evalúa como ANG. No incluye aún el transformador (FTEE/FLEE: ver Proyecto Tipo de Centros de Transformación tipo poste).
+
+## Cimentaciones
+`python3 -I scripts/proyecto.py <csv> A rural ... --terreno normal` agrega la sección CIMENTACIONES: monobloque cilíndrico, Sulzberger (B7.4.1), F = rotura/2,5, CS ≥ 1,0, tan α = 0,01, c = 0,375; Ch y Ck = C2·h/2 con C2 = 8/12/16 daN/cm³ (flojo/normal/duro, como el Excel) y presión admisible supuesta 1,0/2,0/4,0 daN/cm² (**ajustar con el estudio de suelos**). Ancho mínimo = diámetro de base + 0,20 m; profundidad mínima = empotramiento (L/10+0,6) + solado 0,10 m. Pesos de poste tomados del Excel (verificar con el fabricante). El Excel usa Ch constante (no escala con la profundidad) y F = R/2.
