@@ -50,5 +50,12 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 - Zona de viento: el Proyecto Tipo la da por mapas por departamento (Anexo A1.1, imágenes). Zona «costera» = **zona A** (terreno tipo I, 130 km/h rural / 80 urbana). COLISEO DEL NORTE (Cartagena rural, costera) = **zona A rural**.
 - Afinia y EPM comparten normas: ET-TD-ME04-01 (EPM) confirma cargas de rotura y empotramiento (NTC 1329, L/10+0,6) y tampoco trae torsión.
 
+## Criterios de modelado de Efraím (consultores Afinia)
+- Cruce de vía / esquina de ~90°: el poste se toma como **dos fines de línea** (`EPP4` y `EPP4A`, mismo punto, cada uno con su cantón), no como ángulo corrido. Cada FL requiere **una sola retenida**, o ninguna si es autosoportado.
+- Poste con doble armado: se modela como otro poste con el mismo nombre terminado en `A` (mismas coordenadas).
+- Marcas de cantón: `I` = inicio, `F` = final. Un FL sin marca en medio de un tramo se evalúa como ANC (anclaje).
+- Pendiente (mejora): verificar el poste físico con los esfuerzos combinados de sus dos armados (X + XA); hoy se evalúan por separado, como en el Excel.
+
 ## Evaluar un proyecto completo
+Entrada: libro Excel con hoja «Ingreso» o un CSV (`ejemplos/coliseo_ingreso.csv`: apoyo,tipo,marca,calibre,x,y,largo,rotura,kva,tipo_trafo).
 `python3 -I scripts/proyecto.py <libro.xlsx> A rural` lee la hoja «Ingreso» del Excel, arma las líneas (nueva línea en cada FL marcado «I»), los cantones (terminan en FL; usar `--amarres APOYO1,APOYO2` para dividir en ángulos con amarre), calcula ángulos desde las coordenadas y evalúa cada apoyo con su poste. Los «AC» del Excel se tratan como ANG; un AL con deflexión > 5° se evalúa como ANG. No incluye aún el transformador (FTEE/FLEE: ver Proyecto Tipo de Centros de Transformación tipo poste).

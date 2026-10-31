@@ -11,7 +11,18 @@ CAL = {"1/0": "ACSR 1/0 (RAVEN)", "4/0": "ACSR 4/0 (PENGUIN)", "266": "ACSR 266.
        "266.8": "ACSR 266.8 (PARTRIDGE)", "336": "ACSR 336.4 (LINNET)", "477": "ACSR 477 (HAWK)"}
 TIPO = {"AL": "AL", "AC": "ANG", "AG": "ANG", "ANG": "ANG", "FL": "FL", "ANC": "ANC"}
 
+def leer_csv(path):
+    import csv
+    ap = []
+    for r in csv.DictReader(open(path, encoding="utf-8")):
+        cal = r["calibre"].strip()
+        ap.append(dict(nombre=r["apoyo"].strip(), tipo=TIPO[r["tipo"].strip().upper()], marca=r["marca"].strip() or None,
+                       cond=CAL[cal], x=float(r["x"]), y=float(r["y"]), largo=float(r["largo"]), existente=False,
+                       rotura=int(r["rotura"]), trafo=(r.get("kva"), r.get("tipo_trafo"))))
+    return ap
+
 def leer_ingreso(path):
+    if path.lower().endswith(".csv"): return leer_csv(path)
     ws = openpyxl.load_workbook(path, data_only=True)["Ingreso"]
     ap = []
     for r in range(6, 400):
@@ -26,7 +37,8 @@ def leer_ingreso(path):
     return ap
 
 def lineas(ap):
-    """Separa en lineas continuas: una nueva linea empieza en cada FL marcado 'I' (inicio)."""
+    """Separa en tramos: una nueva linea empieza en cada FL marcado 'I' (inicio) y termina en el 'F'.
+    Criterio Afinia para esquinas ~90 grados y doble armado: dos fines de linea (X y XA) en la misma ubicacion."""
     out, cur = [], []
     for a in ap:
         if a["tipo"] == "FL" and str(a["marca"]).upper() == "I" and cur: out.append(cur); cur = []
@@ -56,6 +68,7 @@ def evaluar_linea(linea, zona, area, amarres=()):
         a1 = dist[i-1] if i > 0 else dist[0]; a2 = dist[i] if i < n-1 else 0.0
         beta = deflexion(linea[i-1], a, linea[i+1]) if 0 < i < n-1 else 0.0
         f = a["tipo"]; nota = ""
+        if f == "FL" and 0 < i < n-1 and not a["marca"]: f = "ANC"; nota = "FL sin marca I/F en medio del tramo: evaluado como ANC (anclaje)"
         if f == "AL" and beta > 5: f = "ANG"; nota = f"AL con deflexion {beta:.0f} grados: evaluado como ANG"
         tense = "reducido" if area == "urbana" and max(ar1, ar2 or 0) <= 50 else "normal"
         if f == "FL":
@@ -66,7 +79,9 @@ def evaluar_linea(linea, zona, area, amarres=()):
         ap = P.Apoyo(f, pole, c, zona, area, [hN_-0.106]*3, ar1=ar1, ar2=ar2, a1=a1, a2=a2, beta=beta, tense=tense)
         r = P.evaluar(ap)
         ref, _ = P.poste_minimo_autosoportado(ap, largos=[a["largo"]])
-        res.append(dict(apoyo=a["nombre"], funcion=f, beta=beta, poste=pole, ar=(ar1, ar2), r=r, minimo=ref, nota=nota))
+        auto = r["veredicto"].startswith("AUTO")
+        ret = 0 if auto else {"FL": 1, "ANC": 2}.get(f, 1)   # FL: una retenida; ANC: una por lado
+        res.append(dict(apoyo=a["nombre"], funcion=f, beta=beta, poste=pole, ar=(ar1, ar2), r=r, minimo=ref, nota=nota, retenidas=ret))
     return res
 
 if __name__ == "__main__":
@@ -76,5 +91,5 @@ if __name__ == "__main__":
         print(f"\n=== Linea {li}: {linea[0]['nombre']} -> {linea[-1]['nombre']}  ({zona} {area}, {linea[0]['cond']})")
         for x in evaluar_linea(linea, zona, area, am):
             r = x["r"]; usos = [v["uso"] for v in r["verificaciones"] if v["uso"] is not None]
-            print(f"{x['apoyo']:7s} {x['funcion']:3s} b={x['beta']:5.1f} {x['poste']:11s} uso max {max(usos):5.2f} | {r['veredicto']}"
+            print(f"{x['apoyo']:7s} {x['funcion']:3s} b={x['beta']:5.1f} {x['poste']:11s} uso max {max(usos):5.2f} | {r['veredicto']} | retenidas: {x['retenidas']}"
                   + (f" | minimo autosoportado: {x['minimo']}" if not r['veredicto'].startswith('AUTO') else "") + (f" | {x['nota']}" if x['nota'] else ""))
