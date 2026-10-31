@@ -66,3 +66,5 @@ Entrada: libro Excel con hoja «Ingreso» o un CSV (`ejemplos/coliseo_ingreso.cs
 
 ## Cimentaciones
 `python3 -I scripts/proyecto.py <csv> A rural ... --terreno normal` agrega la sección CIMENTACIONES: monobloque cilíndrico, Sulzberger (B7.4.1), F = rotura/2,5, CS ≥ 1,0, tan α = 0,01, c = 0,375; Ch y Ck = C2·h/2 con C2 = 8/12/16 daN/cm³ (flojo/normal/duro, como el Excel) y presión admisible supuesta 1,0/2,0/4,0 daN/cm² (**ajustar con el estudio de suelos**). Ancho mínimo = diámetro de base + 0,20 m; profundidad mínima = empotramiento (L/10+0,6) + solado 0,10 m. Pesos de poste tomados del Excel (verificar con el fabricante). El Excel usa Ch constante (no escala con la profundidad) y F = R/2.
+
+**Entregable:** `scripts/exportar_cimentaciones.py <csv> A rural normal <salida.xlsx> --existentes ... --bandera ... --t ... --proyecto "NOMBRE"` genera la tabla de cimentaciones (formato hoja `Ciment`: apoyo, tipo de cimentación, d, h, volúmenes, Mv, Me, CS) con hoja de supuestos. Los apoyos `A` comparten el poste físico y no suman volumen. Ejemplo generado: `entregables/Tabla_Cimentaciones_COLISEO_DEL_NORTE.xlsx`.
