@@ -16,7 +16,7 @@ hipótesis; ver `references/excel_coliseo.md`).
 | Vano regulador (con factor de Truxá), cambio de estado (Cardano), flechas, tablas de tendido, plantillado | Hecho y validado |
 | Esfuerzos en postes y **decisión autosoportado / retenida** (AL, ANG, ANC, FL; método simplificado Tabla 37) | Hecho (`scripts/postes.py`) con el catálogo Afinia ES.03396.TR (27 postes de 9 a 16 m); falta torsión de postes ≥1600 daN y vertical |
 | Retenidas bisectoras (Tabla 42) y cimentaciones de postes (Sulzberger, Anexo B7) | Hecho (`retenidas.py`, `cimentacion.py`) |
-| Anclas de las retenidas (Anexo B8.2) | Pendiente: las fórmulas salen ilegibles del texto extraído; falta la página del PDF o el ancla estándar Afinia |
+| Anclas de las retenidas (Tabla 47, concreto prefabricado) | Hecho (`cimentacion.ANCLAS`) |
 | Lectura de tabla de apoyos + coordenadas (hoja "Ingreso") y salida a Excel | Pendiente |
 
 ## Cómo usar
@@ -64,7 +64,9 @@ porque `Esf M.T.!AC` tiene `IF(U="FL","R",...)`.) Probar con `python3 -I scripts
 Entrada: libro Excel con hoja «Ingreso» o un CSV (`ejemplos/coliseo_ingreso.csv`: apoyo,tipo,marca,calibre,x,y,largo,rotura,kva,tipo_trafo).
 `python3 -I scripts/proyecto.py <libro.xlsx> A rural` lee la hoja «Ingreso» del Excel, arma las líneas (nueva línea en cada FL marcado «I»), los cantones (terminan en FL; usar `--amarres APOYO1,APOYO2` para dividir en ángulos con amarre), calcula ángulos desde las coordenadas y evalúa cada apoyo con su poste. Los «AC» del Excel se tratan como ANG; un AL con deflexión > 5° se evalúa como ANG. No incluye aún el transformador (FTEE/FLEE: ver Proyecto Tipo de Centros de Transformación tipo poste).
 
-## Cimentaciones
-`python3 -I scripts/proyecto.py <csv> A rural ... --terreno normal` agrega la sección CIMENTACIONES: monobloque cilíndrico, Sulzberger (B7.4.1), F = rotura/2,5, CS ≥ 1,0, tan α = 0,01, c = 0,375; Ch y Ck = C2·h/2 con C2 = 8/12/16 daN/cm³ (flojo/normal/duro, como el Excel) y presión admisible de diseño 1,0/2,0/4,0 daN/cm² (Tabla B7.2; Efraím adoptó este valor por no haber estudio de suelos, al ir la cimentación en hormigón). Ancho mínimo = diámetro de base + 0,20 m; profundidad mínima = empotramiento (L/10+0,6) + solado 0,10 m. Pesos de poste tomados del Excel (verificar con el fabricante). El Excel usa Ch constante (no escala con la profundidad) y F = R/2.
+## Cimentaciones y anclas
+Se usan las **cimentaciones normalizadas del Proyecto Tipo** (Anexo A7.2, monobloque cilíndrico; `references/a7_2_cilindricas.json`, extraído con `scripts/parsear_a7.py`): por poste, función (AL/ANG o ANC/FL) y terreno dan a, h, CS, V y P máx. Se verifica CS ≥ 1,5 (1,9 en ANC) y que la carga vertical de retenida + gravivano + equipos sea ≤ P máx. Poste con doble armado: se toma la mayor dimensión. Terrenos (Tabla 48): flojo K 8 / σ 0,5; **normal K 12 / σ 1,0**; duro 16 / 1,5; muy duro 20 / 2,0. Efraím no tiene estudio de suelos: se adopta terreno normal y todos los postes nuevos van cimentados (el Proyecto Tipo prefiere poste directamente empotrado en terreno normal).
+Anclas: Tabla 47 (concreto prefabricado; cable 3/8\" o 1/2\" en terreno normal: H 1,88, a 0,40, b 0,25, c 0,30 m, carga máxima 8975 daN); se verifica que el tiro del cable no la supere.
+`cimentacion.py` conserva además un cálculo propio de Sulzberger (B7) que da CS ~15-30 % más alto que la tabla oficial: úsese solo como referencia, no para dimensionar.
 
-**Entregable:** `scripts/exportar_cimentaciones.py <csv> A rural normal <salida.xlsx> --existentes ... --bandera ... --t ... --proyecto "NOMBRE"` genera la tabla de cimentaciones (formato hoja `Ciment`: apoyo, tipo de cimentación, d, h, volúmenes, Mv, Me, CS) con hoja de supuestos. Los apoyos `A` comparten el poste físico y no suman volumen. Ejemplo generado: `entregables/Tabla_Cimentaciones_COLISEO_DEL_NORTE.xlsx`.
+**Entregable:** `scripts/exportar_cimentaciones.py <csv> A rural normal <salida.xlsx> --existentes ... --bandera ... --t ... --proyecto "NOMBRE"` genera la tabla de cimentaciones normalizadas (apoyo, poste, a, h, V, CS, P máx, vertical, verificación), la hoja de anclas y la de supuestos. Los apoyos `A` comparten el poste físico y no suman volumen. Ejemplo generado: `entregables/Tabla_Cimentaciones_COLISEO_DEL_NORTE.xlsx`.

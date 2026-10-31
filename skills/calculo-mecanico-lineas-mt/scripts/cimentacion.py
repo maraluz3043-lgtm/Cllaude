@@ -7,8 +7,9 @@ import postes as P
 
 # Coeficiente de compresibilidad a 2 m (daN/cm3) como el Excel (Flojo 8, Normal 12, Duro 16) y capacidad portante
 # adoptada como valor de diseno (Tabla B7.2) cuando no hay estudio de suelos; con cimentacion de hormigon no es critica.
-TERRENOS = {"flojo": dict(C2=8.0, sadm=1.0, mu=0.05), "normal": dict(C2=12.0, sadm=2.0, mu=0.4),
-            "duro": dict(C2=16.0, sadm=4.0, mu=0.45)}
+# Tabla 48 del Proyecto Tipo (caracterizacion de terrenos): sadm daN/cm2, K = Ch = Ck daN/cm3
+TERRENOS = {"flojo": dict(C2=8.0, sadm=0.5, mu=0.2), "normal": dict(C2=12.0, sadm=1.0, mu=0.3),
+            "duro": dict(C2=16.0, sadm=1.5, mu=0.4), "muy_duro": dict(C2=20.0, sadm=2.0, mu=0.5)}
 TAN_ALFA = 0.01; C_COEF = 0.375; GAMMA_CONC = 2400.0
 
 # Peso aproximado del poste (daN) tomado del Excel de COLISEO ('Ciment'): verificar con el fabricante.
@@ -60,3 +61,25 @@ def dimensionar(poste, terreno="normal", forma="cilindrica", Pextra=0.0, F=None,
                 if mejor is None or r["V_exc"] < mejor["V_exc"]: mejor = r
                 break
     return mejor
+
+
+# ---- Cimentaciones NORMALIZADAS del Proyecto Tipo (Anexo A7.2, monobloque cilindrico) -> references/a7_2_cilindricas.json
+import json, os
+_A72 = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "references", "a7_2_cilindricas.json")))
+CS_MIN = {"AL": 1.5, "ANG": 1.5, "FL": 1.5, "ANC": 1.9}          # 11.2.1
+
+def normalizada(poste, funciones, terreno="normal"):
+    """Cimentacion normalizada A7.2. `funciones`: funciones de los armados del poste fisico (envolvente: mayor ancho).
+    Devuelve dict(a, h, CS, V, Pmax, grupo, cs_min)."""
+    poste = P.normalizar_poste(poste)
+    cands = []
+    for f in funciones:
+        g = "ANC_FL" if f in ("FL", "ANC") else "AL_ANG"
+        r = dict(_A72[g][poste][terreno]); r["grupo"] = g; r["cs_min"] = CS_MIN[f]; cands.append(r)
+    return max(cands, key=lambda r: (r["a"], r["V"]))
+
+# ---- Anclas de concreto (Tabla 47): cable -> terreno -> dimensiones y carga maxima (daN)
+ANCLAS = {"3/8": {"normal": dict(H=1.88, a=0.40, b=0.25, c=0.30, Cmax=8975, parrilla='3/8"@10cm', tipo="prefabricada"),
+                  "flojo": dict(H=1.94, a=0.65, b=0.25, c=0.30, Cmax=4770, parrilla='3/8"@10cm', tipo="prefabricada")},
+          "1/2": {"normal": dict(H=1.88, a=0.40, b=0.25, c=0.30, Cmax=8975, parrilla='3/8"@10cm', tipo="prefabricada"),
+                  "flojo": dict(H=1.78, a=1.45, b=0.25, c=1.50, Cmax=8160, parrilla='1/2"@20cm', tipo="fabricada in situ")}}
